@@ -60,8 +60,3 @@ npm run preview
 - Email: divyanshusingh2903@gmail.com
 - GitHub: [divyanshusingh2903](https://github.com/divyanshusingh2903)
 - LinkedIn: [divyanshu-singh2903](https://www.linkedin.com/in/divyanshu-singh2903)
-
-## License
-
-© 2024 Divyanshu Singh. All rights reserved.
-# personal-website
