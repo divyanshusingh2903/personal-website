@@ -11,27 +11,16 @@ const Hero = () => {
 
   return (
     <section id="hero">
-      <div className="main-intro-container">
-        <div className="main-intro-name">
-          <h1 className="introMainText">
-            <span>Hi! I am</span>
-            <span>Divyanshu</span>
-          </h1>
-          <h3 className="introSubText-1">Software Engineer & Entrepreneur</h3>
-          <h3 className="introSubText-2">
-            Welcome to my digital portfolio! I'm Divyanshu Singh, a software
-            engineer passionate about Cloud Computing, AI, and building
-            innovative solutions. Currently working on multi-cloud
-            infrastructure automation and pharmaceutical technology platforms.
-          </h3>
-        </div>
-        <div className="contact-buttons-container">
-          <div className="resume-contact-button" onClick={openPDF}>
-            <p>Resume</p>
-          </div>
-          <div className="resume-contact-button" onClick={mailTo}>
-            <p>Contact Me</p>
-          </div>
+      <div className="hero-inner">
+        <span className="hero-label">Software Engineer & Entrepreneur</span>
+        <h1 className="hero-name">Divyanshu<br />Singh</h1>
+        <p className="hero-desc">
+          Building at the intersection of Cloud, AI, and materials science.
+          MS Computer Science at Texas A&amp;M. Founder of Vihayas &amp; PharmIndr.
+        </p>
+        <div className="hero-actions">
+          <button className="btn-primary" onClick={openPDF}>Resume</button>
+          <button className="btn-outline" onClick={mailTo}>Contact</button>
         </div>
       </div>
     </section>
