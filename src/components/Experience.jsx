@@ -1,194 +1,136 @@
 import React from "react";
 
+const jobs = [
+  {
+    logo: "/tamu-box-logo.png",
+    logoAlt: "Texas A&M",
+    logoLink: "https://www.tamu.edu/",
+    role: "Student Software Engineer",
+    company: "Texas A&M University",
+    location: "College Station, TX",
+    date: "Feb 2024 – Present",
+    bullets: [
+      "Led full-stack development of DataScribe.Cloud, a research data platform adopted by teams at multiple universities and national labs. Primary developer from MVP to production.",
+      "Built and deployed an LLM-powered research agent with RAG-based materials science Q&A and dynamic ML workflow orchestration, enabling researchers to trigger complex pipelines in natural language.",
+      "Architected automated CI/CD pipeline (Docker + Kubernetes) reducing deployment from 2 hours of manual work to a fully automated ~5-minute process.",
+    ],
+  },
+  {
+    logo: "/exabeam-logo.png",
+    logoAlt: "Exabeam",
+    logoLink: "https://www.exabeam.com/",
+    role: "Software Engineering Intern",
+    company: "Exabeam Inc.",
+    location: "Foster City, CA",
+    date: "May – Aug 2023",
+    bullets: [
+      "Built a Spring Boot REST API cost-analysis tool giving developers real-time visibility into the compute cost impact of code changes, used by the data engineering team.",
+      "Designed and deployed Prometheus + Grafana observability from scratch for the core threat scoring engine — first real-time visibility into pipeline health, enabling previously impossible incident detection.",
+      "Conducted security audits across 15+ repositories, identified and remediated critical/high-severity CVEs.",
+    ],
+  },
+  {
+    logo: "/tamu-box-logo.png",
+    logoAlt: "Texas A&M",
+    logoLink: "https://www.tamu.edu/",
+    role: "Teaching Assistant",
+    company: "Texas A&M University",
+    location: "College Station, TX",
+    date: "Spring 2024 – Present",
+    bullets: [
+      "C++, Quantum Computing, Programming Languages — ~150 students/semester.",
+      "Automated assignment grading pipeline with Bash scripts, cutting TA grading time by ~60% per coding assignment cycle.",
+    ],
+  },
+  {
+    logo: "/tamu-box-logo.png",
+    logoAlt: "Texas A&M",
+    logoLink: "https://www.tamu.edu/",
+    role: "Researcher",
+    company: "Texas A&M University",
+    location: "College Station, TX",
+    date: "2022 – 2023",
+    bullets: [
+      "Graph Mining and Cybersecurity research — optimizing graph mining systems and developing novel algorithms for large-scale graph analysis.",
+      "Processed 1TB+ of cybersecurity data converting JSON datasets into actionable graphs using Python and C++.",
+      "10× speedup in data processing pipelines via parallelization on university HPC clusters.",
+    ],
+  },
+];
+
+const skillGroups = [
+  { label: "Languages", value: "JavaScript, TypeScript, Python, GoLang, C/C++, MATLAB, SQL, Haskell" },
+  { label: "Frameworks", value: "React.js, Flutter, Spring/Spring Boot, Express.js, Flask, Go-Chi" },
+  { label: "Tools", value: "AWS (Cloud Practitioner), Google Cloud Platform, Docker, Kubernetes, GitHub, Linux/Unix" },
+  { label: "Databases", value: "PostgreSQL, MongoDB, Redis" },
+];
+
 const Experience = () => {
   return (
     <section id="experience">
-      <div className="qualifications-main-container">
-        <div className="experience-sub-section">
-          <h3 className="sub-section-header">Experience</h3>
+      <div className="section-container">
+        <h2 className="section-header">Experience</h2>
+        <div className="exp-layout">
 
-          <div className="sub-section-title-container">
-            <img
-              className="experience-image"
-              src="/tamu-box-logo.png"
-              alt="Texas A&M"
-              onClick={() => window.open("https://www.tamu.edu/")}
-            />
-            <h2 className="sub-section-title">
-              Student Software Intern - Texas A&M University
-            </h2>
-          </div>
-          <p className="sub-section-date">
-            Feb. 2024 - Present | College Station, TX
-          </p>
-          <h1 className="sub-section-content">
-            Serve as the primary developer of the DataScribe.Cloud data
-            management platform, adopted by researchers across multiple
-            universities and national laboratories for materials science
-            research and discovery.
-          </h1>
-          <h1 className="sub-section-content">
-            Contributed to the development of agentic AI components to support
-            intelligent data workflows and collaborative research tasks,
-            implementing machine learning algorithms for automated data
-            analysis.
-          </h1>
-          <h1 className="sub-section-content">
-            Designed and deployed AI-driven algorithms for data table schema
-            recommendations, duplicate data detection, and automated data
-            analysis, improving research efficiency by 40%.
-          </h1>
-          <h1 className="sub-section-content">
-            Developed a scalable microservices architecture and deployed
-            containerized infrastructure using Docker and Kubernetes to
-            streamline continuous integration and deployment pipelines.
-          </h1>
-          <h1 className="sub-section-content">
-            Authored a research paper on the DataScribe platform, scheduled for
-            publication in an academic journal in 2025.
-          </h1>
-
-          <div className="sub-section-title-container">
-            <img
-              className="experience-image"
-              src="/exabeam-logo.png"
-              alt="Exabeam"
-              onClick={() => window.open("https://www.exabeam.com/")}
-            />
-            <h2 className="sub-section-title">
-              Software Engineer Intern - Exabeam Inc.
-            </h2>
-          </div>
-          <p className="sub-section-date">May - Aug. 2023 | Foster City, CA</p>
-          <h1 className="sub-section-content">
-            Implemented Prometheus and Grafana-based observability solutions,
-            enabling real-time tracking of critical systems and reducing
-            downtime by 30% through proactive monitoring.
-          </h1>
-          <h1 className="sub-section-content">
-            Developed a RESTful API using Spring Boot for a cost analysis tool,
-            allowing developers to assess the impact of code changes on job
-            costs, resulting in 25% cost reduction in cloud resources.
-          </h1>
-          <h1 className="sub-section-content">
-            Deployed the cost analysis tool to Google Cloud Functions, ensuring
-            scalable execution and efficient resource utilization across
-            multiple environments.
-          </h1>
-          <h1 className="sub-section-content">
-            Conducted security audits across GitHub repositories, identifying
-            and remediating CVEs to enhance overall system security and maintain
-            compliance standards.
-          </h1>
-
-          <div className="sub-section-title-container">
-            <img
-              className="experience-image"
-              src="/tamu-box-logo.png"
-              alt="Texas A&M"
-              onClick={() => window.open("https://www.tamu.edu/")}
-            />
-            <h2 className="sub-section-title">
-              Teaching Assistant - Texas A&M University
-            </h2>
-          </div>
-          <p className="sub-section-date">Spring 2024 | College Station, TX</p>
-          <h1 className="sub-section-content">
-            Created Bash scripts for automated testing and grading, improving
-            efficiency in assignment evaluation by 60% and reducing grading
-            turnaround time from 5 days to 2 days.
-          </h1>
-          <h1 className="sub-section-content">
-            Conducted lab sessions and office hours, enhancing student
-            understanding of C++ programming concepts including data structures,
-            algorithms, and object-oriented programming.
-          </h1>
-          <h1 className="sub-section-content">
-            Collaborated on developing instructional materials, contributing to
-            improved course content and delivery for 200+ students per semester.
-          </h1>
-
-          <div className="sub-section-title-container">
-            <img
-              className="experience-image"
-              src="/tamu-box-logo.png"
-              alt="Texas A&M"
-              onClick={() => window.open("https://www.tamu.edu/")}
-            />
-            <h2 className="sub-section-title">
-              Researcher - Texas A&M University
-            </h2>
-          </div>
-          <p className="sub-section-date">2022 - 2023 | College Station, TX</p>
-          <h1 className="sub-section-content">
-            Conducted research in Graph Mining and Cybersecurity, optimizing
-            graph mining systems with focus on runtime support and developing
-            novel algorithms for large-scale graph analysis.
-          </h1>
-          <h1 className="sub-section-content">
-            Converted extensive JSON datasets into actionable graphs using
-            Python, C++, and graph data structures, processing over 1TB of
-            cybersecurity data.
-          </h1>
-          <h1 className="sub-section-content">
-            Leveraged Linux SSH access for efficient processing on university
-            HPC clusters, achieving 10× speedup in data processing pipelines
-            through parallelization.
-          </h1>
-        </div>
-
-        <div className="qualifications-sub-section-container">
-          <div className="sub-section">
-            <h3 className="sub-section-header">Education</h3>
-            <h1 className="sub-section-content">
-              <b>Texas A&M University,</b> College of Engineering, College
-              Station, TX
-            </h1>
-            <h1 className="sub-section-content">
-              <b>Master of Science,</b> Computer Science
-            </h1>
-            <h1 className="sub-section-content">
-              <b>Expected Graduation:</b> May 2026
-            </h1>
-            <h1 className="sub-section-content">
-              <b>Research Focus:</b> Machine Learning-Powered Computer Vision
-              for Human Modeling and 3D Reconstruction in Dynamic Scenes with
-              Multiple Bodies
-            </h1>
-            <h1 className="sub-section-content" style={{ marginTop: "20px" }}>
-              <b>Bachelor of Science,</b> Computer Science
-            </h1>
-            <h1 className="sub-section-content">
-              <b>Minor:</b> Mathematics
-            </h1>
-            <h1 className="sub-section-content">
-              <b>Graduated:</b> December 2024
-            </h1>
-            <h1 className="sub-section-content">
-              <b>Relevant Courses:</b> Machine Learning, Artificial
-              Intelligence, Operating Systems, Distributed Systems, Networks &
-              Distributed Processing, Quantum Algorithms, Deep Reinforcement
-              Learning, Deep Learning, Parallel Algorithms
-            </h1>
+          {/* Timeline */}
+          <div className="exp-timeline">
+            {jobs.map((job, i) => (
+              <div key={i} className="exp-entry">
+                <div className="exp-entry-head">
+                  <img
+                    src={job.logo}
+                    alt={job.logoAlt}
+                    className="exp-logo"
+                    onClick={() => window.open(job.logoLink)}
+                  />
+                  <div className="exp-entry-meta">
+                    <h3 className="exp-role">{job.role}</h3>
+                    <span className="exp-company">{job.company} · {job.location}</span>
+                  </div>
+                  <span className="exp-date">{job.date}</span>
+                </div>
+                <ul className="exp-bullets">
+                  {job.bullets.map((b, j) => (
+                    <li key={j}>{b}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
 
-          <div className="sub-section">
-            <h3 className="sub-section-header">Skills</h3>
-            <h1 className="sub-section-content">
-              <b>Certifications:</b> AWS Cloud Practitioner
-            </h1>
-            <h1 className="sub-section-content">
-              <b>Programming Languages:</b> Java, Python, C/C++, JavaScript,
-              TypeScript, SQL, HTML, CSS
-            </h1>
-            <h1 className="sub-section-content">
-              <b>Frameworks:</b> React, Flutter, Spring/Spring Boot, Node.js
-            </h1>
-            <h1 className="sub-section-content">
-              <b>Cloud & Tools:</b> AWS, Google Cloud Platform, Azure, Docker,
-              Kubernetes, GitHub, Linux/Unix
-            </h1>
+          {/* Sidebar — Education + Skills, no separation */}
+          <div className="exp-sidebar">
+            <span className="sidebar-label">Education</span>
+
+            <div className="edu-entry">
+              <div className="edu-degree">MS Computer Science</div>
+              <div className="edu-school">Texas A&M University</div>
+              <div className="edu-detail">GPA: 3.85 · Expected May 2026</div>
+              <div className="edu-detail" style={{ marginTop: "0.4rem" }}>
+                ML-aided Computer Vision for Human 3D Reconstruction in Dynamic Scenes
+              </div>
+            </div>
+
+            <div className="edu-entry">
+              <div className="edu-degree">BS Computer Science</div>
+              <div className="edu-school">Texas A&M University · Minor: Mathematics</div>
+              <div className="edu-detail">December 2024</div>
+              <div className="edu-detail" style={{ marginTop: "0.4rem" }}>
+                Machine Learning · AI · OS · Distributed Systems · Deep RL · Quantum Algorithms · Parallel Algorithms
+              </div>
+            </div>
+
+            <div className="sidebar-divider" />
+
+            <span className="sidebar-label">Skills</span>
+            {skillGroups.map((g, i) => (
+              <div key={i} className="skills-group">
+                <span className="skills-category">{g.label}</span>
+                <p className="skills-value">{g.value}</p>
+              </div>
+            ))}
           </div>
+
         </div>
       </div>
     </section>
