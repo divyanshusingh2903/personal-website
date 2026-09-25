@@ -7,6 +7,7 @@ import Projects from "./components/Projects";
 import Research from "./components/Research";
 import Experience from "./components/Experience";
 import Contact from "./components/Contact";
+import Forge from "./components/Forge";
 import "./App.css";
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path="/research" element={<Research />} />
           <Route path="/experience" element={<Experience />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/forge" element={<Forge />} />
         </Routes>
       </div>
     </Router>

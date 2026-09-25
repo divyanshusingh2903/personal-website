@@ -1,7 +1,13 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Header = ({ isDark, toggleTheme }) => {
+  const { pathname } = useLocation();
+
+  if (pathname === "/forge") {
+    return null;
+  }
+
   return (
     <nav className="nav-bar">
       <Link to="/" className="nav-item">
