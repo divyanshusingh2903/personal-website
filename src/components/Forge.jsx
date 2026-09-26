@@ -1,7 +1,8 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 const GITHUB_URL = "https://github.com/divyanshusingh2903/forge";
+// Drop the recording in public/ and point this at it, e.g. "/forge-demo.gif".
+const DEMO_GIF = null;
 
 const features = [
   {
@@ -28,26 +29,16 @@ const Forge = () => {
   return (
     <main id="forge">
       <section className="forge-hero">
-        <div className="forge-shell">
-          <div className="forge-page-nav">
-            <Link className="forge-home-link" to="/">
-              <span aria-hidden="true">&lt;-</span> Back to home
-            </Link>
-            <img className="forge-mark" src="/forge-mark.svg" alt="Forge" />
-          </div>
+        <div className="forge-shell forge-hero-shell">
           <div className="forge-hero-layout">
-            <div>
+            <div className="forge-hero-heading">
+              <img className="forge-mark" src="/forge-mark.svg" alt="Forge" />
               <h1 className="forge-title">Forge your code, not blind trust.</h1>
             </div>
             <div className="forge-hero-copy">
               <p>
                 A human-in-the-loop coding agent for developers who want useful
                 automation without surrendering the steering wheel.
-              </p>
-              <p>
-                Forge is tuned to make its next move visible, ask before it
-                crosses a boundary, and help you move through complex work with
-                intent.
               </p>
               <div className="forge-actions">
                 <a
@@ -58,20 +49,28 @@ const Forge = () => {
                 >
                   View source <span aria-hidden="true">-&gt;</span>
                 </a>
-                <Link className="forge-button forge-button-secondary" to="/projects">
-                  Back to projects
-                </Link>
               </div>
             </div>
           </div>
-          <div className="forge-demo-placeholder">
-            <div className="forge-demo-placeholder-copy">
-              <span className="forge-kicker">Workflow preview</span>
-              <h2>See Forge at work.</h2>
-              <p>GIF demo coming soon.</p>
+          <figure className="forge-demo">
+            <div className="forge-demo-bar">
+              <span>Workflow preview</span>
+              <span>forge</span>
             </div>
-            <span className="forge-demo-placeholder-mark">GIF</span>
-          </div>
+            <div className="forge-demo-screen">
+              {DEMO_GIF ? (
+                <img src={DEMO_GIF} alt="Forge planning and editing code in the desktop app" />
+              ) : (
+                <div className="forge-demo-placeholder">
+                  <div className="forge-demo-placeholder-copy">
+                    <h2>See Forge at work.</h2>
+                    <p>GIF demo coming soon.</p>
+                  </div>
+                  <span className="forge-demo-placeholder-mark">GIF</span>
+                </div>
+              )}
+            </div>
+          </figure>
         </div>
       </section>
 
@@ -84,6 +83,11 @@ const Forge = () => {
               Forge pairs the coding workflow developers love in Claude Code
               with the flexibility of OpenCode. Choose how much autonomy a task
               deserves, without losing the ability to steer the work.
+            </p>
+            <p>
+              Forge is tuned to make its next move visible, ask before it
+              crosses a boundary, and help you move through complex work with
+              intent.
             </p>
           </div>
           <div className="forge-feature-grid">
