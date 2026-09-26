@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
@@ -9,6 +9,8 @@ import Experience from "./components/Experience";
 import Contact from "./components/Contact";
 import Forge from "./components/Forge";
 import "./App.css";
+
+const Coach = lazy(() => import("./coach/Coach"));
 
 function App() {
   const [isDark, setIsDark] = useState(false);
@@ -28,6 +30,14 @@ function App() {
           <Route path="/experience" element={<Experience />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/forge" element={<Forge />} />
+          <Route
+            path="/coach/*"
+            element={
+              <Suspense fallback={<div className="coach-loading" />}>
+                <Coach />
+              </Suspense>
+            }
+          />
         </Routes>
       </div>
     </Router>

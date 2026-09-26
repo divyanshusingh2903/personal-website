@@ -847,3 +847,6 @@ body {
   .exp-layout { grid-template-columns: 1fr; }
   .exp-timeline { border-right: none; border-bottom: 1px solid var(--border); }
 }
+
+/* ─── Coach (lazy-loaded; full styles live in src/coach/coach.css) ─── */
+.coach-loading { min-height: 100vh; background: #0c1f14; }
