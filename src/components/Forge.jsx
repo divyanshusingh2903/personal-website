@@ -3,12 +3,12 @@ import "./Forge.css";
 
 const GITHUB_URL = "https://github.com/divyanshusingh2903/forge";
 const RELEASES_URL = `${GITHUB_URL}/releases`;
-// Enable after a stable release contains all three assets with these exact names.
-const DOWNLOADS_READY = false;
+// Asset names must match the files on the latest GitHub release exactly.
+const DOWNLOADS_READY = true;
 const DOWNLOADS = {
   mac: { label: "macOS", asset: "forge-desktop-mac-arm64.dmg" },
   windows: { label: "Windows", asset: "forge-desktop-win-x64.exe" },
-  linux: { label: "Linux", asset: "forge-desktop-linux-x64.AppImage" },
+  linux: { label: "Linux", asset: "forge-desktop-linux-x86_64.AppImage" },
 };
 const UPSTREAM_URL = "https://github.com/anomalyco/opencode";
 const DOCS_URL = "https://opencode.ai/docs";
@@ -54,6 +54,23 @@ function Arrow() {
       <path d="M6.5 12L17 12M13 16.5L17.5 12L13 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
     </svg>
   );
+}
+
+// Unauthenticated GitHub API calls are rate limited per visitor IP, so render nothing until the count loads.
+function Stars() {
+  const [stars, setStars] = useState(null);
+
+  useEffect(() => {
+    fetch("https://api.github.com/repos/divyanshusingh2903/forge")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((repo) => {
+        if (typeof repo?.stargazers_count === "number") setStars(repo.stargazers_count);
+      })
+      .catch(() => {});
+  }, []);
+
+  if (stars === null) return null;
+  return <span className="forge-stars">[{new Intl.NumberFormat("en", { notation: "compact" }).format(stars)}]</span>;
 }
 
 function getDownloadPlatform() {
@@ -189,8 +206,7 @@ function Forge() {
           <a className="forge-logo" href="#forge" aria-label="Forge, back to top"><Mark /><Wordmark /></a>
           <nav aria-label="Forge navigation">
             <ul>
-              <li><a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a></li>
-              <li><a href={DOCS_URL} target="_blank" rel="noopener noreferrer">Docs</a></li>
+              <li><a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub <Stars /></a></li>
             </ul>
           </nav>
         </header>
@@ -266,6 +282,11 @@ function Forge() {
                 <>Desktop installers are coming soon. For now, clone the repo, run <code>bun install</code>, then start the desktop app, web UI, or CLI from source.</>
               )}
             </FaqItem>
+            {DOWNLOADS_READY && (
+              <FaqItem question="Why does my computer warn me when I open Forge?">
+                Forge’s installers aren’t code-signed yet. On macOS, if the first launch is blocked, open System Settings → Privacy & Security and click Open Anyway (or run <code>xattr -dr com.apple.quarantine /Applications/Forge.app</code>). On Windows, when SmartScreen appears, click More info → Run anyway. Linux needs no extra steps beyond making the AppImage executable.
+              </FaqItem>
+            )}
             <FaqItem question="Which models can I use?">
               Any provider OpenCode supports. Configuration works the same way; see the <a href={`${DOCS_URL}/providers/`} target="_blank" rel="noopener noreferrer">OpenCode providers docs</a>.
             </FaqItem>

@@ -116,6 +116,7 @@
 @media (max-width: 55rem) { .forge-top ul { gap: 24px; } }
 .forge-top li a { text-decoration: none !important; }
 .forge-top li a:hover { text-decoration: underline !important; }
+.forge-stars { color: var(--color-text-weak); }
 
 .forge-logo { align-items: center; gap: 12px; }
 .forge-mark { width: 24px; height: 24px; }
@@ -123,8 +124,9 @@
 @media (max-width: 40rem) { .forge-top ul { gap: 16px; } }
 
 /* ─── Hero ──────────────────────────────────────────────── */
-.forge-hero { padding: calc(var(--vertical-padding) * 1.5) var(--padding); }
-@media (max-width: 30rem) { .forge-hero { padding: var(--vertical-padding) var(--padding); } }
+/* Short bottom padding keeps the command box close to the demo video. */
+.forge-hero { padding: calc(var(--vertical-padding) * 1.5) var(--padding) calc(var(--vertical-padding) * 0.75); }
+@media (max-width: 30rem) { .forge-hero { padding: var(--vertical-padding) var(--padding) calc(var(--vertical-padding) * 0.75); } }
 
 .forge-hero-copy h1 {
   margin-bottom: 8px;
