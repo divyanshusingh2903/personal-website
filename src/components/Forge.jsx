@@ -2,10 +2,16 @@ import { useEffect, useState } from "react";
 import "./Forge.css";
 
 const GITHUB_URL = "https://github.com/divyanshusingh2903/forge";
+const RELEASES_URL = `${GITHUB_URL}/releases`;
+// Enable after a stable release contains all three assets with these exact names.
+const DOWNLOADS_READY = false;
+const DOWNLOADS = {
+  mac: { label: "macOS", asset: "forge-desktop-mac-arm64.dmg" },
+  windows: { label: "Windows", asset: "forge-desktop-win-x64.exe" },
+  linux: { label: "Linux", asset: "forge-desktop-linux-x64.AppImage" },
+};
 const UPSTREAM_URL = "https://github.com/anomalyco/opencode";
 const DOCS_URL = "https://opencode.ai/docs";
-// Drop a demo into public/ and point this at it (e.g. "/forge-demo.mp4" or "/forge-demo.gif").
-const DEMO_SRC = null;
 
 // Pixel-block "FORGE" wordmark, same grid as Forge's own logo (packages/ui/src/components/logo.tsx).
 const WORDMARK = [
@@ -47,6 +53,39 @@ function Arrow() {
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M6.5 12L17 12M13 16.5L17.5 12L13 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
     </svg>
+  );
+}
+
+function getDownloadPlatform() {
+  if (typeof navigator === "undefined") return null;
+  const agent = navigator.userAgent || "";
+  // iPadOS can report itself as a Mac; mobile platforms need their own instructions.
+  if (/Android|iPhone|iPad|iPod|Windows Phone/i.test(agent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) return null;
+
+  const platform = navigator.userAgentData?.platform || navigator.platform || agent;
+  if (/Win/i.test(platform)) return DOWNLOADS.windows;
+  if (/Mac/i.test(platform)) return DOWNLOADS.mac;
+  if (/Linux/i.test(platform)) return DOWNLOADS.linux;
+  return null;
+}
+
+function Download() {
+  const [platform] = useState(getDownloadPlatform);
+  const directDownload = DOWNLOADS_READY && platform;
+  const url = directDownload
+    ? `${RELEASES_URL}/latest/download/${platform.asset}`
+    : RELEASES_URL;
+
+  return (
+    <div className="forge-download">
+      <a className="forge-button" href={url}>
+        <span>{directDownload ? `Download Forge for ${platform.label}` : "View Forge downloads"}</span>
+        <Arrow />
+      </a>
+      {directDownload && <a href={RELEASES_URL}>Other platforms and architectures</a>}
+      {!DOWNLOADS_READY && <span>Installers coming soon. Run Forge from source below.</span>}
+    </div>
   );
 }
 
@@ -97,44 +136,6 @@ function Install() {
             <svg className="forge-copy-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8.5 8.5V4.5H19.5V15.5H15.5M4.5 8.5H15.5V19.5H4.5V8.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" /></svg>
           )}
         </button>
-      </div>
-    </div>
-  );
-}
-
-function Demo() {
-  if (!DEMO_SRC) return <WorkflowPreview />;
-  if (DEMO_SRC.endsWith(".gif")) return <img className="forge-demo" src={DEMO_SRC} alt="Forge planning a change before editing code" />;
-  return <video className="forge-demo" src={DEMO_SRC} autoPlay playsInline loop muted preload="auto" />;
-}
-
-function WorkflowPreview() {
-  return (
-    <div className="forge-preview" aria-label="Illustration of Forge's planning workflow">
-      <aside className="forge-preview-sidebar" aria-hidden="true">
-        <div className="forge-preview-sidebar-title">SESSIONS</div>
-        <div className="forge-preview-sidebar-item active">Refactor settings page</div>
-        <div className="forge-preview-sidebar-item">Fix flaky ripgrep test</div>
-        <div className="forge-preview-sidebar-item">Codex ws pooling</div>
-      </aside>
-      <div className="forge-preview-content">
-        <div className="forge-preview-conversation">
-          <p className="forge-preview-prompt">Help me refactor the settings page without changing its behavior.</p>
-          <div className="forge-preview-response">
-            <p>I’ll map the existing state and component boundaries first, then propose a small, reviewable change.</p>
-            <div className="forge-preview-step"><span className="done">✓</span> Read settings components</div>
-            <div className="forge-preview-step"><span className="done">✓</span> Trace state and dependencies</div>
-            <div className="forge-preview-step"><span className="done">✓</span> Draft implementation plan</div>
-            <div className="forge-preview-step current"><span className="accent">◌</span> Waiting for your approval before editing</div>
-          </div>
-        </div>
-        <div className="forge-preview-composer">
-          <span>Approve the plan, or steer it…</span>
-        </div>
-        <div className="forge-preview-footer">
-          <span><b>plan</b> · read-only</span>
-          <span>tab to switch agents</span>
-        </div>
       </div>
     </div>
   );
@@ -203,11 +204,14 @@ function Forge() {
             </p>
           </div>
 
+          <Download />
           <Install />
         </section>
 
         <section className="forge-preview-section">
-          <Demo />
+          <video className="forge-demo" src="/forge-demo.mp4" aria-label="Forge desktop app demonstration" autoPlay playsInline loop muted controls preload="metadata">
+            Your browser does not support video playback.
+          </video>
         </section>
 
         <section className="forge-section">
@@ -256,7 +260,11 @@ function Forge() {
               No. Forge is an independent personal project. Claude Code is simply the reference for how the workflow should feel: transparent, collaborative, and with a human in the loop.
             </FaqItem>
             <FaqItem question="How do I install it?">
-              Forge isn’t a published product — there’s no install script or hosted release. Clone the repo, run <code>bun install</code>, then start the desktop app, web UI, or CLI from source.
+              {DOWNLOADS_READY ? (
+                <>Download the desktop installer for your OS above, or choose another architecture or format from <a href={RELEASES_URL}>GitHub Releases</a>. To run from source, clone the repo, run <code>bun install</code>, then start the desktop app, web UI, or CLI.</>
+              ) : (
+                <>Desktop installers are coming soon. For now, clone the repo, run <code>bun install</code>, then start the desktop app, web UI, or CLI from source.</>
+              )}
             </FaqItem>
             <FaqItem question="Which models can I use?">
               Any provider OpenCode supports. Configuration works the same way; see the <a href={`${DOCS_URL}/providers/`} target="_blank" rel="noopener noreferrer">OpenCode providers docs</a>.

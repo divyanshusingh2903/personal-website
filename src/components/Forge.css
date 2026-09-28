@@ -137,6 +137,20 @@
 .forge-hero-copy p { max-width: 82%; margin-bottom: 32px; color: var(--color-text); }
 @media (max-width: 50rem) { .forge-hero-copy p { max-width: 100%; } }
 
+/* ─── Desktop download ──────────────────────────────────── */
+.forge-download {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-bottom: 32px;
+}
+#forge .forge-download .forge-button { margin-top: 0; }
+.forge-download > span { color: var(--color-text); }
+@media (max-width: 30rem) {
+  .forge-download { align-items: flex-start; flex-direction: column; }
+}
+
 /* ─── Install tabs ──────────────────────────────────────── */
 .forge-tablist {
   display: flex;
@@ -190,45 +204,12 @@
 .forge-copy-icon { flex-shrink: 0; width: 16px; height: 16px; color: var(--color-text-weaker); }
 .forge-copy-icon.is-copied { color: var(--color-accent); }
 
-/* ─── Preview (stands in for opencode's video) ──────────── */
+/* ─── Demo video ─────────────────────────────────────────── */
 .forge-preview-section { border-top: 1px solid var(--color-border-weak); }
-.forge-demo { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
-.forge-preview {
-  display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
-  aspect-ratio: 16 / 9;
-  background: hsl(0, 9%, 7%);
-  color: hsl(0, 4%, 71%);
-  font-size: 13px;
-}
-.forge-preview-sidebar { padding: 24px 12px; background: hsl(0, 6%, 10%); border-right: 1px solid hsl(0, 4%, 18%); }
-.forge-preview-sidebar-title { padding: 0 10px 12px; color: hsl(0, 2%, 49%); font-size: 11px; letter-spacing: .1em; }
-.forge-preview-sidebar-item { padding: 8px 10px; overflow: hidden; color: hsl(0, 2%, 49%); text-overflow: ellipsis; white-space: nowrap; }
-.forge-preview-sidebar-item.active { background: hsl(0, 6%, 15%); border-radius: 4px; color: hsl(0, 15%, 94%); }
-.forge-preview-content { display: flex; flex-direction: column; min-width: 0; padding: 32px 40px 16px; }
-.forge-preview-conversation { flex: 1; max-width: 620px; }
-#forge .forge-preview-prompt {
-  padding: 12px 16px;
-  background: hsl(0, 6%, 12%);
-  border: 1px solid hsl(0, 4%, 20%);
-  border-radius: 6px;
-  color: hsl(0, 15%, 94%);
-  line-height: 1.6;
-}
-.forge-preview-response { margin-top: 24px; }
-#forge .forge-preview-response p { margin-bottom: 16px; line-height: 1.7; }
-.forge-preview-step { display: flex; gap: 12px; padding: 8px 0; border-top: 1px solid hsl(0, 4%, 16%); }
-.forge-preview-step.current { color: hsl(0, 15%, 94%); }
-.forge-preview-step .done { color: #7fd88f; }
-.forge-preview-step .accent { color: #e0825f; }
-.forge-preview-composer { padding: 14px 16px; border: 1px solid hsl(0, 4%, 23%); border-radius: 6px; color: hsl(0, 2%, 49%); }
-.forge-preview-footer { display: flex; justify-content: space-between; padding-top: 10px; color: hsl(0, 2%, 49%); font-size: 11px; }
-.forge-preview-footer b { color: #e0825f; font-weight: 500; }
-
-@media (max-width: 50rem) {
-  .forge-preview { display: block; aspect-ratio: auto; }
-  .forge-preview-sidebar { display: none; }
-  .forge-preview-content { padding: 24px var(--padding) 16px; }
+.forge-demo {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 /* ─── Sections ──────────────────────────────────────────── */
