@@ -316,11 +316,13 @@ const DrillPage = () => {
             More on YouTube →
           </a>
         </div>
-        <div className="video-grid">
-          {drill.videos.map((v) => (
-            <Video key={v.id} video={v} />
-          ))}
-        </div>
+        {drill.videos?.length > 0 && (
+          <div className="video-grid">
+            {drill.videos.map((v) => (
+              <Video key={v.id} video={v} />
+            ))}
+          </div>
+        )}
       </section>
 
       <nav className="pager" aria-label="More drills in this category">
