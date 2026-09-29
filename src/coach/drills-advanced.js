@@ -44,6 +44,10 @@ export const ADVANCED_DRILLS = [
       "Finish on goal after the through ball.",
       "C may play through first time only.",
     ],
+    videos: [
+      { id: "g4rWBSH44ng", title: "Up-Back-Through Passing Pattern", channel: "The Coaching Manual" },
+      { id: "i6vZkhwbWf8", title: "Up-Back-Through Examples", channel: "Football Maestros" },
+    ],
     search: "up back through passing pattern soccer drill",
     diagram: {
       field: { type: "grid", w: 30, h: 20 },
@@ -119,6 +123,10 @@ export const ADVANCED_DRILLS = [
       "A must finish on a goal instead of a gate.",
       "Wall players swap sides: returns with the weaker foot.",
     ],
+    videos: [
+      { id: "m2l6T0_npbc", title: "Practising Wall Passes", channel: "TacticalPedia - Coaching Your Way" },
+      { id: "_Ror-KkTYqE", title: "Two-Player Wall Pass: 1-2 and Swap", channel: "s7socceracademy" },
+    ],
     search: "double one two passing drill soccer wall pass",
     diagram: {
       field: { type: "grid", w: 30, h: 20 },
@@ -169,6 +177,10 @@ export const ADVANCED_DRILLS = [
       "Mannequins become live defenders.",
       "Players choose overlap or underlap depending on the defender.",
       "Takeover variation below.",
+    ],
+    videos: [
+      { id: "nKog9APi9qY", title: "Overlapping and Underlapping Run Drills", channel: "AD Football Training Videos" },
+      { id: "fctS-jkfSjE", title: "Wide Combination: Underlap (Liverpool)", channel: "Ryan Faithfull" },
     ],
     search: "underlap run drill soccer combination play",
     diagramName: "Underlap",
@@ -242,6 +254,10 @@ export const ADVANCED_DRILLS = [
       "Coach calls 'turn' and the receiver of the across pass turns instead of setting.",
       "Add a passive defender in the middle.",
     ],
+    videos: [
+      { id: "oEjFfOhz9YU", title: "Hexagon Passing Drills: 2 Variations", channel: "Coach Konstantinos Foundas" },
+      { id: "u_S1Fiquizw", title: "6 Hexagon Passing Drills", channel: "Coach Konstantinos Foundas" },
+    ],
     search: "hexagon passing drill one touch rotation",
     diagram: {
       field: { type: "grid", w: 32, h: 24, bare: true },
@@ -287,6 +303,10 @@ export const ADVANCED_DRILLS = [
       "Defender can change distance while the ball travels.",
       "Support player joins the attack after a set: 2v1.",
       "Replace the gate with a goal and keeper.",
+    ],
+    videos: [
+      { id: "S4ygH3iqvF0", title: "Receiving Under Pressure: Coaching Session", channel: "England Football Learning" },
+      { id: "O35mn1GSEU0", title: "Back to Goal Drill (Bayer Leverkusen)", channel: "Elev8 Coaching" },
     ],
     search: "back to goal receiving decision turn set spin drill",
     diagramName: "Space: turn",
@@ -385,6 +405,10 @@ export const ADVANCED_DRILLS = [
       "Defender may start from behind the receiver.",
       "One touch to receive, one to pass.",
     ],
+    videos: [
+      { id: "8xfWkNLdVYE", title: "How I Coach First Touch Under Pressure", channel: "Joner Football" },
+      { id: "yWICUIQTyJs", title: "Receiving the Ball Under Pressure", channel: "DICK'S" },
+    ],
     search: "receive away from pressure first touch drill soccer",
     diagram: {
       field: { type: "grid", w: 20, h: 16, bare: true },
@@ -435,6 +459,10 @@ export const ADVANCED_DRILLS = [
       "Passive defender behind the middle player.",
       "Middle player must play one-touch.",
       "Two middle players, one on each diagonal.",
+    ],
+    videos: [
+      { id: "J4fqB4t0PpQ", title: "How to Coach: Back-Foot Receiving", channel: "Foot-Tech Academy" },
+      { id: "rvjCLchidqQ", title: "Back-Foot Receiving Passing Exercise", channel: "The DiBernardo Soccer Methodology" },
     ],
     search: "diagonal passing box receive across body drill",
     diagram: {
@@ -489,6 +517,10 @@ export const ADVANCED_DRILLS = [
       "Add a third defender.",
       "Outside players can also play direct if the pivot is marked (no point).",
     ],
+    videos: [
+      { id: "d_BIjHBFr50", title: "Find Those Advanced Midfield Pockets", channel: "Touchtight Coaching" },
+      { id: "63jp5z5v-xI", title: "Centre Midfield: The Half-Turn", channel: "The Intelligent Footballer" },
+    ],
     search: "pivot receiving between the lines drill half turn",
     diagram: {
       field: { type: "grid", w: 20, h: 20 },
@@ -540,6 +572,10 @@ export const ADVANCED_DRILLS = [
       "Pivot one-touch only.",
       "Add a third defender (4+1 v 3).",
       "Two pivots.",
+    ],
+    videos: [
+      { id: "vnsHHa2tu80", title: "4+1v2 Possession Rondo", channel: "Code Football" },
+      { id: "gf6Ktz4glcY", title: "4v2 Midfield Box Rondo", channel: "Formation Football" },
     ],
     search: "rondo with pivot 4+1 v 2 possession drill",
     diagram: {
@@ -593,6 +629,10 @@ export const ADVANCED_DRILLS = [
       "The wide channels allow one touch only.",
       "Point only if the ball reaches the far end through a half-space.",
       "Remove the centre neutral.",
+    ],
+    videos: [
+      { id: "bUpwuvGYqh8", title: "What Is a Half-Space?", channel: "Tifo Football by The Athletic" },
+      { id: "dhmCwI5vAlE", title: "What Is Positional Play?", channel: "Tifo Football by The Athletic" },
     ],
     search: "positional play five channels half space game juego de posicion",
     diagram: {
@@ -656,6 +696,10 @@ export const ADVANCED_DRILLS = [
       "Neutrals can't pass to each other.",
       "Inside players limited to two touches.",
     ],
+    videos: [
+      { id: "kToukhkfsmo", title: "4v4+4 Possession Game", channel: "Modern Soccer Coach" },
+      { id: "PcHuI7RjXGg", title: "Positional Game 4v4+3 (Bayern Munich)", channel: "Football Focus" },
+    ],
     search: "4v4+4 possession game neutrals width depth",
     diagram: {
       field: { type: "grid", w: 30, h: 25 },
@@ -714,6 +758,9 @@ export const ADVANCED_DRILLS = [
       "Add a second 10.",
       "Middle defenders may press into the end zone.",
       "10 one-touch: lay-off to a supporting player coming forward.",
+    ],
+    videos: [
+      { id: "IJv_1BWplO0", title: "Play Through the Lines: Possession Drill", channel: "Onside - Training" },
     ],
     search: "playing between the lines drill three zones free player",
     diagram: {
@@ -775,6 +822,10 @@ export const ADVANCED_DRILLS = [
       "Two touches maximum.",
       "Point only if the pass is first time.",
     ],
+    videos: [
+      { id: "-NcVxFBFvQc", title: "How to Train Line-Breaking Passes", channel: "Onside - Training" },
+      { id: "DIHAMJyVkKU", title: "4v2 Rondo with Small Goals: Penetrating Passes", channel: "BFCN TV" },
+    ],
     search: "line breaking passes drill small sided game targets",
     diagram: {
       field: { type: "grid", w: 35, h: 25 },
@@ -828,6 +879,10 @@ export const ADVANCED_DRILLS = [
       "Add a third presser.",
       "Pivot must be involved before a gate counts.",
       "Two-touch maximum for the back four.",
+    ],
+    videos: [
+      { id: "FmVQniDnqCg", title: "Build-Up Play Explained", channel: "Football Meta" },
+      { id: "gDVuNyf83Ow", title: "Building From the Back Against a High Press", channel: "Martin Todorinov" },
     ],
     search: "back four possession circulation drill vs two strikers",
     diagram: {
@@ -912,6 +967,10 @@ export const ADVANCED_DRILLS = [
       "Allow the midfielders to jump and press.",
       "Rule: must pass through an 8 before a gate counts.",
     ],
+    videos: [
+      { id: "2cCFLLd7Kfg", title: "Salida Lavolpiana: The Lavolpiana Build-Up", channel: "M-10 FOOTBALL" },
+      { id: "RJocN3j0iW0", title: "Salida Lavolpiana Example", channel: "Cruyff Academy" },
+    ],
     search: "salida lavolpiana pivot drops between centre backs build up",
     diagram: {
       field: { type: "half" },
@@ -974,6 +1033,10 @@ export const ADVANCED_DRILLS = [
       "One-touch inside player.",
       "5v4.",
     ],
+    videos: [
+      { id: "2S76-A5Z_fU", title: "Third Man Run Exercise", channel: "Coach Mark Savvides" },
+      { id: "tcKDGKOctFg", title: "Third Man Run Drills (U10–U12)", channel: "KS Performance" },
+    ],
     search: "third man rondo possession drill",
     diagram: {
       field: { type: "grid", w: 20, h: 20 },
@@ -1024,6 +1087,10 @@ export const ADVANCED_DRILLS = [
       "Add a fourth blue midfielder.",
       "Striker may turn if unmarked: finish in a mini-goal.",
       "Two-touch maximum in midfield.",
+    ],
+    videos: [
+      { id: "sY5Gtw_odco", title: "Developing the 4-3-3: Midfield Rotations", channel: "Touchtight Coaching" },
+      { id: "vKWpAIQrSwQ", title: "Midfield Triangle Rotation: 3 Variations", channel: "KS Performance" },
     ],
     search: "midfield rotations drill 6 8 10 positional",
     diagram: {
@@ -1083,6 +1150,10 @@ export const ADVANCED_DRILLS = [
       "Rotate on the other side.",
       "Winger and 8 swap roles: winger comes inside, 8 goes wide.",
     ],
+    videos: [
+      { id: "OJPc3KcNLDg", title: "4-3-3 Build-Up Drill for Inverted Full-Backs", channel: "Code Football" },
+      { id: "rk05PKO6v2M", title: "Breaking Down Inverted Full-Backs", channel: "The Overlap" },
+    ],
     search: "inverted full back rotation drill positional play",
     diagram: {
       field: { type: "half" },
@@ -1140,6 +1211,10 @@ export const ADVANCED_DRILLS = [
       "Defence gets a sixth player who can cover the far side.",
       "Switch must be played in the air.",
       "Far full-back overlaps to make it 2v1 after the switch.",
+    ],
+    videos: [
+      { id: "y1IMrUY5f40", title: "1v1 Winger Attacking Drill: Isolation", channel: "Code Football" },
+      { id: "otmT99aS-sU", title: "Switching the Play Training Session", channel: "Sherwood Park Phoenix FC" },
     ],
     search: "overload to isolate switch play drill 1v1 winger",
     diagram: {
@@ -1199,6 +1274,10 @@ export const ADVANCED_DRILLS = [
       "Striker has to set in one touch.",
       "Runner must finish with one touch.",
     ],
+    videos: [
+      { id: "NVuHa93QH0Q", title: "False 9 Third-Man Run", channel: "Belleville Soccer Academy" },
+      { id: "n82IBXn6NFM", title: "Striker: 4 Basic Movements", channel: "GEDFOOTBALL" },
+    ],
     search: "striker drops deep runner in behind drill false nine",
     diagram: {
       field: { type: "half" },
@@ -1253,6 +1332,10 @@ export const ADVANCED_DRILLS = [
       "Defender can track any runner: attackers read and choose.",
       "Cut-back only.",
       "Mirror it on the other side.",
+    ],
+    videos: [
+      { id: "VYHp8qHz8UU", title: "Wide Triangle Full-Back Overlap", channel: "Touchtight Coaching" },
+      { id: "1XqF_SHWa4A", title: "Wide Triangles", channel: "Elite Football Tactics" },
     ],
     search: "wide triangle rotation drill full back winger 8",
     diagram: {
@@ -1310,6 +1393,10 @@ export const ADVANCED_DRILLS = [
       "Add 3–4 passive defenders.",
       "Coach calls 'switch' at random.",
       "Players must receive side-on or it doesn't count.",
+    ],
+    videos: [
+      { id: "wjGSTx1F_aM", title: "10v0 Shadow Play (Ajax)", channel: "Dario Grabusic | Football Coach" },
+      { id: "A5W9lb72fY0", title: "Shadow Play", channel: "WORLD CLASS COACHING" },
     ],
     search: "shadow play team shape drill soccer",
     diagram: {
@@ -1375,6 +1462,10 @@ export const ADVANCED_DRILLS = [
       "Defenders go fully live.",
       "8 must play one-touch.",
       "Add a second holding midfielder.",
+    ],
+    videos: [
+      { id: "tGZn3I173pE", title: "4v4: Attack the Half-Spaces", channel: "Coach X" },
+      { id: "q9Wm3Ml4dr0", title: "David Silva: Exploiting the Half-Space", channel: "GEDFOOTBALL" },
     ],
     search: "half space receiving drill attacking midfielder",
     diagram: {

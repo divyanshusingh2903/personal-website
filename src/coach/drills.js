@@ -19,6 +19,7 @@
 import { EXTRA_DRILLS } from "./drills-extra";
 import { TOUCH_DRILLS } from "./drills-touch";
 import { ADVANCED_DRILLS } from "./drills-advanced";
+import { MASTERY_DRILLS } from "./drills-mastery";
 
 // Ball Mastery Circuit: four players, each in their own coned box.
 const BOX_X = [2.6, 7.4, 12.2, 17];
@@ -2605,6 +2606,6 @@ export const DRILLS = [
   },
 ];
 
-DRILLS.push(...EXTRA_DRILLS, ...TOUCH_DRILLS, ...ADVANCED_DRILLS);
+DRILLS.push(...EXTRA_DRILLS, ...TOUCH_DRILLS, ...ADVANCED_DRILLS, ...MASTERY_DRILLS);
 
 export const findDrill = (id) => DRILLS.find((d) => d.id === id);

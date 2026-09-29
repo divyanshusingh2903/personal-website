@@ -34,6 +34,10 @@ export const TOUCH_DRILLS = [
       "Receive with the sole, then the outside, then the inside.",
       "Laces-driven pass from 8 m, then control it dead.",
     ],
+    videos: [
+      { id: "xJGHMjrHU3c", title: "11 Wall Drills for First Touch and Passing", channel: "Philip Blystone" },
+      { id: "LHSJbFE43Xg", title: "Passing & First Touch With a Wall or Rebounder", channel: "Joner Football" },
+    ],
     search: "wall passing drill soccer rebounder first touch",
     diagramName: "Two-touch",
     diagram: {
@@ -101,6 +105,10 @@ export const TOUCH_DRILLS = [
       "Increase the distance to 15 m and the pass speed.",
       "Shrink the box to 1 × 1 m.",
     ],
+    videos: [
+      { id: "j8Xzko2hy_g", title: "Wedge Control Basics: The First Touch", channel: "SoccerCoachTV" },
+      { id: "5TwNoZU7Ajk", title: "Partner Passing Drills: First Touch and Control", channel: "Coach Javi" },
+    ],
     search: "soccer first touch cushion control drill",
     diagram: {
       field: { type: "grid", w: 16, h: 6, bare: true },
@@ -147,6 +155,10 @@ export const TOUCH_DRILLS = [
       "Server calls the surface while the ball is in the air.",
       "Control and pass back in two touches without it bouncing.",
       "Volley pass back with the inside of the foot.",
+    ],
+    videos: [
+      { id: "AdzxLVnOZoY", title: "How to Control a Ball in the Air", channel: "AllAttack" },
+      { id: "syQOLrd-NHA", title: "Controlling a Ball in the Air: 8 Exercises", channel: "AD Football Training Videos" },
     ],
     search: "aerial ball control drill thigh chest instep soccer",
     diagram: {
@@ -197,6 +209,10 @@ export const TOUCH_DRILLS = [
       "Weaker foot only.",
       "Coach joins in as a 'shark' without a ball.",
     ],
+    videos: [
+      { id: "98h0ATdsFrc", title: "The Dribble Knockout Drill (U8–U12)", channel: "Onside - Training" },
+      { id: "d4KXjFm9v-M", title: "Dribbling & Shielding Drill (U7–U10)", channel: "KS Performance" },
+    ],
     search: "knockout soccer game kids shielding dribbling",
     diagram: {
       field: { type: "grid", w: 20, h: 20 },
@@ -246,6 +262,10 @@ export const TOUCH_DRILLS = [
       "After shielding, turn and dribble out of the box to score.",
       "Add a teammate to play a pass to once you've held it.",
     ],
+    videos: [
+      { id: "XAPe56hVvGQ", title: "Shielding the Ball", channel: "SportVideos" },
+      { id: "vFSE4MOqrgI", title: "How to Shield the Ball", channel: "Unisport" },
+    ],
     search: "shielding the ball drill soccer 1v1",
     diagram: {
       field: { type: "grid", w: 6, h: 6 },
@@ -292,6 +312,9 @@ export const TOUCH_DRILLS = [
       "Turn instead of stopping and dribble back.",
       "Pass with the weaker foot.",
       "Race another pair: 10 passes wins.",
+    ],
+    videos: [
+      { id: "ekesFXtK8go", title: "Kindergarten Soccer Skills: Ball Control", channel: "Prime Coaching Sport" },
     ],
     search: "dribble stop pass drill kids soccer",
     diagram: {
@@ -340,6 +363,10 @@ export const TOUCH_DRILLS = [
       "Dribble with the weaker foot only.",
       "Add a slalom of cones on the way out.",
       "Next player must control with one touch before going.",
+    ],
+    videos: [
+      { id: "34R6lvI9ugw", title: "Fun Dribbling & Passing Race", channel: "Coach Thomas Vlaminck" },
+      { id: "wvFyTDkOKzc", title: "Fun Dribbling Race: 4 Variations", channel: "Coach Thomas Vlaminck" },
     ],
     search: "dribble and pass relay race soccer kids",
     diagram: {
@@ -391,6 +418,10 @@ export const TOUCH_DRILLS = [
       "Add THIGH and CHEST with thrown serves.",
       "Receivers must move 2 m to receive: no standing still.",
       "Call the surface and a direction: 'Outside, left!'",
+    ],
+    videos: [
+      { id: "O4v-o1xeco0", title: "7 First Touch Drills for Team and Partner", channel: "AD Football Training Videos" },
+      { id: "2fbO9AKTPnI", title: "Let's Improve Your First Touch", channel: "Unisport" },
     ],
     search: "soccer receiving surfaces drill inside outside sole",
     diagram: {
@@ -448,6 +479,10 @@ export const TOUCH_DRILLS = [
       "Juggle while walking across the grid.",
       "Juggle, then flick up and volley to a partner.",
     ],
+    videos: [
+      { id: "5PQgz2SUPdk", title: "How to Juggle a Football for Beginners", channel: "Daniel Meyn Football" },
+      { id: "NMJHu0IneFU", title: "Anyone Can Juggle to 100", channel: "2oddlers Football" },
+    ],
     search: "juggling progression beginner soccer levels",
     diagram: {
       field: { type: "grid", w: 25, h: 5 },
@@ -500,6 +535,10 @@ export const TOUCH_DRILLS = [
       "Replace the second cone with a passive defender.",
       "Combine two moves at one cone: step-over into a roll.",
     ],
+    videos: [
+      { id: "ejr1QWFp1dg", title: "Step-Over and Scissors", channel: "CHSC Development" },
+      { id: "T54pFC0W-t8", title: "Scissors & Step-Over Cone Dribbling", channel: "Ultimate Soccer Moves Collection" },
+    ],
     search: "soccer dribbling moves scissors step over drill cones",
     diagram: {
       field: { type: "grid", w: 20, h: 12 },
@@ -551,6 +590,9 @@ export const TOUCH_DRILLS = [
       "Follower tries to get to a gate before the leader.",
       "Leader loses a point if the follower keeps up for 30 s.",
     ],
+    videos: [
+      { id: "aDYvRvHljFk", title: "Mirror Dribbling Warm-Up", channel: "Cincy SC" },
+    ],
     search: "mirror dribbling drill soccer shadow partner",
     diagram: {
       field: { type: "grid", w: 16, h: 12 },
@@ -600,6 +642,10 @@ export const TOUCH_DRILLS = [
       "Add a passive defender who blocks one gate: go the other way.",
       "Receive, go through the gate and pass to a second server beyond it.",
     ],
+    videos: [
+      { id: "UnbGJj3VwoM", title: "First Touch Drills + Change of Direction", channel: "Coach Thomas Vlaminck" },
+      { id: "O4v-o1xeco0", title: "7 First Touch Drills for Team and Partner", channel: "AD Football Training Videos" },
+    ],
     search: "directional first touch drill soccer gates",
     diagram: {
       field: { type: "grid", w: 16, h: 12, bare: true },
@@ -648,6 +694,10 @@ export const TOUCH_DRILLS = [
       "Defender goes live and tries to intercept.",
       "Receiver may spin in behind if the defender stays too tight.",
       "Receiver turns and plays to a third player.",
+    ],
+    videos: [
+      { id: "eubyWq8v-F4", title: "Checking and Receiving", channel: "Sportsy" },
+      { id: "L-DUShAlbUc", title: "Checking and Spinning Away", channel: "Soccer Coach Academy" },
     ],
     search: "check away check to receiving movement soccer drill",
     diagramName: "Check to",
@@ -719,6 +769,10 @@ export const TOUCH_DRILLS = [
       "Receive with the strong foot, pass with the weak: no extra touches.",
       "One-touch weak-foot passing at 5 m.",
     ],
+    videos: [
+      { id: "EW4N16-0obw", title: "How to Improve Your Weak Foot", channel: "Unisport" },
+      { id: "HGU3r0fb3Z8", title: "Unlock Your Weak Foot", channel: "Kreider Academy" },
+    ],
     search: "weak foot passing drill soccer",
     diagram: {
       field: { type: "grid", w: 20, h: 6, bare: true },
@@ -768,6 +822,10 @@ export const TOUCH_DRILLS = [
       "Receiver must be moving: pass into space ahead of them.",
       "Two-touch maximum: control and strike.",
       "Diagonal switch between two channels (below).",
+    ],
+    videos: [
+      { id: "ybAd3Ny8Ybc", title: "Passing: Driven Pass", channel: "Red Bull New York" },
+      { id: "S4BBki3bxtw", title: "Low Driven Pass: Technique Breakdown", channel: "Kreider Academy" },
     ],
     search: "driven pass technique drill laces soccer",
     diagramName: "Through the gate",
@@ -840,6 +898,10 @@ export const TOUCH_DRILLS = [
       "Receiver may only take one touch before passing back.",
       "Add a defender in the middle who can head the ball away.",
     ],
+    videos: [
+      { id: "_jSOW9rTX8g", title: "Passing: Lofted Pass", channel: "Red Bull New York" },
+      { id: "BZYfEinNYcc", title: "Lofted Pass Tutorial: Step by Step", channel: "Accelerate Football Coaching" },
+    ],
     search: "lofted pass technique drill soccer long ball",
     diagram: {
       field: { type: "grid", w: 34, h: 12, bare: true },
@@ -888,6 +950,10 @@ export const TOUCH_DRILLS = [
       "Defender goes live.",
       "Finish on a mini-goal.",
       "Wall player on the other side: use the weaker foot.",
+    ],
+    videos: [
+      { id: "SiQUZU6FNcE", title: "How to Do the Wall Pass (Give & Go)", channel: "Howcast" },
+      { id: "Qmk_XkPKrdM", title: "Passing Drill With 1-2 Combination", channel: "SoccerCoaching.Net" },
     ],
     search: "one two wall pass drill soccer beginners",
     diagram: {
@@ -938,6 +1004,9 @@ export const TOUCH_DRILLS = [
       "One-touch through the gates.",
       "Add a defender pair who can block a gate by standing in it.",
       "Weaker foot only.",
+    ],
+    videos: [
+      { id: "0PA39XnRetE", title: "Game: Through the Gates (Pairs)", channel: "Prime Coaching Sport" },
     ],
     search: "passing through gates game soccer pairs",
     diagram: {
@@ -992,6 +1061,10 @@ export const TOUCH_DRILLS = [
       "Pass and follow to the next corner.",
       "One-touch with the back foot.",
     ],
+    videos: [
+      { id: "AP7DDO2ktBo", title: "Open Body Passing", channel: "KS Performance" },
+      { id: "XXQstjAFfOQ", title: "Square Passing Drill: 3 Variations", channel: "Onside - Training" },
+    ],
     search: "square passing drill two touch open body",
     diagram: {
       field: { type: "grid", w: 12, h: 12 },
@@ -1043,6 +1116,10 @@ export const TOUCH_DRILLS = [
       "Weaker foot on the way back.",
       "Speed it up: sprint the channel.",
     ],
+    videos: [
+      { id: "FlFyz_8sI8M", title: "2 Player Warm-Up Passing Drill", channel: "Onside - Training" },
+      { id: "EDJKPs2Qcag", title: "Pass & Move Drill (U9–U12)", channel: "KS Performance" },
+    ],
     search: "passing on the move pairs drill soccer",
     diagram: {
       field: { type: "grid", w: 40, h: 12 },
@@ -1091,6 +1168,10 @@ export const TOUCH_DRILLS = [
       "Add a passive defender behind the receiver.",
       "Defender goes live: turn if there's space, set back if not.",
       "Finish on goal instead of through a gate.",
+    ],
+    videos: [
+      { id: "r9Ox8VnOyN0", title: "4 Essential Turns to Beat Defenders", channel: "Unisport" },
+      { id: "MkPq9l86KZE", title: "Receiving and Turning (U10–U12)", channel: "Cincy SC" },
     ],
     search: "receiving and turning drill soccer inside hook cruyff",
     diagramName: "Inside hook",
@@ -1184,6 +1265,10 @@ export const TOUCH_DRILLS = [
       "One-touch passing.",
       "Shrink to 8 × 8 m.",
       "Count passes: 10 = point.",
+    ],
+    videos: [
+      { id: "Zy5CZg9wAkI", title: "3v1 Rondo with Direction", channel: "Coach Helper" },
+      { id: "ei6reQyLe60", title: "3v1 Triangle Rondo", channel: "William Wilson" },
     ],
     search: "3v1 rondo triangle passing angles kids",
     diagram: {
