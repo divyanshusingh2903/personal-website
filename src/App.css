@@ -202,6 +202,7 @@ body {
 }
 
 .project-card {
+  min-width: 0;
   padding: 2rem;
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
@@ -481,15 +482,20 @@ body {
 /* ─── Responsive ─────────────────────────────────────────── */
 @media (max-width: 900px) {
   .about-body { grid-template-columns: 1fr; }
-  .projects-grid { grid-template-columns: 1fr; }
+  .projects-grid { grid-template-columns: minmax(0, 1fr); }
+  .about-body { grid-template-columns: minmax(0, 1fr); }
+  .exp-layout { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 768px) {
-  .nav-bar { padding: 0 1rem; gap: 0; }
-  .nav-bar a.nav-item { font-size: 0.65rem; padding: 0.35rem 0.5rem; }
+  .nav-bar { padding: 0 0.5rem; gap: 0; overflow-x: auto; scrollbar-width: none; }
+  .nav-bar::-webkit-scrollbar { display: none; }
+  .nav-bar a.nav-item { font-size: 0.62rem; letter-spacing: 0.4px; padding: 0.6rem 0.35rem; white-space: nowrap; }
+  .theme-toggle { padding: 0.6rem 0.4rem; }
+  .pub-card-top { gap: 0.5rem; }
 
   #hero, #contact { padding-bottom: 3.5rem; padding-left: 1.25rem; padding-right: 1.25rem; }
-  .hero-name { letter-spacing: -2px; }
+  .hero-name { letter-spacing: -2px; font-size: clamp(3rem, 16vw, 6rem); }
   .contact-heading { letter-spacing: -1.5px; }
 
   .section-container { padding: 4rem 1.25rem; }
@@ -501,6 +507,8 @@ body {
   .hero-actions { flex-direction: column; }
   .btn-primary, .btn-outline { width: 100%; text-align: center; }
   .contact-socials { flex-direction: column; gap: 0.75rem; }
+  .contact-email { overflow-wrap: anywhere; }
+  .btn-primary, .btn-outline { padding: 0.85rem 1.5rem; }
 }
 
 /* Keep old class names working for Experience page */
@@ -694,6 +702,12 @@ body {
 @media (max-width: 900px) {
   .exp-layout { grid-template-columns: 1fr; }
   .exp-timeline { border-right: none; border-bottom: 1px solid var(--border); }
+}
+
+@media (max-width: 768px) {
+  .exp-entry, .exp-sidebar { padding: 1.5rem 1.25rem; }
+  .exp-entry-head { flex-wrap: wrap; }
+  .exp-date { white-space: normal; }
 }
 
 /* ─── Coach (lazy-loaded; full styles live in src/coach/coach.css) ─── */
