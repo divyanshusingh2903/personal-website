@@ -8,6 +8,8 @@ import Research from "./components/Research";
 import Experience from "./components/Experience";
 import Contact from "./components/Contact";
 import Forge from "./components/Forge";
+import Harbinger from "./components/Harbinger";
+import HarbingerExperiments from "./components/HarbingerExperiments";
 import "./App.css";
 
 const Coach = lazy(() => import("./coach/Coach"));
@@ -30,6 +32,8 @@ function App() {
           <Route path="/experience" element={<Experience />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/forge" element={<Forge />} />
+          <Route path="/harbinger" element={<Harbinger />} />
+          <Route path="/harbinger/experiments" element={<HarbingerExperiments />} />
           <Route
             path="/coach/*"
             element={

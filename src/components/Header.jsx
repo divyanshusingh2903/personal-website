@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 const Header = ({ isDark, toggleTheme }) => {
   const { pathname } = useLocation();
 
-  if (pathname === "/forge" || pathname.startsWith("/coach")) {
+  if (pathname === "/forge" || pathname.startsWith("/harbinger") || pathname.startsWith("/coach")) {
     return null;
   }
 
