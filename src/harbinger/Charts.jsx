@@ -21,7 +21,7 @@ export function Bars({ rows, max, unit = "", digits = 1 }) {
 }
 
 // Signed change versus a baseline: left of the axis is better (lower), right is worse.
-export function Deltas({ rows, span = 70 }) {
+export function Deltas({ rows, span = 70, legend = ["← better than FIFO", "worse than FIFO →"], suffix = "%" }) {
   return (
     <div className="deltas" role="list">
       {rows.map((r) => {
@@ -33,11 +33,11 @@ export function Deltas({ rows, span = 70 }) {
               <span className="deltas-axis" />
               <span className="deltas-fill" style={r.value < 0 ? { right: "50%", width: `${w}%` } : { left: "50%", width: `${w}%` }} />
             </div>
-            <strong className="deltas-value">{r.value > 0 ? "+" : "−"}{Math.abs(r.value)}%</strong>
+            <strong className="deltas-value">{r.value > 0 ? "+" : r.value < 0 ? "−" : ""}{Math.abs(r.value)}{suffix}</strong>
           </div>
         );
       })}
-      <div className="deltas-legend"><span>← better than FIFO</span><span>worse than FIFO →</span></div>
+      <div className="deltas-legend"><span>{legend[0]}</span><span>{legend[1]}</span></div>
     </div>
   );
 }

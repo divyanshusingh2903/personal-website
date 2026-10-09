@@ -14,8 +14,8 @@ const STEPS = [
   { stage: 0, title: "Submit", text: "A producer sends a message over gRPC. It can attach a job_type header, and optionally a size, so the broker can tell its jobs apart." },
   { stage: 1, title: "Stamp", text: "The proxy assigns an ID, the arrival time and the broker-assigned producer id. Clients can't forge that id." },
   { stage: 2, title: "Predict", text: "route_message() looks up the message's key and reads the median of its learned duration histogram. That estimate becomes a tier through boundaries learned from global quantiles." },
-  { stage: 3, title: "Queue", text: "The message joins a level. Strict priority between levels, FIFO within a level. Cold or unpredictable keys take the middle tier." },
-  { stage: 3, aging: true, title: "Age", text: "A message that waits too long is promoted one level at a time, so expensive jobs are delayed but never starved." },
+  { stage: 3, title: "Queue", text: "The message joins a level. Strict priority between levels by default, FIFO within a level. Cold or unpredictable keys take the middle tier." },
+  { stage: 3, aging: true, title: "Age", text: "A message that waits too long is promoted one level at a time, so expensive jobs are delayed but never starved. Optionally, level weights share worker time between levels and pausing aging holds back promotions during a long backlog, so priority still means something under sustained overload." },
   { stage: 4, title: "Pull", text: "Consumers are tier-blind. They just pull, and the broker decides which message each pull receives." },
   { stage: 2, loop: true, title: "Learn", text: "The consumer Acks with processing_time_ms, and the predictor learns from it. Failures retry, then land in the dead-letter queue." },
 ];

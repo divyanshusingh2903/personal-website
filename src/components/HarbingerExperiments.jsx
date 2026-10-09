@@ -11,6 +11,8 @@ const PATH = [
   ["The v1 budgets could not be met even by a perfect static map.", "Re-pre-registered on a realistic workload before any predictive run.", "exp-3"],
   ["Production flow passed. The Azure trace did not.", "Predictive routing is opt-in. Aging under overload became a follow-up.", "exp-4"],
   ["A per-key median is off by 2× where cost follows input size.", "Added size-binned keys. No heavier model.", "exp-7"],
+  ["Size bins made the predictor more accurate but not measurably faster under load.", "They stay opt-in. Next test needs a job type that spans tiers and carries a lot of the work.", "exp-8"],
+  ["Under sustained overload, aging collapses every policy into FIFO.", "Level weights plus pausing aging: large mean gains, with caveats on the tail. Opt-in for now.", "exp-9"],
 ];
 
 function Outcome({ kind, children }) {
@@ -56,7 +58,7 @@ function HarbingerExperiments() {
           <p className="hb-eyebrow">Experiments</p>
           <h1>What we ran, and where it pointed.</h1>
           <p className="hb-lede">
-            <G>Seven experiments. Two failed their gates, and those failures shaped the research as much as the passes did.</G>
+            <G>Nine experiments. Several missed some of their pre-registered gates, and those misses, with the caveats they exposed, shaped the research as much as the passes did.</G>
           </p>
         </div>
       </section>
@@ -66,12 +68,12 @@ function HarbingerExperiments() {
           <ol className="path">
             {PATH.map(([found, then, id], i) => (
               <li key={id}>
-                <a href={`#${id}`}>
+                <div className="path-row">
                   <span className="path-n">{i + 1}</span>
                   <span className="path-found"><G>{found}</G></span>
                   <span className="path-arrow" aria-hidden="true">→</span>
-                  <span className="path-then"><G>{then}</G></span>
-                </a>
+                  <span className="path-then"><G>{then}</G> <a className="path-go" href={`#${id}`}>Details ↓</a></span>
+                </div>
               </li>
             ))}
           </ol>
@@ -216,10 +218,12 @@ function HarbingerExperiments() {
             "With 5 s aging, every message in a backlog that long is promoted to the top tier within seconds, so all policies collapse into FIFO.",
             "Re-running with aging off (exploratory, not part of the registered result) separates them: the oracle −50%, predictive −31%, static history −2%.",
             "Pooling 64 workers across all functions isn't how serverless scales, so the model limits what this trace can show too.",
+            "Digging in also exposed a bug: staleness was measured from a key's last completed job. Keys stuck in a backlog had no completions, so the predictor wrote them off. 47.6% of predictions during backlogs fell back as stale at load 0.5, against 0.6% otherwise.",
           ]}
           changed={[
             "The failed gate is reported unchanged. Nothing was re-tuned.",
-            "Aging and sustained overload interact: aging turns any priority policy into FIFO. This became the top follow-up.",
+            "Stale-key fix (#38): a prediction for a still-fresh key now counts as activity. Stale share during backlogs fell to 36.4% / 24.9% / 21.7% across the three loads, and with aging off predictive improved slightly at every load.",
+            "Aging and sustained overload interact: aging turns any priority policy into FIFO. This led straight to experiment 9.",
           ]}
         >
           <div className="mini-grid two">
@@ -273,7 +277,7 @@ function HarbingerExperiments() {
           ]}
           changed={[
             "Opt-in size-binned keys (key × floor(log2 size)), with a cold bin borrowing its own key's history, never another key's.",
-            "No heavier model. Not yet evaluated end-to-end in the broker.",
+            "No heavier model. Evaluated end-to-end under load in experiment 8.",
           ]}
         >
           <div className="mini-grid two">
@@ -313,12 +317,90 @@ function HarbingerExperiments() {
           </div>
         </Exp>
 
+        <Exp
+          id="exp-8" n={8} title="Size-binned keys under load" outcome="Gate not passed" kind="fail"
+          question="Experiment 7 showed size bins predict better on their own. Do they actually lower latency in the production-flow benchmark, where resize and invoice jobs vary widely in cost?"
+          facts={[["20", "runs, 5 seeds"], ["28 vs 9", "keys with bins vs without"], ["0.84 → 0.66", "median prediction error (octaves)"], ["−1.5%", "mean latency vs job-type keys"]]}
+          learned={[
+            "The predictor did get better: median prediction error fell from 0.84 to 0.66 octaves. But mean latency moved only −1.5%, and the 95% interval ran from −5.1% to +1.7%, so we can't tell it from no change.",
+            "Reordering worked as intended. Small resizes moved up (−12% for the cheapest third) and large invoices moved down (+28% for the costliest third).",
+            "Invoices are cheap (about 5 ms) and use under 3% of worker time, so demoting the big ones cost them more than it saved everyone else.",
+            "Most of the benefit was already captured by job-type keys: predictive beat FIFO by 25%, the oracle by 28.5%.",
+            "All five guardrails passed, so the cost side was clean.",
+          ]}
+          changed={[
+            "Size bins stay opt-in, as shipped.",
+            "They should help most when one job type spans tiers and carries a big share of the work. This workload has no such job type, so that claim is untested and needs a new pre-registered workload.",
+          ]}
+        >
+          <h5 className="viz-title">Size-binned vs job-type keys: mean latency change by planned cost</h5>
+          <Deltas
+            span={30}
+            legend={["← faster with bins", "slower with bins →"]}
+            rows={[
+              { label: "resize_image · cheapest third", value: -12 },
+              { label: "resize_image · middle third", value: -1 },
+              { label: "resize_image · costliest third", value: 3 },
+              { label: "generate_invoice · cheapest", value: 0 },
+              { label: "generate_invoice · middle", value: 6 },
+              { label: "generate_invoice · costliest", value: 28 },
+            ]}
+          />
+          <p className="viz-note">Exploratory breakdown, not part of the pre-registered result.</p>
+        </Exp>
+
+        <Exp
+          id="exp-9" n={9} title="Aging under sustained overload" outcome="Improves, with caveats" kind="mixed"
+          question="Experiment 5 showed aging turns every policy into FIFO when a backlog lasts hours. Can sharing worker time between levels, with aging that pauses during a backlog, keep priority meaningful without starving long jobs?"
+          facts={[["[8, 3, 1]", "level weights"], ["3", "Azure loads: 0.5 / 0.8 / 0.95"], ["15", "production-flow runs"], ["−56.9%", "mean vs FIFO in production flow"]]}
+          learned={[
+            "The improvement is real and consistent. On the Azure trace, weights with pausing cut mean latency against FIFO at every load (−14.6% to −27.3%) and against today's aging by 14–25%. In the production flow, mean latency fell 42% against today's predictive routing and 57% against FIFO.",
+            "Two caveats, both against pre-registered limits. At load 0.5 the Azure gain was −14.6%, a hair under the −15% bar, with the interval entirely below zero. At load 0.95 the long-job wait ratio was 1.46×, but its interval reached 2.23×, over the 2× limit. By the letter of the pre-registration the Azure gate passed at load 0.8 only, and the production-flow gate did not pass.",
+            "The gain lives in ordinary busy windows (15–52% lower mean), not in the single extreme window, where FIFO's mean latency was about 8 hours.",
+            "In the production flow short-job median fell from 6.4 s to 18 ms. The one guardrail that tripped was all-message P99, up 12% against today's predictive routing, over the 10% limit.",
+            "Our expectation that pausing would rarely trigger in the production flow was wrong. Flash-sale backlogs of 16–23 s are well past the 5 s aging threshold, so the same collapse happens at small scale.",
+            "The cost is the tail of longer job types: P99 rose from about 28 s to 31–32 s.",
+            "The oracle with the same scheduler gains 24–39%, so better predictions would still pay off.",
+          ]}
+          changed={[
+            "Level weights ship as opt-in, with pausing aging on whenever weights are set. The gates were not all met, so the default stays strict priority until the tail cost is understood.",
+            "Conclusion: it helps substantially, at a bounded cost to the longest jobs. Operators who value mean and short-job latency over the tail of the longest jobs should turn it on.",
+            "Next, with a new pre-registration: a larger bottom-level weight to win back some long-job tail, and a weights-only arm in the production flow to separate weights from pausing.",
+          ]}
+        >
+          <div className="mini-grid two">
+            <MiniCompare title="Azure trace: mean latency reduction vs FIFO" unit="%" max={100} digits={1} rows={[
+              { label: "Load 0.50", value: 14.6, kind: "ours", text: "−14.6%" },
+              { label: "Load 0.80", value: 23.7, kind: "ours", text: "−23.7%" },
+              { label: "Load 0.95", value: 27.3, kind: "ours", text: "−27.3%" },
+            ]} />
+            <MiniCompare title="Azure trace: long-job max wait vs FIFO (limit 2×)" unit="×" max={2.5} digits={2} rows={[
+              { label: "Limit", value: 2, kind: "base", text: "2.00×" },
+              { label: "Load 0.50", value: 1.21, kind: "ours" },
+              { label: "Load 0.80", value: 1.23, kind: "ours" },
+              { label: "Load 0.95", value: 1.46, kind: "ours", text: "1.46×" },
+            ]} />
+            <MiniCompare title="Production flow: mean latency (s)" unit=" s" rows={[
+              { label: "FIFO", value: 13.17, kind: "base" },
+              { label: "Predictive, today's aging", value: 9.66 },
+              { label: "Weights + pausing", value: 5.71, kind: "ours" },
+            ]} />
+            <MiniCompare title="Production flow: all-message P99 vs predictive (limit 1.10×)" unit="×" max={1.3} digits={2} rows={[
+              { label: "Limit", value: 1.1, kind: "base", text: "1.10×" },
+              { label: "Weights + pausing", value: 1.12, kind: "ours", text: "1.12×" },
+            ]} />
+          </div>
+          <p className="viz-note">At load 0.95 the long-job wait interval reaches 2.23×, over the 2× limit.</p>
+          <a className="exp-src" href={`${REPORT}/benchmarks/results/v3-aging/README.md`} target="_blank" rel="noopener noreferrer">Full results ↗</a>
+        </Exp>
+
         <Level level={2} tag="Next" title="Open follow-ups" id="next">
           <ol className="next">
-            <li><strong>Aging under sustained overload.</strong> Make aging relative to the backlog, or cap promotions per level, then re-evaluate on the Azure trace under a new pre-registration.</li>
-            <li><strong>Warm start.</strong> Snapshots restored after a long outage are treated as stale. Keep restored keys usable until enough new evidence arrives.</li>
-            <li><strong>Size bins in the broker.</strong> Implemented, but only measured offline so far. A cloud repeat of the collection remains.</li>
+            <li><strong>Bottom-level weight.</strong> Try a larger weight on the lowest level to see whether it wins back some of the long-job tail that experiment 9 cost.</li>
+            <li><strong>Weights-only arm.</strong> Add it to the production flow to separate the effect of weights from the effect of pausing aging.</li>
+            <li><strong>A workload where size bins should win.</strong> One job type that spans tiers and carries a large share of the work, pre-registered before running.</li>
             <li><strong>Per-function worker pools</strong> in the trace simulator, to model serverless scaling more honestly.</li>
+            <li><strong>Cloud repeat</strong> of the feature-signal collection, on hardware other than one laptop.</li>
           </ol>
         </Level>
       </div>
