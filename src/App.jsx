@@ -10,6 +10,8 @@ import Contact from "./components/Contact";
 import Forge from "./components/Forge";
 import Harbinger from "./components/Harbinger";
 import HarbingerExperiments from "./components/HarbingerExperiments";
+import HarbingerBenchmarks from "./components/HarbingerBenchmarks";
+import HarbingerComparison from "./components/HarbingerComparison";
 import "./App.css";
 
 const Coach = lazy(() => import("./coach/Coach"));
@@ -34,6 +36,8 @@ function App() {
           <Route path="/forge" element={<Forge />} />
           <Route path="/harbinger" element={<Harbinger />} />
           <Route path="/harbinger/experiments" element={<HarbingerExperiments />} />
+          <Route path="/harbinger/benchmarks" element={<HarbingerBenchmarks />} />
+          <Route path="/harbinger/comparison" element={<HarbingerComparison />} />
           <Route
             path="/coach/*"
             element={

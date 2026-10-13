@@ -7,7 +7,7 @@ export function Bars({ rows, max, unit = "", digits = 1 }) {
     <div className="bars" role="list">
       {rows.map((r) => (
         <div className="bars-row" role="listitem" key={r.label} data-kind={r.kind || "ink"}>
-          <span className="bars-label">{r.label}</span>
+          <span className="bars-label">{r.icon}{r.label}</span>
           <div className="bars-track">
             <span className="bars-fill" style={{ width: `${Math.max(1.5, (r.value / top) * 100)}%` }}>
               {r.kind === "ours" && <i className="hb-dot" />}
@@ -28,7 +28,7 @@ export function Deltas({ rows, span = 70, legend = ["← better than FIFO", "wor
         const w = Math.min(50, (Math.abs(r.value) / span) * 50);
         return (
           <div className="deltas-row" role="listitem" key={r.label} data-better={r.value < 0 ? "" : undefined}>
-            <span className="deltas-label">{r.label}</span>
+            <span className="deltas-label">{r.icon}{r.label}</span>
             <div className="deltas-track">
               <span className="deltas-axis" />
               <span className="deltas-fill" style={r.value < 0 ? { right: "50%", width: `${w}%` } : { left: "50%", width: `${w}%` }} />

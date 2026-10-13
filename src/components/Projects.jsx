@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const projects = [
   {
-    title: "Harbinger — Predictive Multi-Level Message Queue",
+    title: "Harbinger",
     image: "/harbinger-icon.svg",
     description:
       "Research messaging system combining online ML-based processing-time prediction with Multi-Level Feedback Queue scheduling to reduce end-to-end message latency. Phase 1 includes a C++20 gRPC broker with priority queues, aging-based starvation prevention, retries, and a dead-letter queue.",

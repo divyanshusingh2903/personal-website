@@ -95,19 +95,35 @@ function Harbinger() {
             max={100}
             rows={[
               { label: "FIFO", value: 100, kind: "base", text: "baseline" },
-              { label: "Mean latency", value: 72, kind: "ours", text: "−28%" },
-              { label: "Short-job median", value: 12, kind: "ours", text: "−88%" },
-              { label: "vs hand-tuned static map", value: 89, kind: "ours", text: "−11%" },
+              { label: "Mean latency", value: 69, kind: "ours", text: "−31%" },
+              { label: "Short-job median", value: 5, kind: "ours", text: "−95%" },
+              { label: "vs hand-tuned static map", value: 86, kind: "ours", text: "−14%" },
             ]}
           />
-          <p className="hb-fine"><G>Production-flow benchmark, 5 seeds × 7 arms. The tail did not improve: all-message P99 rose 4%.</G></p>
-          <Link className="hb-card-link" to="/harbinger/experiments">
-            <span>
-              <strong>See every experiment</strong>
-              What we ran, what failed, and how each result changed the design.
-            </span>
-            <b aria-hidden="true">→</b>
-          </Link>
+          <p className="hb-fine"><G>Production-flow benchmark on AWS, 5 seeds × 7 arms, replicating a laptop run (−26% mean on a quiet machine). The tail did not improve: all-message P99 was about 1.03× FIFO. Under hours-long backlogs the gain shrinks and needs the opt-in weighted design.</G></p>
+          <div className="hb-cards">
+            <Link className="hb-card-link" to="/harbinger/experiments">
+              <span>
+                <strong>Experiments</strong>
+                Thirteen steps, and how each one, including the failures, changed the design.
+              </span>
+              <b aria-hidden="true">→</b>
+            </Link>
+            <Link className="hb-card-link" to="/harbinger/benchmarks">
+              <span>
+                <strong>Benchmarks</strong>
+                Laptop, AWS and four real traces, and the conclusions they support.
+              </span>
+              <b aria-hidden="true">→</b>
+            </Link>
+            <Link className="hb-card-link" to="/harbinger/comparison">
+              <span>
+                <strong>RabbitMQ and Redis</strong>
+                Same workload, different broker: a scheduling win and a throughput loss.
+              </span>
+              <b aria-hidden="true">→</b>
+            </Link>
+          </div>
         </Level>
 
         <Level tag="Run it" title="Build and run">

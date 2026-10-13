@@ -126,7 +126,7 @@ function SimInfo() {
             <li>The arrival sequence was picked for readability at the default mix. Over the 12 sequences I tried at that mix, average wait beat FIFO in all 12 with strict priority and in 11 with weights. Weights beat strict priority in 9.</li>
             <li>Weights cut average wait but raise the longest wait.</li>
           </ul>
-          <Link to="/harbinger/experiments">See the measured results →</Link>
+          <Link to="/harbinger/benchmarks">See the measured results →</Link>
         </div>
       )}
     </div>
