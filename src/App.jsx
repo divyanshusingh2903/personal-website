@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import About from "./components/About";
@@ -24,31 +24,29 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className={isDark ? "dark" : ""}>
-        <Header isDark={isDark} toggleTheme={toggleTheme} />
-        <Routes>
-          <Route path="/" element={<><Hero /><About /></>} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/research" element={<Research />} />
-          <Route path="/experience" element={<Experience />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/forge" element={<Forge />} />
-          <Route path="/harbinger" element={<Harbinger />} />
-          <Route path="/harbinger/experiments" element={<HarbingerExperiments />} />
-          <Route path="/harbinger/benchmarks" element={<HarbingerBenchmarks />} />
-          <Route path="/harbinger/comparison" element={<HarbingerComparison />} />
-          <Route
-            path="/coach/*"
-            element={
-              <Suspense fallback={<div className="coach-loading" />}>
-                <Coach />
-              </Suspense>
-            }
-          />
-        </Routes>
-      </div>
-    </Router>
+    <div className={isDark ? "dark" : ""}>
+      <Header isDark={isDark} toggleTheme={toggleTheme} />
+      <Routes>
+        <Route path="/" element={<><Hero /><About /></>} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/research" element={<Research />} />
+        <Route path="/experience" element={<Experience />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/forge" element={<Forge />} />
+        <Route path="/harbinger" element={<Harbinger />} />
+        <Route path="/harbinger/experiments" element={<HarbingerExperiments />} />
+        <Route path="/harbinger/benchmarks" element={<HarbingerBenchmarks />} />
+        <Route path="/harbinger/comparison" element={<HarbingerComparison />} />
+        <Route
+          path="/coach/*"
+          element={
+            <Suspense fallback={<div className="coach-loading" />}>
+              <Coach />
+            </Suspense>
+          }
+        />
+      </Routes>
+    </div>
   );
 }
 

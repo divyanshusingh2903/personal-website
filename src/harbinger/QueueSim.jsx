@@ -135,7 +135,7 @@ function SimInfo() {
 
 const createSim = (mode, mix) => {
   const sim = { jobs: makeJobs(SEED, mix), fifo: newPanel("fifo"), h: newPanel(mode) };
-  if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+  if (typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
     while (!(isDone(sim.fifo, sim.jobs) && isDone(sim.h, sim.jobs))) { advance(sim.fifo, sim.jobs, 1); advance(sim.h, sim.jobs, 1); }
   }
   return sim;
