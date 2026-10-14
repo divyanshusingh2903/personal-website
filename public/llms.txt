@@ -1,0 +1,26 @@
+# Divyanshu Singh
+
+> Software engineer and entrepreneur working across cloud, AI and materials science. MS in Computer Science at Texas A&M University (BS in CS, minor in Mathematics). Founder of Vihayas and PharmIndr. Open to research collaborations, engineering roles and startup conversations.
+
+Every page is served as static HTML, so no JavaScript is needed to read it.
+
+## Pages
+
+- [Home](/): Overview and bio
+- [Projects](/projects): Harbinger, Forge, Vihayas, PharmFindr, IPELint and more
+- [Research](/research): Publications (DataScribe, Digital Discovery 2026; TRAM-MP, arXiv 2025) and research interests
+- [Experience](/experience): Texas A&M student software engineer and TA; Exabeam software engineering intern
+- [Contact](/contact): Email, GitHub, LinkedIn
+
+## Projects
+
+- [Forge](/forge): Personal fork of OpenCode, a coding agent that shows its plan before acting and keeps the human in the loop
+- [Harbinger](/harbinger): ML-predicted processing times plus Multi-Level Feedback Queue scheduling to cut message latency; C++20 gRPC broker
+- [Harbinger experiments](/harbinger/experiments), [benchmarks](/harbinger/benchmarks), [comparison](/harbinger/comparison)
+
+## Links
+
+- Email: divyanshusingh2903@gmail.com
+- GitHub: https://github.com/divyanshusingh2903
+- LinkedIn: https://www.linkedin.com/in/divyanshu-singh-75697721b
+- [Resume (PDF)](/Singh_Divyanshu_Resume.pdf)

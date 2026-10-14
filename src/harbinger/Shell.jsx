@@ -42,8 +42,10 @@ export function Top() {
       <nav aria-label="Harbinger navigation">
         <NavLink to="/harbinger" end>Overview</NavLink>
         <NavLink to="/harbinger/experiments">Experiments</NavLink>
-        <GlossaryButton className="hb-navbtn" />
-        <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+        <NavLink to="/harbinger/benchmarks">Benchmarks</NavLink>
+        <NavLink to="/harbinger/comparison">Comparison</NavLink>
+        <GlossaryButton className="hb-navbtn hb-optional" />
+        <a className="hb-optional" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
         <Link to="/projects" className="hb-back">← Portfolio</Link>
       </nav>
     </header>
