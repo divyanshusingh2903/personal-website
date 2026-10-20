@@ -13,6 +13,9 @@ const NAV = [
   { id: "production", label: "Production flow" },
   { id: "sustained", label: "Long backlogs" },
   { id: "traces", label: "Real traces" },
+  { id: "baselines", label: "Stronger baselines" },
+  { id: "aging", label: "Isolating aging" },
+  { id: "validation", label: "Validation & sensitivity" },
   { id: "conclusions", label: "What it supports" },
 ];
 
@@ -20,10 +23,14 @@ const SCOREBOARD = [
   ["Production flow", "Laptop, quiet re-run", { v: "Passed", kind: "pass" }, "Mean −25.6% vs FIFO"],
   ["Production flow, replicated", "AWS", { v: "Passed", kind: "pass" }, "Mean −30.8% vs FIFO"],
   ["30-minute run, broker on its own host", "AWS", { v: "3 of 8 checks failed", kind: "mixed" }, "Mean −6% to −7% vs FIFO"],
-  ["Level weights + pausing aging, production flow", "Laptop", { v: "Not passed", kind: "fail" }, "Mean −56.7% vs FIFO, but P99 1.12× (limit 1.10×)"],
-  ["Size-binned keys", "Laptop", { v: "Not passed", kind: "fail" }, "No measurable gain over job-type keys"],
-  ["Azure Functions 2021 trace", "Simulation", { v: "Routing alone: 0 of 3", kind: "fail" }, "With the overload design: 3 of 3, mean −15% to −25%"],
-  ["Huawei 2025 trace", "Simulation", { v: "Routing alone: 1 of 3", kind: "mixed" }, "With the overload design: 2 of 3, mean up to −50%"],
+  ["Level weights + pausing aging, production flow", "Laptop + AWS", { v: "Not passed", kind: "fail" }, "AWS mean −57.5% vs FIFO; P99 interval exceeds the guardrail"],
+  ["Size-binned keys", "Laptop + AWS", { v: "Not passed", kind: "fail" }, "AWS mean −1.5% vs job-type keys; no measurable gain"],
+  ["Azure Functions 2021 trace", "Real-broker replay", { v: "Weights: 2 of 3", kind: "mixed" }, "Default-aging routing: 0 of 3; weighted mean −8% to −17%"],
+  ["Huawei 2025 R5 trace", "Real-broker replay", { v: "Weights: 2 of 3", kind: "mixed" }, "Default-aging routing: 0 of 3; weighted mean −2% to −47%"],
+  ["Huawei, aging off", "Real-broker replay", { v: "2 of 2", kind: "pass" }, "Mean −37% / −45% vs FIFO, with tail and long-wait costs"],
+  ["Stronger baselines and ablations", "AWS production flow", { v: "Descriptive", kind: "note" }, "Per-type fair queueing beats predictive mean, with worse P99"],
+  ["CPU-work simulator validation", "Laptop + AWS", { v: "Not passed", kind: "fail" }, "Simulated effects overstate measured gains by 11–12 points"],
+  ["Parameter sensitivity", "Simulation", { v: "Incomplete", kind: "mixed" }, "Variant confirmation through the real broker was triggered but not run"],
   ["LPC-EGEE 2004 job log", "Simulation", { v: "0 of 6", kind: "fail" }, "Predictor gave a prediction for 21% of jobs"],
   ["DAS2-fs2 2003 job log", "Simulation", { v: "0 of 6", kind: "fail" }, "Overload design made the mean worse (+72% to +89%)"],
   ["Against RabbitMQ and Redis", "AWS", { v: "Passed", kind: "pass" }, "Mean −21.7% and −25.5% vs their FIFO"],
@@ -74,23 +81,32 @@ const TRACE_GRID = [
   ]],
 ];
 
+const REPLAY = [
+  ["Huawei R5 · 0.50", "−2.5% [−4.6, +0.0]", "Fail", "−2.4% [−4.4, +0.0]", "Fail"],
+  ["Huawei R5 · 0.80", "−10.9% [−14.8, −1.6]", "Fail", "−37.0% [−66.0, −4.0]", "Pass"],
+  ["Huawei R5 · 0.95", "−8.4% [−11.5, −3.2]", "Fail", "−47.1% [−74.8, −17.9]", "Pass"],
+  ["Azure 2021 · 0.50", "−0.9% [−1.9, −0.2]", "Fail", "−8.0% [−11.5, −4.3]", "Fail"],
+  ["Azure 2021 · 0.80", "−1.6% [−3.0, −0.6]", "Fail", "−15.3% [−23.9, −9.0]", "Pass"],
+  ["Azure 2021 · 0.95", "−2.2% [−3.9, −1.1]", "Fail", "−17.2% [−25.8, −11.6]", "Pass"],
+].map(([cell, a, av, b, bv]) => [cell, a, { v: av, kind: "fail" }, b, { v: bv, kind: bv === "Pass" ? "pass" : "fail" }]);
+
 const TRACE_STORIES = {
   azure: {
     tab: "Azure",
-    title: "Azure Functions 2021: 990,476 invocations",
+    title: "Azure Functions 2021 · real-broker replay",
     points: [
-      "Routing alone gained only 1–3%. Under the default 5 s aging every waiting job is promoted to the top level, so the predicted order is lost.",
-      "With weights and pausing aging, the same predictor cut mean latency 15–25% at every load, and all guardrails held.",
-      "One backlog dominates the trace. A single window was offered 3.46× capacity, and FIFO's mean latency there was 2.4 hours. The gains come from the other windows, and that window is unchanged or slightly worse.",
+      "On the real broker, default-aging routing gained only 1–2% and failed all three cells. Weights and pausing aging passed at loads 0.8 and 0.95, not 0.5.",
+      "The load-0.8 pass is narrow: −15.3% against a −15% point-estimate bar. Azure ran once per cell, so repeat-based stability is unknown.",
+      "The gate averages equal-time windows. Whole-run weighted mean gains are only −7.9% and −9.3% at loads 0.8 and 0.95, because the final day's backlog holds most of the work.",
     ],
   },
   huawei: {
     tab: "Huawei",
     title: "Huawei 2025 serverless trace",
     points: [
-      "Queueing happens in the busy windows only. In the quiet windows every policy sits at the service time of about 0.2 s, so nothing can be gained, which is why load 0.5 fails.",
-      "At load 0.8 the weighted design took the short-job median from 8.0 s to 54 ms. The long-job mean rose 17% (30.4 s to 35.5 s), and all-message P99 stayed within 1.10×.",
-      "A hand-tuned static map matched the predictor here, because this trace's keys are stable within a day. The predictor's case is that it needs no map.",
+      "All three repeats agree: default-aging routing fails every load, while weights with pausing aging pass at 0.8 and 0.95. Quiet windows offer little queueing benefit.",
+      "At load 0.8, whole-run means are FIFO 17.9 s, predictive 15.0 s and weighted 1.7 s. That roughly 90% whole-run reduction is not the registered −37.0% window-average estimate.",
+      "A static map built from the same history matches or beats the live predictor. Predictive fails +10% non-inferiority at loads 0.8 (+8.2% [+0.1, +17.2]) and 0.95 (+28.6% [+0.5, +58.2]). Stable keys do not establish a benefit from online adaptation.",
     ],
   },
   lpc: {
@@ -139,7 +155,7 @@ function TraceGrid() {
   return (
     <div className="tbl-wrap" role="region" tabIndex={0} aria-label="Mean latency change against FIFO for each trace and load">
       <table className="tbl tg-table">
-        <caption>Mean latency vs FIFO by trace, arm and load. Filled cells passed the pre-registered gate; outlined cells did not.</caption>
+        <caption>Historical v3 simulation: mean latency vs FIFO under the original seven-window analysis. Filled cells passed then; serverless verdicts were revised in v4.</caption>
         <thead>
           <tr><th scope="col">Trace</th><th scope="col">Arm</th><th scope="col">Load 0.5</th><th scope="col">Load 0.8</th><th scope="col">Load 0.95</th></tr>
         </thead>
@@ -181,7 +197,7 @@ function HarbingerBenchmarks() {
           <p className="hb-eyebrow">Benchmarks</p>
           <h1>What the benchmarks show, and what they don't.</h1>
           <p className="hb-lede">
-            <G>The same pre-registered gates, run on a laptop, on AWS and on four public traces. This page collects the results and says which conclusions they support.</G>
+             <G>Real-work production flow, public traces through the real broker, and simulations with explicit limits. The latest studies test stronger baselines, isolate aging, and show where the original conclusions needed to narrow.</G>
           </p>
         </div>
       </section>
@@ -195,16 +211,16 @@ function HarbingerBenchmarks() {
               ["−26%", "mean latency vs FIFO", "quiet laptop re-run"],
               ["−31%", "mean latency vs FIFO", "AWS"],
               ["−6% to −7%", "mean latency vs FIFO", "30-minute run with long backlogs"],
-              ["5 of 12", "trace cells passed with the overload design", "1 of 12 with routing alone"],
+               ["4 of 6", "real-broker trace cells passed with weights + pausing", "0 of 6 with default-aging routing"],
             ]}
           />
           <Table caption="Every benchmark and how it came out" head={["Benchmark", "Where", "Outcome", "Headline"]} rows={SCOREBOARD} />
-          <p className="hb-fine"><G>Outcomes are against criteria frozen before the runs. A pass means every gate criterion passed. Raw files are hashed with SHA-256 and listed in the repository.</G></p>
+           <p className="hb-fine"><G>A gate pass means every applicable criterion passed. Descriptive studies have no overall gate, and incomplete registrations are labeled separately. Raw artifacts are hashed, but not all per-message files are committed.</G></p>
         </Level>
 
         <Level level={1} tag="Method" title="How we measured" id="setup">
           <p className="hb-intro">
-            <G>Two kinds of benchmark. The production flow runs a real gRPC broker with real worker processes on a workload we wrote: nine job types, a flash sale and a mid-run cost shift. The trace simulations replay public logs through the same scheduling code on simulated time, so load cannot affect them.</G>
+             <G>Three evidence types. Production flow runs a real gRPC broker and CPU-work handlers on nine synthetic job types, a flash sale and a cost shift. Real-broker trace replay uses public durations with sleeping handlers. Simulations run scheduling code on simulated time; HPC results and parameter sensitivity remain simulation-only. These are different tests, not interchangeable replications.</G>
           </p>
           <div className="envs">
             <Env title="Laptop" rows={[
@@ -279,7 +295,7 @@ function HarbingerBenchmarks() {
               "Every verdict reproduced on a quiet machine and again on separate cloud hardware.",
               "Mean latency gains were 26–31% in every environment, and the tuned static map was beaten by 11–14%.",
               "The predictor is close to its ceiling. On AWS the oracle was 32% below FIFO and predictive 29%.",
-              "Shadow mode was free: ±0.1% against FIFO.",
+                 "Shadow-mode overhead was not measurable in this benchmark: ±0.1% against FIFO.",
               "The tail did not improve. All-message P99 was 1.02–1.03× FIFO, so the claim is about the mean and the median, not the tail.",
             ]}
           />
@@ -317,18 +333,30 @@ function HarbingerBenchmarks() {
           <Points
             items={[
               "No guardrail moved: P99 and the export max wait match FIFO.",
-              "Shadow mode cost nothing, and predictive stayed ahead of the hand-tuned static map.",
+              "Shadow-mode overhead was not measurable, and predictive stayed ahead of the hand-tuned static map in this run.",
               "After the mid-run cost shift, predictive was 15–23% ahead of FIFO with no drift alerts.",
             ]}
           />
         </Level>
 
-        <Level level={1} tag="Benchmark 3" title="Real traces" id="traces">
-          <p className="hb-intro">
-            <G>Four public traces, replayed under common pre-registered rules at three loads. Two arms are gated: routing alone, as built, and routing with level weights and pausing aging. A third arm gives the scheduler perfect predictions, to show where a failure comes from.</G>
-          </p>
-          <TraceGrid />
-          <p className="hb-fine"><G>The Huawei routing-alone result at load 0.8 is borderline: −15.01% against a −15% bar. On DAS2-fs2 the weighted design also failed its guardrails.</G></p>
+         <Level level={1} tag="Benchmark 3 · v4" title="Real traces through the real broker" id="traces">
+           <p className="hb-intro">
+             <G>Azure Functions 2021 and Huawei Cloud 2025 R5, at three loads, on AWS. Gate A uses default-aging predictive routing; gate B adds level weights and pausing aging. Gate A passes 0 of 6 cells; gate B passes 4 of 6. All three Huawei repeats agree on every verdict.</G>
+           </p>
+           <Table caption="v4 real-broker replay: window-average mean-latency change vs FIFO, with 95% intervals" head={["Trace · load", "Default-aging routing", "Gate A", "Weights + pausing", "Gate B"]} rows={REPLAY} />
+           <p className="hb-fine"><G>28 equal-trace-time windows; moving-block bootstrap, block length 4, 10,000 resamples. Huawei pools three repeats; Azure has one run per cell. P1 requires a point estimate ≤ −15% and an interval below zero, not an entire interval below −15%. G1 and G2 require interval upper bounds ≤ 2.0× FIFO for P99 and long-class maximum wait. Valid runs also require all messages completed, no DLQ or lease expiry, and producer P99 lateness ≤ 10 ms in real time. Gate B's point ratios are at most 1.12× for P99 and 1.14× for long-class maximum wait across these cells.</G></p>
+           <Callout title="What this replay does—and does not—validate">
+             <G>Handlers sleep for recorded durations; they do not do CPU-bound application work. Azure uses time scale 4.5 and Huawei 1; reported latency is in trace time. Azure's load-0.8 pass clears the bar by 0.3 points on one run. All 76 planned cells counted after registered retries, but two Huawei attempts lost the broker for an unknown reason. Their container logs were removed before diagnosis. Successful retries do not explain those failures.</G>
+           </Callout>
+           <p className="exp-links">
+             <a className="exp-src" href={`${RESULTS}/v4-replay/README.md`} target="_blank" rel="noopener noreferrer">Replay results and artifacts ↗</a>
+             <a className="exp-src" href={`${GITHUB_URL}/blob/main/docs/v4-replay-preregistration.md`} target="_blank" rel="noopener noreferrer">Replay criteria and validity rules ↗</a>
+           </p>
+
+           <h3 className="sub">Historical simulations and the HPC boundary</h3>
+           <p><G>The original v3 serverless simulation passed 1/6 routing cells and 5/6 weighted cells. Re-estimating with 28 windows and block bootstrap changes Huawei routing at 0.8 and Azure weighted at 0.5 to failures, yielding 0/6 and 4/6—the same verdicts as real-broker replay. The HPC logs below were not replayed through the real broker and are not pooled with those six cells.</G></p>
+           <TraceGrid />
+           <p className="hb-fine"><G>This grid preserves the original v3 analysis, not the latest serverless verdicts. DAS2-fs2 also failed its tail and long-job guardrails.</G></p>
 
           <h3 className="sub">Look closer</h3>
           <Tabs
@@ -350,13 +378,72 @@ function HarbingerBenchmarks() {
           </div>
 
           <Callout title="The boundary">
-            <G>The design helps where keys recur and predict well, which serverless functions have. Where keys churn or predict poorly, routing gives nothing, and with the overload design it can hurt long jobs. Two defaults are tuned for short jobs: aging at 5 s and the stale limit at 30 minutes. Scaled settings were not tested.</G>
+             <G>Recurring, predictable keys are useful but not sufficient for a scheduling gain. Default aging can erase the ordering, and prioritising short jobs can hurt long ones. Parameter variants were tested in serverless simulation; HPC time-scale tuning and real-broker confirmation of the sensitivity variants remain untested.</G>
           </Callout>
           <p className="exp-links">
             <a className="exp-src" href={`${RESULTS}/v3-traces/README.md`} target="_blank" rel="noopener noreferrer">Serverless traces ↗</a>
             <a className="exp-src" href={`${RESULTS}/v3-traces-2/README.md`} target="_blank" rel="noopener noreferrer">HPC logs ↗</a>
           </p>
-        </Level>
+         </Level>
+
+         <Level level={2} tag="v4 · Baselines" title="Prediction is not the best scheduler here" id="baselines">
+           <p className="hb-intro"><G>Eleven arms, ten seeds, 110 production-flow runs; all messages completed. This is a descriptive study, with no overall pass gate. Predictive routing lowered mean latency 32.1% [29.6, 34.4] vs FIFO and 15.5% [13.3, 17.8] vs a tuned static map. But per-type fair queueing did better on the mean without predicting durations.</G></p>
+           <Table caption="Median run metrics on the v4 synthetic workload; milliseconds, lower is better" head={["Arm", "Mean", "Short-job P50", "All-message P99"]} rows={[
+             ["FIFO", "6,927.7", "4,965.1", "21,099.4"],
+             ["Predictive", "4,779.7", "39.3", "21,753.9"],
+             ["Per-type fair queueing", "2,726.4", "16.1", "31,954.9"],
+           ]} />
+           <Callout title="A stronger baseline, with a different trade-off"><G>Predictive mean latency is 74.1% [64.5, 83.9] worse than per-type fair queueing. The fair scheduler's P99 is 51.7% [45.9, 58.1] worse than predictive. It requires operator-configured per-type queues/levels and was tested on nine near-deterministic types, not hundreds of trace keys. Harbinger avoids a per-endpoint priority map; it does not beat every scheduler.</G></Callout>
+           <h3 className="sub">What the predictor ablations establish</h3>
+           <Points items={[
+             "Removing decay/idle forgetting, the spread gate, staleness, or minimum observations changes the overall mean by only 0.0–0.4%; each interval is within ±3%. This workload does not demonstrate an overall benefit from those components.",
+             "Shifted-phase results are inconclusive, not proof that adaptation never helps. Censored-share handling was not ablated.",
+             "The median remains the better tested summary: the mean estimator is +3.6% [+1.4, +6.1] worse and P75 +3.8% [+1.6, +6.3] worse than default predictive routing.",
+           ]} />
+           <p className="exp-links"><a className="exp-src" href={`${RESULTS}/v4-baselines/README.md`} target="_blank" rel="noopener noreferrer">Baseline and ablation results ↗</a></p>
+         </Level>
+
+         <Level level={0} tag="v4 · Mechanism" title="Aging's cost is now measured" id="aging">
+           <p className="hb-intro"><G>Turning aging off is a separate intervention from adding weights with pausing aging. Both can preserve the predicted order, but neither removes the trade-off between short jobs and long waits.</G></p>
+           <Table caption="Separate Huawei aging-off replay: window metrics vs each run's own FIFO, with 95% intervals" head={["Metric", "Load 0.8", "Load 0.95"]} rows={[
+             ["Default-aging mean change", "−11.0% [−15.1, −1.7] · fail", "−8.5% [−11.7, −3.2] · fail"],
+             ["Aging-off mean change", "−37.4% [−66.0, −4.4] · pass", "−45.4% [−73.6, −16.2] · pass"],
+             ["Aging-off P99 ratio", "1.07× [1.01, 1.15]", "1.12× [1.02, 1.18]"],
+             ["Aging-off long max-wait ratio", "1.16× [1.02, 1.23]", "1.14× [1.03, 1.21]"],
+           ]} />
+           <p><G>All three repeats agree at each load; all 18 runs completed without DLQ, submit errors or lost leases. Aging off also improves mean vs default-aging predictive by 34.1% and 41.8%. These runs use their own controls and different host sizes from the main replay. Runs of roughly 20–25 minutes do not establish starvation freedom over hours.</G></p>
+           <h3 className="sub">Synthetic production-flow isolation</h3>
+           <p><G>Across ten seeds, aging off lowers mean latency another 37.4% [35.1, 39.8] vs predictive and 57.6% [57.1, 58.1] vs FIFO. Against FIFO, P99 rises 13.6% [12.6, 14.6] and long-class maximum wait 13.6% [12.0, 14.7]. Against predictive, those costs are 10.1% and 12.2%. The mechanism is measured; the cost is measured too.</G></p>
+           <h3 className="sub">AWS repeats the weighted-aging and size-bin misses</h3>
+           <Points items={[
+             "Weights with pausing aging lower mean latency 57.5% vs FIFO and 38.4% [34.7, 41.9] vs predictive. But P99 vs predictive is 1.100× [1.091, 1.107]; its upper bound exceeds the 1.10× limit, so the gate fails despite the rounded point estimate.",
+             "Size bins change mean latency −1.5% [−4.5, +0.4] vs job-type keys, failing the −3% criterion. Invoice mean rises 9.5% [4.4, 15.9]; resize intervals are too wide for a directional conclusion. Better prediction is not automatically better end-to-end latency.",
+           ]} />
+           <p className="exp-links">
+             <a className="exp-src" href={`${RESULTS}/v4-replay-aging/README.md`} target="_blank" rel="noopener noreferrer">Huawei aging-off replay ↗</a>
+             <a className="exp-src" href={`${RESULTS}/v4-baselines/README.md`} target="_blank" rel="noopener noreferrer">Synthetic aging isolation ↗</a>
+             <a className="exp-src" href={`${RESULTS}/v4-cloud-reruns/README.md`} target="_blank" rel="noopener noreferrer">AWS reruns ↗</a>
+           </p>
+         </Level>
+
+         <Level level={1} tag="v4 · Limits" title="Validate the model, not just the result" id="validation">
+           <Table caption="CPU-work production-flow validation: predictive mean change vs FIFO" head={["Environment", "Measured", "Simulated", "Effect gap"]} rows={[
+             ["Quiet laptop", "−25.6%", "−37.0%", "11.4 points · fail"],
+             ["AWS", "−30.8%", "−42.7%", "11.8 points · fail"],
+           ]} />
+           <p><G>Both fail the 10-percentage-point effect-agreement criterion, though phase directions and policy-group order pass. Simulated absolute latencies are only 0.31–0.41× measured. Production-flow conversion also omits failed-attempt work for 64 retried local messages. The simulation does not faithfully model CPU contention.</G></p>
+           <Callout title="Agreement depends on the kind of work"><G>On the sleeping-handler serverless replays, simulated and measured whole-run effects generally agree to about one percentage point. That supports the queueing model on those traces, not CPU-bound application realism. There is no universal correction factor for simulation results.</G></Callout>
+           <h3 className="sub">Parameter sensitivity is still simulation-only</h3>
+           <Points items={[
+             "At load 0.8 under the original seven-window rule, P1 passes across 18 tested configurations (including default): Azure routing 0, weighted 16; Huawei routing 10, weighted 18. Azure weighted fails with min_samples=100 and with two levels. These are P1 sensitivity results, not full-gate robustness counts.",
+             "Huawei routing is sensitive to aging: thresholds of 1 s, 5 s and 30 s yield −3.3%, −15.0% and −40.7% mean changes. A parameter setting can change the verdict.",
+             "Using 28 windows and block bootstrap changes two original simulation passes to failures. The registered Part C—real-broker replay of verdict-flipping variants—was triggered but not run. Main replay of the default configuration does not substitute for that missing confirmation.",
+           ]} />
+           <p className="exp-links">
+             <a className="exp-src" href={`${RESULTS}/v4-simvalidation/README.md`} target="_blank" rel="noopener noreferrer">Simulator validation ↗</a>
+             <a className="exp-src" href={`${RESULTS}/v4-sensitivity/README.md`} target="_blank" rel="noopener noreferrer">Sensitivity and missing confirmation ↗</a>
+           </p>
+         </Level>
 
         <Level level={2} tag="Conclusions" title="What the benchmarks support" id="conclusions">
           <div className="verdicts">
@@ -364,9 +451,9 @@ function HarbingerBenchmarks() {
               <h3>Holds up</h3>
               <Points
                 items={[
-                  "Learning each key's duration from acknowledgements beats FIFO and hand-tuned priorities on mean and short-job latency, with no configuration.",
-                  "The result replicates: laptop, quiet laptop re-run and AWS agree on every gate verdict.",
-                  "Shadow mode is a safe first step. It costs nothing measurable.",
+                   "On the tested synthetic production flow, predictive routing beats FIFO and the hand-tuned map on mean and short-job latency, without a per-endpoint priority map.",
+                   "The original production-flow result replicates: laptop, quiet laptop re-run and AWS agree on every v2 gate verdict.",
+                   "Shadow mode changes no routing and had no measurable overhead in those runs.",
                   "The idea is not tied to Harbinger's broker. It also works beside RabbitMQ.",
                 ]}
               />
@@ -376,8 +463,8 @@ function HarbingerBenchmarks() {
               <Points
                 items={[
                   "Keys must recur and predict well. They do on serverless traces and mostly do not on the two HPC logs.",
-                  "Under backlogs lasting minutes or hours, routing alone is flattened by aging. The weighted design recovers the gain on serverless traces but can harm long jobs.",
-                  "Short jobs win at the expense of long ones. On Huawei the long-job mean rose 17%.",
+                   "Default-aging routing passes 0/6 real-broker serverless cells. Weights with pausing aging pass 4/6; aging off also restores gains on Huawei, with tail and long-wait costs.",
+                   "Predictive is not universally better: per-type fair queueing beats its mean on the synthetic workload, and a history-built static map matches or beats it on Huawei.",
                   "Effect sizes depend on load relative to CPU speed.",
                 ]}
               />
@@ -386,7 +473,7 @@ function HarbingerBenchmarks() {
               <h3>Not claimed</h3>
               <Points
                 items={[
-                  "Better tail latency. The queue is non-preemptive, and P99 was flat or up to 12% worse.",
+                   "Better tail latency or hours-long starvation freedom. Short-job gains can increase P99 and long-job waits.",
                   "Production readiness. All evidence is synthetic or trace-driven, and the broker is in-memory with no durability.",
                   "That learned models never help. The workloads tested had little for one to find.",
                   "Anything about other clouds, wide-area networks or durable queue modes.",
@@ -397,18 +484,19 @@ function HarbingerBenchmarks() {
 
           <h3 className="sub">When to turn it on</h3>
           <ol className="steps">
-            <li><strong>Start in shadow mode.</strong> It records predictions without changing routing, and costs nothing measurable.</li>
+             <li><strong>Start in shadow mode.</strong> It records predictions without changing routing. Measure its overhead on your workload.</li>
             <li><strong>Check that keys predict.</strong> Run a per-key predictability check on your own history. If most jobs sit on recurring keys with stable durations, move on.</li>
-            <li><strong>Turn on predictive routing.</strong> Expect a lower mean and a much lower short-job median. Do not expect a better tail.</li>
-            <li><strong>Add weights and pausing aging only if backlogs last minutes or longer</strong> and step 2 passed. Watch long-job waits.</li>
+             <li><strong>Replay your workload against meaningful baselines.</strong> Include FIFO, a history-built static map and an appropriate fair scheduler. Predictability alone does not guarantee a gain.</li>
+             <li><strong>Set tail and long-job budgets before enabling a policy.</strong> Compare default aging, weights with pausing, and aging off where relevant; use measured benefits and costs, not a blanket recommendation.</li>
           </ol>
           <p className="hb-fine"><G>This sequence is our reading of the results, not a pre-registered result. The predictability check as a deployment guideline comes from the HPC-log findings, and an automatic safeguard is future work.</G></p>
 
           <h3 className="sub">Limits of the evidence</h3>
           <Points
             items={[
-              "The production flow is one scenario that we wrote. The traces are real but simulated, with some arrivals reconstructed.",
-              "One cloud provider, one region, one placement group and two instance types.",
+               "The production flow is one scenario that we wrote. Serverless replay uses sleeping handlers and some reconstructed arrivals; HPC and sensitivity variants remain simulation-only.",
+               "One cloud provider and region, with experiment-specific host layouts. Results do not establish behaviour on other infrastructure.",
+               "Azure has one run per replay cell; two Huawei broker deaths remain unexplained. Roughly 5.8 GB of raw replay artifacts are hashed but not committed; run summaries are available.",
               "The 30-minute run has two repetitions, so its checks carry no intervals.",
               "The budgets of the first experiment were set after seeing earlier data, so that gate is less independent than the later ones.",
             ]}

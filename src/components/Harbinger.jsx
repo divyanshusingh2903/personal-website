@@ -6,12 +6,13 @@ import FlowDiagram from "../harbinger/FlowDiagram";
 import PredictorLab from "../harbinger/PredictorLab";
 import { G } from "../harbinger/Glossary";
 import { Bars } from "../harbinger/Charts";
+import { Callout, Headlines } from "../harbinger/Ui";
 import "../harbinger/harbinger.css";
 
 const IDEA = [
   ["Predict", "Each message's cost, from what its key took before."],
   ["Route", "Cheap work to L0, heavy work to L2."],
-  ["Learn", "Every Ack sharpens the next estimate."],
+  ["Learn", "Eligible successful Acks update its duration statistics."],
 ];
 
 const installTabs = [
@@ -90,7 +91,7 @@ function Harbinger() {
           <PredictorLab />
         </Level>
 
-        <Level level={2} tag="Measured" title="Does it work?" id="results">
+        <Level level={2} tag="Measured · Synthetic production flow" title="Does it work?" id="results">
           <Bars
             max={100}
             rows={[
@@ -100,19 +101,28 @@ function Harbinger() {
               { label: "vs hand-tuned static map", value: 86, kind: "ours", text: "−14%" },
             ]}
           />
-          <p className="hb-fine"><G>Production-flow benchmark on AWS, 5 seeds × 7 arms, replicating a laptop run (−26% mean on a quiet machine). The tail did not improve: all-message P99 was about 1.03× FIFO. Under hours-long backlogs the gain shrinks and needs the opt-in weighted design.</G></p>
+          <p className="hb-fine"><G>Original synthetic production-flow benchmark on AWS, 5 seeds × 7 arms, replicating a laptop run (−26% mean on a quiet machine). The tail did not improve: all-message P99 was about 1.03× FIFO. These gains describe this workload, not every queue.</G></p>
+          <h3 className="sub">The latest evidence: real traces through the broker</h3>
+          <Headlines items={[
+            ["0/6", "cells passed with default-aging routing"],
+            ["4/6", "cells passed with weights + pausing aging"],
+          ]} />
+          <p><G>Azure and Huawei traces now run through the real broker with sleeping handlers. Long backlogs can erase predicted ordering under default aging. Weights with pausing aging recover gains at the two higher loads on both traces; separate Huawei runs show aging off can also recover gains, with higher window-level P99 and long waits. Azure ran once per cell, and its load-0.8 pass is narrow.</G></p>
+          <Callout title="A useful scheduling idea, not a universal winner">
+            <G>On the synthetic workload, per-type fair queueing beats predictive mean latency without prediction, but has worse P99 and needs per-type setup. On Huawei, a static map built from the same history matches or beats the live predictor. <Link to="/harbinger/benchmarks#baselines">Read the baselines</Link> and <Link to="/harbinger/benchmarks#traces">replay evidence</Link> before generalising the original gains.</G>
+          </Callout>
           <div className="hb-cards">
             <Link className="hb-card-link" to="/harbinger/experiments">
               <span>
                 <strong>Experiments</strong>
-                Thirteen steps, and how each one, including the failures, changed the design.
+                The research history through v4, including failed gates, stronger baselines and correctness tests.
               </span>
               <b aria-hidden="true">→</b>
             </Link>
             <Link className="hb-card-link" to="/harbinger/benchmarks">
               <span>
                 <strong>Benchmarks</strong>
-                Laptop, AWS and four real traces, and the conclusions they support.
+                Real-work benchmarks, real-broker trace replay, and the limits of simulation.
               </span>
               <b aria-hidden="true">→</b>
             </Link>
@@ -128,7 +138,7 @@ function Harbinger() {
 
         <Level tag="Run it" title="Build and run">
           <Install />
-          <p className="hb-fine"><G>Start in shadow mode: it records predictions without changing routing. Default routing stays static.</G></p>
+          <p className="hb-fine"><G>Start in shadow mode: it records predictions without changing routing. Default routing stays static; predictive routing is opt-in. This is an in-memory research prototype: messages and leases are not recovered after restart, and predictor snapshots save statistics, not deliveries. It is not production-ready.</G></p>
         </Level>
       </div>
     </Shell>

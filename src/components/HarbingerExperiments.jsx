@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Shell, { Level, Top, GITHUB_URL } from "../harbinger/Shell";
 import { G } from "../harbinger/Glossary";
 import { Bars, Deltas, Facts } from "../harbinger/Charts";
-import { Headlines, MoreFrom, Pill, SectionNav } from "../harbinger/Ui";
+import { Callout, Headlines, MoreFrom, Pill, Points, SectionNav } from "../harbinger/Ui";
 import "../harbinger/harbinger.css";
 
 const REPORT = `${GITHUB_URL}/blob/main`;
@@ -14,6 +14,8 @@ const NAV = [
   { id: "phase-2", label: "2 · Does routing work?" },
   { id: "phase-3", label: "3 · Closing gaps" },
   { id: "phase-4", label: "4 · Beyond the lab" },
+  { id: "phase-5", label: "5 · Testing the explanation" },
+  { id: "correctness", label: "Tests & guarantees" },
   { id: "next", label: "Next" },
 ];
 
@@ -24,9 +26,81 @@ const DECISIONS = [
   ["Predictive routing is opt-in. Static priority stays the default, and shadow mode comes first.", "Shipped", [3, 4]],
   ["A prediction for a still-fresh key counts as activity, so keys stuck in a backlog are not written off.", "Shipped", [5]],
   ["Size-binned keys for jobs whose cost follows input size.", "Opt-in", [7, 8]],
-  ["Level weights with pausing aging for sustained overload.", "Opt-in", [5, 9, 11]],
-  ["Use the overload design only where per-key prediction has been shown to work.", "Guideline", [12]],
+  ["Weights with pausing aging preserve ordering under overload, with measured tail costs; default-aging routing fails all six real-broker trace cells.", "Opt-in", [9, 15, 18]],
+  ["Evaluate policies on the workload, against meaningful baselines and explicit tail/long-job budgets. Predictability alone is not enough.", "Guideline", [12, 16, 18]],
   ["The scheduling idea works on another broker too, so it is separable from Harbinger's own queue.", "Finding", [13]],
+  ["Per-type fair queueing beats predictive mean on the synthetic workload. The benefit is avoiding manual per-type setup, not universal scheduling superiority.", "Finding", [16]],
+  ["Aging's mean-latency cost is isolated on synthetic work and Huawei replay; switching it off also increases tail latency and long waits.", "Finding", [16, 19]],
+  ["CPU-contention simulation fails effect validation. Parameter sensitivity confirmation through the real broker remains incomplete.", "Limit", [14, 17]],
+];
+
+const V4 = [
+  {
+    id: "exp-14", title: "Checking the simulator against CPU work", outcome: "Effect-agreement gate failed", kind: "fail",
+    finding: "The simulator gets direction and policy-group order right, but overstates the measured mean-latency benefit.",
+    decision: "Keep simulated queueing evidence separate from CPU-bound application evidence; do not apply a universal correction factor.",
+    question: "Does replaying the measured production flow through the simulator reproduce the effects observed on the laptop and AWS?",
+    facts: [["11.4 / 11.8", "percentage-point predictive effect gaps, local / AWS"], ["10 points", "effect-agreement limit"], ["0.31–0.41×", "simulated / measured absolute latency"]],
+    learned: ["Both measured sets fail the effect-size criterion. Phase directions and policy-group order pass in both sets.", "The conversion uses final-attempt handler times, omitting failed-attempt work for 64 retried local messages. The simulator was not retuned after the result."],
+    changed: ["Claims about real application effects need real-work evidence. Agreement on sleeping-handler traces does not validate CPU-contention modeling."],
+    source: "v4-simvalidation", anchor: "validation",
+  },
+  {
+    id: "exp-15", title: "Repeating aging and size bins on AWS", outcome: "Both missed gates again", kind: "fail",
+    finding: "Cloud hardware reproduces every quiet-local criterion verdict for weighted aging and size bins.",
+    decision: "Both features stay opt-in. Faster hardware does not turn these missed gates into passes.",
+    question: "Do the frozen aging and size-bin production-flow experiments reach the same conclusions on separate cloud hardware?",
+    facts: [["35", "runs, five seeds per arm"], ["−57.5%", "weighted mean vs FIFO"], ["1.107×", "upper P99 bound vs predictive; limit 1.10×"]],
+    learned: ["Weighted scheduling lowers mean latency 38.4% vs predictive, but its P99 interval [1.091, 1.107] crosses the 1.10× bound even though the point estimate rounds to 1.100×.", "Size bins change mean latency −1.5% [−4.5, +0.4] vs job-type keys, short of the −3% criterion. Invoice mean is 9.5% worse; resize estimates are too noisy for a directional conclusion."],
+    changed: ["Report the replicated failures alongside the original feature motivations. Improved prediction alone does not establish improved latency."],
+    source: "v4-cloud-reruns", anchor: "aging",
+  },
+  {
+    id: "exp-16", title: "Stronger baselines, ablations and aging isolation", outcome: "Descriptive: a stronger baseline wins", kind: "note",
+    finding: "Per-type fair queueing beats predictive mean without prediction; aging off explains much of the remaining synthetic-workload gap.",
+    decision: "Narrow the advantage to avoiding per-type configuration, and make the mean-versus-tail trade-off explicit.",
+    question: "Does prediction beat a fair queue per type, which predictor components help, and how much does default aging cost?",
+    facts: [["110", "runs: 11 arms × 10 seeds"], ["+74.1%", "predictive mean vs per-type fair"], ["−37.4%", "aging-off mean vs predictive"]],
+    learned: ["Predictive still beats FIFO (−32.1%) and tuned static (−15.5%). But per-type fair queueing has a much lower mean; its P99 is 51.7% worse than predictive. This is one workload with nine near-deterministic types and operator-configured per-type queues.", "Removing decay, spread, staleness or minimum observations has a small overall effect, with intervals within ±3%. Shifted-phase findings are inconclusive; censored-share handling was not ablated. Mean and P75 estimators are worse than the median.", "Aging off yields −57.6% mean vs FIFO, but P99 and long maximum wait each rise 13.6%. The matching RabbitMQ-sidecar reduction is not a paired equivalence test: layouts and FIFO baselines differ."],
+    changed: ["Do not call predictive the best scheduler on this workload. Do not claim each predictor safeguard has demonstrated performance value here.", "Aging's contribution is measured in Harbinger; a controlled cross-broker comparison remains a separate question. This study has no overall pass gate."],
+    source: "v4-baselines", anchor: "baselines",
+  },
+  {
+    id: "exp-17", title: "Sensitivity to parameters and inference rules", outcome: "Simulation only; confirmation incomplete", kind: "mixed",
+    finding: "Default-aging routing sits on a parameter cliff on Huawei, and finer-window analysis overturns two old passes.",
+    decision: "Use the revised 28-window analysis, and disclose that registered real-broker variant confirmation was not run.",
+    question: "Do verdicts survive parameter changes and a moving-block bootstrap that accounts for neighbouring windows?",
+    facts: [["18", "configurations including default"], ["2", "original serverless cell verdicts flip"], ["Not run", "triggered Part C variant replays"]],
+    learned: ["Under the original seven-window P1 rule at load 0.8, Azure routing passes 0 variants and weighted 16; Huawei routing passes 10 and weighted 18. These are mean-criterion sensitivity counts, not full-gate robustness.", "On Huawei, aging thresholds of 1 s / 5 s / 30 s yield −3.3% / −15.0% / −40.7%. With 28 windows and block bootstrap, Huawei routing at 0.8 and Azure weighted at 0.5 fail, giving A 0/6 and B 4/6."],
+    changed: ["Parameter sensitivity remains simulator evidence. The main replay confirms default-configuration verdicts, not the specific verdict-flipping variants required by Part C."],
+    source: "v4-sensitivity", anchor: "validation",
+  },
+  {
+    id: "exp-18", title: "Real traces through the real broker", outcome: "Routing 0/6; weighted 4/6", kind: "mixed",
+    finding: "Real-broker replay agrees with the revised simulation verdicts, not the original narrow passes.",
+    decision: "Use replay as the current serverless result. Separate window-gate effects from whole-run changes and disclose the reliability gaps.",
+    question: "Do Azure and Huawei traces reproduce the scheduling conclusions through gRPC, with real workers sleeping for trace durations?",
+    facts: [["76", "planned cells counted after registered retries"], ["3 / 1", "repeats per Huawei / Azure cell"], ["4 of 6", "weighted gate cells passed"]],
+    learned: ["Default-aging routing fails every load. Weights and pausing aging pass loads 0.8 and 0.95 on both traces. Huawei repeats agree; Azure's 0.8 pass clears the point-estimate bar by only 0.3 points on one run.", "The static map built from the same history matches or beats the live predictor on Huawei; predictive fails +10% non-inferiority at loads 0.8 and 0.95.", "Whole-run simulated effects generally agree to about a point, but sleeping handlers remove CPU contention. Two Huawei attempts lost the broker and were retried; the cause is unknown and container logs were removed. Raw per-message artifacts are hashed but not committed."],
+    changed: ["Replace the old 1/6 versus 5/6 serverless headline with 0/6 versus 4/6. Do not combine these replay cells with simulation-only HPC results.", "Keep workload, aggregation and repeat counts beside effect sizes; successful retries do not resolve unexplained broker deaths."],
+    source: "v4-replay", anchor: "traces",
+  },
+  {
+    id: "exp-19", title: "Switching aging off on Huawei", outcome: "Both tested loads pass", kind: "pass",
+    finding: "Aging off restores a substantial mean gain without weights, while increasing window-level P99 and long waits.",
+    decision: "Weights are not the only way to preserve ordering. Choose aging policy against measured long-job and tail budgets.",
+    question: "On the real broker, does removing aging alone recover the gain lost by default-aging routing on Huawei?",
+    facts: [["18", "runs: 3 arms × 2 loads × 3 repeats"], ["−37.4% / −45.4%", "window mean vs FIFO, loads 0.8 / 0.95"], ["20–25 min", "run duration; not a starvation proof"]],
+    learned: ["All repeats agree: aging-off passes both loads, default aging neither. Aging-off mean improves 34.1% and 41.8% vs default-aging predictive. Every run completed without DLQ, submit errors or lost leases.", "Window P99 is 1.07× / 1.12× FIFO and long-class maximum wait 1.16× / 1.14×. The guardrails pass, but the costs remain. These ratios are window metrics, not whole-run quantiles.", "Hosts differ from the main replay, so this study uses its own FIFO and predictive controls. Finite runs cannot establish starvation freedom over hours."],
+    changed: ["Aging's effect is now isolated on a real trace as well as synthetic work. Longer-horizon fairness and safeguards remain open questions."],
+    source: "v4-replay-aging", anchor: "aging",
+  },
+];
+
+const EXPERIMENT_IDS = [
+  "exp-1", "exp-2", "exp-3", "exp-4", "exp-5", "exp-6", "exp-7",
+  "exp-8", "exp-9", "exp-10", "exp-11", "exp-12", "exp-13",
+  ...V4.map(({ id }) => id),
 ];
 
 function MiniCompare({ title, rows, unit, max, digits }) {
@@ -112,8 +186,7 @@ function HarbingerExperiments() {
     return () => window.removeEventListener("hashchange", fromHash);
   }, [reveal]);
 
-  const ALL = Array.from({ length: 13 }, (_, i) => `exp-${i + 1}`);
-  const allOpen = ALL.every((id) => open.has(id));
+   const allOpen = EXPERIMENT_IDS.every((id) => open.has(id));
   const props = (id) => ({ id, n: Number(id.slice(4)), open: open.has(id), onToggle: toggle });
 
   return (
@@ -124,7 +197,7 @@ function HarbingerExperiments() {
           <p className="hb-eyebrow">Experiments</p>
           <h1>How the experiments shaped Harbinger.</h1>
           <p className="hb-lede">
-            <G>Every experiment ended in a design decision. Several missed their own pre-registered gates, and those misses shaped the design as much as the passes did. The numbers behind the headline results are on the benchmarks page.</G>
+             <G>From the first scheduling tests to v4 replay, ablations and stronger baselines. Failures narrowed the claims as much as successes shaped the design. Correctness tests support specific invariants; benchmark results support workload-specific performance claims.</G>
           </p>
         </div>
       </section>
@@ -133,7 +206,8 @@ function HarbingerExperiments() {
 
       <div className="hb-page">
         <Level level={0} tag="Overview" title="What was decided" id="decisions">
-          <Headlines items={[["13", "steps", "12 experiments and 1 pre-registration"], ["4", "passed their gate"], ["4", "mixed results"], ["4", "missed their gate"]]} />
+           <Headlines items={[[String(EXPERIMENT_IDS.length), "research steps", "including pre-registration and descriptive studies"], ["6", "new v4 studies"], ["4/6", "weighted real-broker cells passed", "0/6 with default-aging routing"]]} />
+           <p className="hb-fine">There is no combined pass count: descriptive studies, per-cell gates and incomplete registrations answer different questions. Earlier entries retain their original outcomes, with later evidence noted.</p>
           <ul className="ledger">
             {DECISIONS.map(([text, status, ids]) => (
               <li key={text}>
@@ -149,7 +223,7 @@ function HarbingerExperiments() {
           </ul>
           <div className="exp-toolbar">
             <span>Each experiment opens to its question, evidence and takeaways.</span>
-            <button type="button" className="hb-pill" onClick={() => setOpen(allOpen ? new Set() : new Set(ALL))}>
+             <button type="button" className="hb-pill" onClick={() => setOpen(allOpen ? new Set() : new Set(EXPERIMENT_IDS))}>
               {allOpen ? "Collapse all" : "Expand all"}
             </button>
           </div>
@@ -254,7 +328,7 @@ function HarbingerExperiments() {
           <div className="exp-list">
             <Exp
               {...props("exp-4")} title="Production-flow benchmark" outcome="Gate passed" kind="pass"
-              finding="Learned routing beat FIFO and a hand-tuned map with no configuration, but the tail did not improve."
+               finding="Learned routing beat FIFO and a hand-tuned map without a per-endpoint priority map, but the tail did not improve."
               decision="Predictive routing is opt-in and static stays the default. Shadow mode comes first."
               question="On a realistic e-commerce job queue with a flash sale and a mid-run cost shift, does learned routing beat FIFO and a hand-tuned static map, with no hand configuration?"
               facts={[["9", "job types, 5 services"], ["7", "arms"], ["5", "seeds"], ["~35,000", "messages per run"], ["10 / 10", "criteria passed"]]}
@@ -424,7 +498,8 @@ function HarbingerExperiments() {
                 "Invoices are cheap (about 5 ms) and use under 3% of worker time, so demoting the big ones cost them more than it saved everyone else.",
                 "Most of the benefit was already captured by job-type keys: predictive beat FIFO by 25%, the oracle by 28.5%.",
                 "All five guardrails passed, so the cost side was clean.",
-                "A quiet-machine re-run was less noisy and agreed: size bins do not help on this workload.",
+                 "A quiet-machine re-run was less noisy and agreed: size bins do not help on this workload.",
+                 "Later evidence: experiment 15 repeats the missed gate on AWS. The end-to-end benefit of size bins remains workload-dependent.",
               ]}
               changed={[
                 "Size bins stay opt-in, as shipped.",
@@ -464,8 +539,8 @@ function HarbingerExperiments() {
               ]}
               changed={[
                 "Level weights ship as opt-in, with pausing aging on whenever weights are set. The gates were not all met, so the default stays strict priority until the tail cost is understood.",
-                "Conclusion: it helps substantially, at a bounded cost to the longest jobs. Operators who value mean and short-job latency over the tail of the longest jobs should turn it on.",
-                "Next, with a new pre-registration: a larger bottom-level weight to win back some long-job tail, and a weights-only arm in the production flow to separate weights from pausing.",
+                 "The gain is substantial, but enabling it requires workload-specific evaluation and explicit long-job/tail budgets, not just a preference for a lower mean.",
+                 "Later evidence: experiment 15 repeats the tail failure on AWS. Experiments 16 and 19 isolate aging off; weights are not the only mechanism that restores ordering.",
               ]}
               links={[{ label: "Full results", href: `${REPORT}/benchmarks/results/v3-aging/README.md` }, { label: "Repeated on two more traces", to: "/harbinger/benchmarks#traces" }]}
             >
@@ -521,9 +596,9 @@ function HarbingerExperiments() {
             />
 
             <Exp
-              {...props("exp-11")} title="Real traces under common rules" outcome="Overload design generalises" kind="mixed"
-              finding="With weights and pausing aging the same predictor passed 5 of 6 serverless cells. Routing alone passed 1."
-              decision="Weights plus pausing is confirmed as the overload design, still opt-in."
+               {...props("exp-11")} title="Real traces under common rules" outcome="Historical v3 simulation" kind="mixed"
+               finding="The original seven-window simulation passed 5/6 weighted cells and 1/6 routing cells; later analysis and replay revise that to 4/6 and 0/6."
+               decision="Keep this original result as history; use experiments 17 and 18 for current serverless conclusions."
               question="Do experiments 5 and 9 hold on a second serverless provider? Run Azure and Huawei under the same pre-registered rules, with and without the weights and pausing aging design."
               facts={[["2", "serverless traces: Azure 2021, Huawei 2025"], ["3", "loads each: 0.5 / 0.8 / 0.95"], ["5 of 6", "cells passed with weights + pausing"], ["1 of 6", "cells passed with routing alone"]]}
               learned={[
@@ -531,10 +606,11 @@ function HarbingerExperiments() {
                 "With weights [8, 3, 1] and pausing aging, mean latency fell 15–25% on Azure and 47–50% on Huawei at loads 0.8 and 0.95.",
                 "Short jobs win and long jobs pay a little. On Huawei at 0.8 the short-job median fell from 8.0 s to 54 ms, the long-job mean rose 17%, and all-message P99 stayed within 1.10×.",
                 "A hand-tuned static map did as well as the predictor on Huawei, because that trace's keys are stable within a day. The predictor's case is that it needs no map.",
-                "The strict-priority oracle was no better than the predictor, so under today's aging the ordering is lost to aging, not to prediction error.",
+                 "The strict-priority oracle was no better than the predictor, so under today's aging the ordering is lost to aging, not to prediction error.",
+                 "Later evidence: experiments 17 and 18 overturn the narrow Huawei routing and Azure weighted passes. Real-broker replay also finds the history-built static map matches or beats predictive, with non-inferiority failures at the two higher Huawei loads.",
               ]}
               changed={[
-                "Predictive routing alone is not enough under backlogs. The overload design is what carries the gain.",
+                 "Default-aging routing is not enough under these backlogs. Weights with pausing carry a gain in four replay cells; experiment 19 shows aging off can also restore it.",
                 "The weighted design stays opt-in. Experiment 12 shows where it should not be used.",
               ]}
               links={[{ label: "See the numbers", to: "/harbinger/benchmarks#traces" }, { label: "Full results", href: `${REPORT}/benchmarks/results/v3-traces/README.md` }]}
@@ -543,7 +619,7 @@ function HarbingerExperiments() {
             <Exp
               {...props("exp-12")} title="Job queues that do not recur" outcome="No gate passed: found the boundary" kind="fail"
               finding="On HPC logs the predictor mostly can't predict, and the overload design can hurt long jobs."
-              decision="Enable the overload design only where per-key prediction has been shown to work."
+               decision="Predictability is a prerequisite, not a sufficient reason to enable the overload design; evaluate latency and long-job costs too."
               question="Does the same design work on HPC job logs, where jobs run for minutes to days and keys may not recur? Tested as shipped, with no tuning, on LPC-EGEE 2004 and DAS2-fs2 2003."
               facts={[["2", "HPC job logs"], ["0 of 12", "gates passed"], ["24,402 / 117,823", "LPC-EGEE jobs that got a prediction"], ["+72% to +89%", "mean vs FIFO on DAS2-fs2, weighted, loads 0.8–0.95"]]}
               learned={[
@@ -569,8 +645,8 @@ function HarbingerExperiments() {
               learned={[
                 "The gate passed by less than expected: −21.7% against RabbitMQ FIFO and −25.5% against Redis FIFO, where −25% to −28% was expected.",
                 "Part of the gap is Harbinger's own FIFO arm running 11% slower than RabbitMQ's, just outside the ±10% equivalence bar.",
-                "The same predictor running beside RabbitMQ as a sidecar cut mean latency by 57.6%, more than inside Harbinger. RabbitMQ's priorities never age, and Harbinger's default aging likely gives some of the gain back. This experiment does not isolate that.",
-                "RabbitMQ static priorities starved the long class: the longest export waited 101 s, 5.2× FIFO. Harbinger's predictive routing held that wait to a fifth of it.",
+                 "The same predictor running beside RabbitMQ as a sidecar cut mean latency by 57.6%, more than inside Harbinger. This comparison did not isolate aging. Later, experiment 16 measured a further 37.4% reduction by turning Harbinger aging off, supporting the mechanism without a paired cross-broker equivalence test.",
+                 "RabbitMQ static priorities increased the longest export wait to 101 s, 5.2× FIFO. Harbinger's predictive routing held that wait to a fifth of it; this finite observation is not a general starvation guarantee.",
                 "With empty handlers Harbinger delivered about 5,300 messages per second against 7,400 for RabbitMQ (prefetch 1) and 21,200 for Redis, and fell behind at 20,000 msg/s in all five runs.",
               ]}
               changed={[
@@ -582,15 +658,70 @@ function HarbingerExperiments() {
           </div>
         </Level>
 
-        <Level level={2} tag="Next" title="Open questions" id="next">
-          <p className="hb-intro"><G>None of these is needed for the results above. They are what the experiments left open, and the ones that change a design default would need a new pre-registration first.</G></p>
-          <ol className="next">
-            <li><strong>Bottom-level weight.</strong> Try a larger weight on the lowest level to see whether it wins back some of the long-job tail that experiment 9 cost.</li>
-            <li><strong>Weights-only arm.</strong> Add it to the production flow to separate the effect of weights from the effect of pausing aging.</li>
+         <Level level={1} tag="Phase 5 · v4" title="Testing the explanation, not just the headline" id="phase-5">
+           <div className="exp-list">
+             {V4.map(({ id, source, anchor, ...experiment }) => (
+               <Exp key={id} {...props(id)} {...experiment} links={[
+                 { label: "Results and methods", href: `${REPORT}/benchmarks/results/${source}/README.md` },
+                 { label: "Benchmark context", to: `/harbinger/benchmarks#${anchor}` },
+               ]} />
+             ))}
+           </div>
+         </Level>
+
+         <Level level={2} tag="Correctness evidence" title="What the tests cover" id="correctness">
+           <p className="hb-intro"><G>The new v4 tests mainly exercise the replay runner and analysis pipeline. Existing broker tests cover settlement and prediction invariants. Neither a passing benchmark nor a test-suite name proves general reliability or performance.</G></p>
+           <h3 className="sub">Replay harness and runner</h3>
+           <Points items={[
+             "Synthetic trace planning, all-arm completion, time scaling, approximate FIFO order and discriminating short-before-long oracle behaviour; this is not exact scheduling-order verification.",
+             "Embedded and split-role runner paths, warm snapshot transfer via stand-in SSH, resume, failed-attempt preservation and one retry, sharding, load-specific arms, smoke-kit compatibility and invalid configuration handling.",
+           ]} />
+           <p className="exp-links">
+             <a className="exp-src" href={`${REPORT}/benchmarks/tests/test_replay.py`} target="_blank" rel="noopener noreferrer">Replay tests ↗</a>
+             <a className="exp-src" href={`${REPORT}/benchmarks/tests/test_run_replay.py`} target="_blank" rel="noopener noreferrer">Runner tests ↗</a>
+           </p>
+           <h3 className="sub">Reports and inference</h3>
+           <Points items={[
+             "Quantiles, equal-time windows, validity rejection, trace-time conversion, paired repeats and pooling, stability rules, scheduled-versus-submit latency, and simulator comparisons.",
+             "Block-bootstrap behaviour, invalid blocks, sensitivity verdict flips, ablation interpretations, and hand-computed simulation validation cases. Regressions cover simulator metadata being mistaken for an arm and replay-only gates being falsely reported as simulator failures.",
+           ]} />
+           <p className="exp-links">
+             <a className="exp-src" href={`${REPORT}/benchmarks/tests/test_replay_report.py`} target="_blank" rel="noopener noreferrer">Replay reports ↗</a>
+             <a className="exp-src" href={`${REPORT}/benchmarks/tests/test_sim_report.py`} target="_blank" rel="noopener noreferrer">Bootstrap and sensitivity ↗</a>
+             <a className="exp-src" href={`${REPORT}/benchmarks/tests/test_prodflow_report.py`} target="_blank" rel="noopener noreferrer">Production-flow reports ↗</a>
+             <a className="exp-src" href={`${REPORT}/benchmarks/tests/test_sim_validation.py`} target="_blank" rel="noopener noreferrer">Validation tests ↗</a>
+           </p>
+           <h3 className="sub">Broker, scheduler and predictor invariants</h3>
+           <Points items={[
+             "Only eligible successful Acks inside lease/TTL teach the predictor. Replayed Acks do not teach twice; stale tokens, Nacks, expired Acks and invalid durations do not supply successful duration labels.",
+             "Chronological broker/predictor/replay consistency, including size bins; concurrent Submit/Pull/Ack/Nack/lease recovery and snapshot accounting; feedback disk failure does not block settlement or learning.",
+             "Weighted charges use predicted or learned per-level cost. Queue tests cover worker-time shares, work conservation, idle-credit handling, cancellation refunds and pausing aging. Predictor tests distinguish fresh activity from attempts to revive a stale key.",
+           ]} />
+           <p className="exp-links">
+             <a className="exp-src" href={`${REPORT}/tests/unit/test_broker.cpp`} target="_blank" rel="noopener noreferrer">Broker invariants ↗</a>
+             <a className="exp-src" href={`${REPORT}/tests/unit/test_multi_level_queue.cpp`} target="_blank" rel="noopener noreferrer">Scheduler invariants ↗</a>
+             <a className="exp-src" href={`${REPORT}/tests/unit/test_duration_predictor.cpp`} target="_blank" rel="noopener noreferrer">Predictor invariants ↗</a>
+           </p>
+           <Callout title="Configured coverage, not a live CI verdict"><G>The workflow configures Release, ASan, UBSan, Python 3.10/3.13 model tests, and restricted queue/predictor TSan checks. Replay integration has a separate CTest target. Simulator-dependent validation cases require HARBINGER_TRACE_SIM, which the benchmark Python CTest environment does not currently supply, so those cases can skip. This is source-reviewed coverage, not a claim that every case ran or that live CI is green.</G></Callout>
+           <p className="exp-links">
+             <a className="exp-src" href={`${REPORT}/.github/workflows/ci.yml`} target="_blank" rel="noopener noreferrer">CI configuration ↗</a>
+             <a className="exp-src" href={`${REPORT}/benchmarks/CMakeLists.txt`} target="_blank" rel="noopener noreferrer">Benchmark test wiring ↗</a>
+           </p>
+           <Callout title="Delivery boundary"><G>Delivery is at least once within a process lifetime, not exactly-once side effects. Attempt tokens fence stale settlements, but restart recovers no messages, leases or completion history. Predictor snapshots persist statistics, not deliveries. These tested invariants do not make the broker durable or establish starvation freedom.</G></Callout>
+           <p className="exp-links"><a className="exp-src" href={`${REPORT}/docs/internals.md`} target="_blank" rel="noopener noreferrer">Delivery semantics and limits ↗</a></p>
+         </Level>
+
+         <Level level={0} tag="Next" title="Open questions" id="next">
+           <p className="hb-intro"><G>These are the remaining evidence gaps and design questions. The triggered sensitivity confirmation is unfinished registered work; the other proposals would need their own evaluation before changing defaults.</G></p>
+           <ol className="next">
+             <li><strong>Sensitivity Part C.</strong> Replay the verdict-flipping parameter variants through the real broker; default-configuration replay does not complete this requirement.</li>
+             <li><strong>Unexplained broker deaths.</strong> Preserve diagnostic logs and investigate the two failed Huawei attempts; reruns alone do not identify the cause.</li>
+             <li><strong>Long-horizon fairness.</strong> Test aging-off and weighted policies over hours, with explicit long-job and tail budgets. Short finite runs cannot establish starvation freedom.</li>
+             <li><strong>Bottom-level weight.</strong> Try a larger weight on the lowest level to see whether it wins back some of the long-job tail that experiment 9 cost.</li>
             <li><strong>Time-scaled aging.</strong> Scale aging and the stale limit to the workload's own job durations, then retest the HPC logs.</li>
             <li><strong>A predictability safeguard.</strong> Switch the overload design off automatically when a workload's keys do not predict well.</li>
             <li><strong>A workload where size bins should win.</strong> One job type that spans tiers and carries a large share of the work, pre-registered before running.</li>
-            <li><strong>Isolating aging against RabbitMQ.</strong> An arm that separates aging from the rest of the scheduler, to test why the sidecar gained more.</li>
+             <li><strong>A controlled cross-broker aging comparison.</strong> Aging is isolated within Harbinger now; matching the sidecar's reduction across different layouts is not a paired equivalence test.</li>
             <li><strong>Per-function worker pools</strong> in the trace simulator, to model serverless scaling more honestly.</li>
             <li><strong>Cloud repeat</strong> of the feature-signal collection (experiment 7), on hardware other than one laptop.</li>
           </ol>

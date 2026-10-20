@@ -8,6 +8,7 @@ import Research from "./components/Research";
 import Experience from "./components/Experience";
 import Contact from "./components/Contact";
 import Forge from "./components/Forge";
+import ForgeDocs from "./components/ForgeDocs";
 import Harbinger from "./components/Harbinger";
 import HarbingerExperiments from "./components/HarbingerExperiments";
 import HarbingerBenchmarks from "./components/HarbingerBenchmarks";
@@ -33,6 +34,7 @@ function App() {
         <Route path="/experience" element={<Experience />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/forge" element={<Forge />} />
+        <Route path="/forge/docs" element={<ForgeDocs />} />
         <Route path="/harbinger" element={<Harbinger />} />
         <Route path="/harbinger/experiments" element={<HarbingerExperiments />} />
         <Route path="/harbinger/benchmarks" element={<HarbingerBenchmarks />} />
