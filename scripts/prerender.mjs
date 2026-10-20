@@ -16,6 +16,7 @@ const routes = [
   { path: "/experience", title: "Experience | Divyanshu Singh", description: "Professional experience and education of Divyanshu Singh." },
   { path: "/contact", title: "Contact | Divyanshu Singh", description: "Contact Divyanshu Singh by email, GitHub or LinkedIn." },
   { path: "/forge", title: "Forge | Divyanshu Singh", description: "Forge: a coding agent, forked from OpenCode, that shows its next move before it makes it and keeps you in the loop." },
+  { path: "/forge/docs", title: "Forge Docs | Divyanshu Singh", description: "Forge documentation: getting started, agents and edit modes, plan review, memory, Git controls, and how Forge differs from OpenCode." },
   { path: "/harbinger", title: "Harbinger | Divyanshu Singh", description: "Harbinger: ML-based processing-time prediction with Multi-Level Feedback Queue scheduling to reduce message latency, with interactive simulations." },
   { path: "/harbinger/experiments", title: "Harbinger Experiments | Divyanshu Singh", description: "Experiments for the Harbinger project." },
   { path: "/harbinger/benchmarks", title: "Harbinger Benchmarks | Divyanshu Singh", description: "Benchmarks for the Harbinger project." },

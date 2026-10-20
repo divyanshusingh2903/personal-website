@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link, Route, Routes, useLocation } from "react-router-dom";
+import { Link, NavLink, Route, Routes, useLocation } from "react-router-dom";
 import Library from "./Library";
 import DrillPage from "./DrillPage";
+import Planner from "./Planner";
 import { findDrill } from "./drills";
 import { useSession } from "./session";
 import { categoryLabel } from "./meta";
@@ -64,6 +65,9 @@ function SessionTray() {
             <button type="button" className="btn btn-ghost" onClick={session.clear}>
               Clear
             </button>
+            <Link to="/coach/plan" className="btn btn-ghost" onClick={() => setOpen(false)}>
+              Planner
+            </Link>
             <button type="button" className="btn" onClick={copy}>
               {copied ? "Copied" : "Copy plan"}
             </button>
@@ -105,19 +109,28 @@ const Coach = () => {
           </svg>
           Coach
         </Link>
+        <nav className="coach-nav" aria-label="Coach sections">
+          <NavLink to="/coach" end className={({ isActive }) => (isActive ? "is-active" : undefined)}>
+            Drills
+          </NavLink>
+          <NavLink to="/coach/plan" className={({ isActive }) => (isActive ? "is-active" : undefined)}>
+            Session planner
+          </NavLink>
+        </nav>
         <Link to="/" className="coach-home">
           Divyanshu Singh
         </Link>
       </header>
       <Routes>
         <Route index element={<Library />} />
+        <Route path="plan" element={<Planner />} />
         <Route path=":drillId" element={<DrillPage />} />
       </Routes>
       <footer className="coach-foot">
         <span>Drill diagrams are illustrative. Adapt distances and numbers to your players.</span>
         <Link to="/">← divyanshusingh</Link>
       </footer>
-      <SessionTray />
+      {pathname !== "/coach/plan" && <SessionTray />}
     </div>
   );
 };

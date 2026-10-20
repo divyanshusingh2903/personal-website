@@ -15,6 +15,7 @@ Every page is served as static HTML, so no JavaScript is needed to read it.
 ## Projects
 
 - [Forge](/forge): Personal fork of OpenCode, a coding agent that shows its plan before acting and keeps the human in the loop
+- [Forge docs](/forge/docs): Getting started, agents and edit modes, plan review, memory, Git controls, and differences from OpenCode
 - [Harbinger](/harbinger): ML-predicted processing times plus Multi-Level Feedback Queue scheduling to cut message latency; C++20 gRPC broker
 - [Harbinger experiments](/harbinger/experiments), [benchmarks](/harbinger/benchmarks), [comparison](/harbinger/comparison)
 

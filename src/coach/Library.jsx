@@ -118,9 +118,18 @@ const Library = () => {
           on the chalkboard.
         </h1>
         <p className="lib-lede">
-          {DRILLS.length} animated sessions, from first touches for six-year-olds to pressing triggers for a
-          back four. Filter by age, position or phase of play, and build today's session as you go.
+          {DRILLS.length} animated drills, from first touches for six-year-olds to pressing triggers for a back four.
+          Filter by age, position or phase of play, or let the session planner build a practice for your team.
         </p>
+      </section>
+
+      <section className="planner-cta wrap" aria-label="Session planner">
+        <p>
+          <strong>New to coaching?</strong> Build a full practice in a minute.
+        </p>
+        <Link to="/coach/plan" className="btn">
+          Open the session planner
+        </Link>
       </section>
 
       <section className="age-guide wrap" aria-label="Coaching by age">

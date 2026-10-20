@@ -226,7 +226,8 @@ const DrillPage = () => {
     if (drill) document.title = `${drill.title} | Coach`;
   }, [drill]);
 
-  const backTo = `/coach${state?.search ? `?${state.search}` : ""}`;
+  const fromPlanner = state?.from === "/coach/plan";
+  const backTo = fromPlanner ? "/coach/plan" : `/coach${state?.search ? `?${state.search}` : ""}`;
 
   if (!drill) {
     return (
@@ -248,7 +249,7 @@ const DrillPage = () => {
   return (
     <main className="detail wrap" key={drill.id}>
       <Link to={backTo} className="back-link">
-        ← All drills
+        {fromPlanner ? "← Back to your plan" : "← All drills"}
       </Link>
 
       <header className="detail-head">
@@ -307,6 +308,7 @@ const DrillPage = () => {
         <List title="How it runs" items={drill.steps} ordered />
         <List title="Coaching points" items={drill.points} />
         <List title="Progressions" items={drill.progressions} />
+        {drill.ask && <List title="Ask the players" items={drill.ask} />}
       </div>
 
       <section className="videos">

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import "./Forge.css";
+import { Arrow, Mark, Wordmark } from "./ForgeBrand";
 
 const GITHUB_URL = "https://github.com/divyanshusingh2903/forge";
 const RELEASES_URL = `${GITHUB_URL}/releases`;
@@ -12,49 +14,6 @@ const DOWNLOADS = {
 };
 const UPSTREAM_URL = "https://github.com/anomalyco/opencode";
 const DOCS_URL = "https://opencode.ai/docs";
-
-// Pixel-block "FORGE" wordmark, same grid as Forge's own logo (packages/ui/src/components/logo.tsx).
-const WORDMARK = [
-  ["####", "#...", "###.", "#...", "#...", "#..."],
-  ["####", "#..#", "#..#", "#..#", "#..#", "####"],
-  ["###.", "#..#", "###.", "#.#.", "#..#", "#..#"],
-  ["####", "#...", "#.##", "#..#", "#..#", "####"],
-  ["####", "#...", "###.", "#...", "#...", "####"],
-];
-
-function Wordmark() {
-  return (
-    <svg className="forge-wordmark" viewBox="0 0 144 42" role="img" aria-label="Forge">
-      <g fill="currentColor">
-        {WORDMARK.flatMap((letter, l) =>
-          letter.flatMap((row, r) =>
-            [...row].map((cell, c) =>
-              cell === "#" ? <rect key={`${l}-${r}-${c}`} x={l * 30 + c * 6} y={3 + r * 6} width="6" height="6" /> : null,
-            ),
-          ),
-        )}
-      </g>
-    </svg>
-  );
-}
-
-function Mark() {
-  return (
-    <svg className="forge-mark" viewBox="0 0 16 16" aria-hidden="true">
-      <rect x="0" y="0" width="16" height="4" fill="currentColor" />
-      <rect x="4" y="6" width="8" height="4" fill="currentColor" />
-      <rect x="0" y="12" width="16" height="4" fill="currentColor" />
-    </svg>
-  );
-}
-
-function Arrow() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M6.5 12L17 12M13 16.5L17.5 12L13 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
-    </svg>
-  );
-}
 
 // Unauthenticated GitHub API calls are rate limited per visitor IP, so render nothing until the count loads.
 function Stars() {
@@ -110,8 +69,6 @@ const installTabs = [
   { id: "clone", label: "clone", prefix: "git clone ", highlight: "github.com/divyanshusingh2903/forge", suffix: "", copy: `git clone ${GITHUB_URL}.git` },
   { id: "install", label: "install", prefix: "cd forge && ", highlight: "bun install", suffix: "", copy: "cd forge && bun install" },
   { id: "desktop", label: "desktop", prefix: "bun run --cwd ", highlight: "packages/desktop", suffix: " dev", copy: "bun run --cwd packages/desktop dev" },
-  { id: "web", label: "web", prefix: "bun dev ", highlight: "web", suffix: "", copy: "bun dev web" },
-  { id: "cli", label: "cli", prefix: "", highlight: "bun dev", suffix: "", copy: "bun dev" },
 ];
 
 function Install() {
@@ -158,14 +115,22 @@ function Install() {
   );
 }
 
-const features = [
-  ["Transparent by default", "The agent surfaces its plan and its next step before it touches your code, instead of acting silently."],
-  ["Human in the loop", "Forge asks before it acts on anything consequential, so you keep the final say — much like working in Claude Code."],
-  ["Plan agent", "A read-only agent for exploring the codebase. It denies file edits and asks before running bash commands."],
-  ["Build agent", "The default full-access agent for development work. Switch between the two with the Tab key."],
-  ["General subagent", "Hand off complex searches and multistep tasks with @general in your message."],
-  ["Any model", "Keeps OpenCode’s model and provider flexibility — the same config works here."],
-  ["Desktop, web and CLI", "Run the Electron desktop app, the web UI, or the terminal CLI from the same source tree."],
+// Shared with OpenCode: what carries over unchanged.
+const inherited = [
+  ["Any model", "Keeps OpenCode’s provider flexibility. The same config works here."],
+  ["Desktop app", "Forge ships as an Electron desktop app for macOS, Windows and Linux."],
+  ["Subagents", "@general for multistep work and @explore for fast read-only search, same as upstream."],
+  ["MCP, skills and plugins", "OpenCode’s extension points all still apply, and Forge adds a point-and-click MCP setup dialog."],
+];
+
+// What Forge adds on top of OpenCode.
+const differences = [
+  ["Edit modes", "Choose how much the agent does on its own, from asking every time to full auto."],
+  ["Plan review", "Read the plan, then accept, revise or deny it before a single line changes."],
+  ["Native memory", "Keep your project’s context across sessions, stored locally and yours to edit."],
+  ["Git in the review panel", "Git actions at your fingertips. Control your version control without leaving the app."],
+  ["Faster approvals", "Prompts come preset with keybindings, so approving takes one keystroke."],
+  ["More context for you", "See token usage on every message and know what’s filling the window."],
 ];
 
 function FaqItem({ question, children }) {
@@ -206,6 +171,7 @@ function Forge() {
           <a className="forge-logo" href="#forge" aria-label="Forge, back to top"><Mark /><Wordmark /></a>
           <nav aria-label="Forge navigation">
             <ul>
+              <li><Link to="/forge/docs">Docs</Link></li>
               <li><a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub <Stars /></a></li>
             </ul>
           </nav>
@@ -231,34 +197,44 @@ function Forge() {
         </section>
 
         <section className="forge-section">
-          <div className="forge-section-title">
+          <div className="forge-section-title is-flush">
             <h3>What is Forge?</h3>
             <p>Forge is my personal fork of OpenCode, steered closer to how Claude Code feels to use: more transparent, and less inclined to act without asking first.</p>
           </div>
+        </section>
+
+        <section className="forge-section" id="vs-opencode">
+          <div className="forge-section-title">
+            <h3>How Forge differs from OpenCode</h3>
+            <p>
+              Forge keeps OpenCode’s engine but changes the defaults and the workflow around it, bringing it closer to how Claude Code feels to use.
+            </p>
+          </div>
           <ul className="forge-list">
-            {features.map(([title, body]) => (
+            {differences.map(([title, body]) => (
               <li key={title}>
-                <span>[*]</span>
+                <span>[+]</span>
                 <div><strong>{title}</strong> {body}</div>
               </li>
             ))}
           </ul>
-          <a className="forge-button" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
-            <span>Browse the source</span>
-            <Arrow />
-          </a>
         </section>
 
         <section className="forge-section">
-          <div className="forge-section-title is-flush">
-            <h3>Built on OpenCode</h3>
-            <div>
-              <span>[*]</span>
-              <p>
-                Forge is a real GitHub fork of <a href={UPSTREAM_URL} target="_blank" rel="noopener noreferrer">anomalyco/opencode</a>, so it shares upstream’s history and can pull in new releases normally. Nearly all of <a href={DOCS_URL} target="_blank" rel="noopener noreferrer">OpenCode’s docs</a> apply here too.
-              </p>
-            </div>
+          <div className="forge-section-title">
+            <h3>Still OpenCode underneath</h3>
+            <p>
+              Forge is a real GitHub fork of <a href={UPSTREAM_URL} target="_blank" rel="noopener noreferrer">anomalyco/opencode</a>, so it shares upstream’s history and can pull in new releases normally. Anything Forge doesn’t change is covered by <a href={DOCS_URL} target="_blank" rel="noopener noreferrer">OpenCode’s docs</a>; what it does change is in the <Link to="/forge/docs">Forge docs</Link>.
+            </p>
           </div>
+          <ul className="forge-list">
+            {inherited.map(([title, body]) => (
+              <li key={title}>
+                <span>[=]</span>
+                <div><strong>{title}</strong> {body}</div>
+              </li>
+            ))}
+          </ul>
         </section>
 
         <section className="forge-section">
@@ -266,20 +242,17 @@ function Forge() {
             <h3>FAQ</h3>
           </div>
           <ul className="forge-faq">
-            <FaqItem question="What is Forge?">
-              A personal, human-in-the-loop fork of OpenCode. It keeps OpenCode’s agent and provider support while making the agent more transparent about what it’s about to do.
-            </FaqItem>
             <FaqItem question="How is it different from OpenCode?">
-              It steers OpenCode’s experience closer to Claude Code: the agent is more transparent about what it’s about to do, asks before acting instead of running ahead on its own, and the UI is tuned for steering it along the way.
+              Forge asks before edits and commands by default, writes plans to a reviewable plan file, remembers your project across sessions, and adds Git controls and crash recovery to the desktop app. See the <a href="#vs-opencode">full comparison</a>.
             </FaqItem>
             <FaqItem question="Is it affiliated with Anthropic or Claude Code?">
               No. Forge is an independent personal project. Claude Code is simply the reference for how the workflow should feel: transparent, collaborative, and with a human in the loop.
             </FaqItem>
             <FaqItem question="How do I install it?">
               {DOWNLOADS_READY ? (
-                <>Download the desktop installer for your OS above, or choose another architecture or format from <a href={RELEASES_URL}>GitHub Releases</a>. To run from source, clone the repo, run <code>bun install</code>, then start the desktop app, web UI, or CLI.</>
+                <>Download the desktop installer for your OS above, or choose another architecture or format from <a href={RELEASES_URL}>GitHub Releases</a>. To run from source, clone the repo, run <code>bun install</code>, then start the desktop app.</>
               ) : (
-                <>Desktop installers are coming soon. For now, clone the repo, run <code>bun install</code>, then start the desktop app, web UI, or CLI from source.</>
+                <>Desktop installers are coming soon. For now, clone the repo, run <code>bun install</code>, then start the desktop app from source.</>
               )}
             </FaqItem>
             {DOWNLOADS_READY && (
@@ -298,7 +271,7 @@ function Forge() {
 
         <footer className="forge-footer">
           <div className="forge-footer-cell"><a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a></div>
-          <div className="forge-footer-cell"><a href={DOCS_URL} target="_blank" rel="noopener noreferrer">Docs</a></div>
+          <div className="forge-footer-cell"><Link to="/forge/docs">Docs</Link></div>
           <div className="forge-footer-cell"><a href={UPSTREAM_URL} target="_blank" rel="noopener noreferrer">OpenCode <span>[upstream]</span></a></div>
         </footer>
       </div>

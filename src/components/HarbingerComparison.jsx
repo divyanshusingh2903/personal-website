@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Shell, { Level, Top, GITHUB_URL } from "../harbinger/Shell";
 import { G } from "../harbinger/Glossary";
 import { Bars, Deltas } from "../harbinger/Charts";
@@ -79,7 +80,7 @@ function HarbingerComparison() {
           <p className="hb-eyebrow">Comparison</p>
           <h1>Same workload. Different broker.</h1>
           <p className="hb-lede">
-            <G>Two separate questions, kept apart: does predictive scheduling beat the FIFO queues people run today, and what does each broker itself cost? Harbinger wins the first and loses the second.</G>
+            <G>On the tested synthetic workload, predictive scheduling beats RabbitMQ and Redis FIFO, while Harbinger has higher broker cost. The v4 follow-up isolates aging's contribution and tests a stronger scheduling baseline.</G>
           </p>
         </div>
       </section>
@@ -99,7 +100,7 @@ function HarbingerComparison() {
           <div className="duo">
             <div className="duo-card" data-kind="win">
               <span>Scheduling outcome</span>
-              <h3>Harbinger's idea wins</h3>
+              <h3>A win against the tested FIFO baselines</h3>
               <p><G>On the same production-flow workload, predictive routing cut mean latency by more than 20% against both FIFO brokers and the short-job median by about 90%. The gate passed.</G></p>
             </div>
             <div className="duo-card" data-kind="lose">
@@ -182,13 +183,23 @@ function HarbingerComparison() {
           <Points
             items={[
               "The gate passes by less than expected. The pre-registration expected −25% to −28%, and against RabbitMQ it is −21.7%. Part of the gap is Harbinger's own FIFO arm running 11% slower than RabbitMQ's, just outside the ±10% bar.",
-              "The idea transfers, and works best on RabbitMQ. The sidecar cut mean latency by 57.6%, far more than Harbinger's predictive arm inside its own broker (−21.7%), and more than its weighted arm (−52.4%).",
-              "Aging is the likely reason, not a measured one. RabbitMQ priorities never age, so short jobs stay ahead through the flash sale. Harbinger's default 5 s aging lifts waiting long jobs back up. With weights and pausing aging Harbinger gets most of the same gain. This experiment does not isolate aging.",
+              "The idea transfers: on this workload the RabbitMQ sidecar cut mean latency by 57.6% against its FIFO, versus Harbinger predictive at −21.7% and weighted at −52.4% against RabbitMQ FIFO.",
+              "This original cross-broker experiment does not isolate aging. RabbitMQ priorities never age, while Harbinger's default aging promotes waiting long jobs. Separate v4 experiments now measure the cost of that protection within Harbinger.",
             ]}
           />
+          <Callout title="v4 follow-up: aging's cost is now isolated">
+            <G>A preregistered synthetic production-flow experiment lowers Harbinger's mean another 37.4% [35.1, 39.8] by turning aging off, reaching −57.6% vs its own FIFO. That supports aging as the mechanism behind the sidecar gap. The matching −57.6% figures are not a paired equivalence test: the experiments use different host layouts and baselines. Without aging, P99 and long-class maximum wait each rise 13.6% vs FIFO. Separate Huawei replay also recovers gains, but its 20–25-minute runs cannot establish starvation freedom over hours.</G>
+          </Callout>
+          <p className="exp-links">
+            <a className="exp-src" href={`${GITHUB_URL}/blob/main/benchmarks/results/v4-baselines/README.md`} target="_blank" rel="noopener noreferrer">Aging isolation results ↗</a>
+            <Link className="exp-src" to="/harbinger/benchmarks#aging">Tail costs and real-trace isolation →</Link>
+          </p>
+          <Callout title="A stronger scheduling baseline also matters">
+            <G>On the v4 synthetic workload, predictive mean is 74.1% worse than per-type fair queueing, which needs no predictions. The fair scheduler's P99 is 51.7% worse than predictive, and it requires operator-configured per-type queues. These FIFO comparisons establish a scheduling benefit, not superiority to every policy. <Link to="/harbinger/benchmarks#baselines">See the baseline study.</Link></G>
+          </Callout>
           <h3 className="sub">Protecting long jobs</h3>
           <p className="hb-intro">
-            <G>Static priorities without aging starve the long class. The longest export waited 101 s on RabbitMQ priority, 5.2× FIFO. Harbinger's predictive routing held that wait to a fifth of it.</G>
+            <G>Static priorities without aging greatly increase long-job waits here. The longest export waited 101 s on RabbitMQ priority, 5.2× FIFO. Harbinger's predictive routing held that wait to a fifth of it. Finite observed waits do not establish general starvation freedom for either policy.</G>
           </p>
           <div className="exp-viz">
             <h5 className="viz-title">Longest export wait, median across seeds (s)</h5>
@@ -262,13 +273,14 @@ function HarbingerComparison() {
               "The scheduling idea is separable from Harbinger's broker. The same predictor lowers mean latency on RabbitMQ by more than half and beats a hand-tuned RabbitMQ priority map by 26%.",
               "In the production flow broker cost is small. Handlers take milliseconds to seconds at about 116 messages per second, far below Harbinger's limit, so it shows only as the 11% gap in the FIFO arms.",
               "If handlers are trivial and the rate is tens of thousands per second, this benchmark says Redis or RabbitMQ will serve better today. Harbinger fell behind at 20,000 msg/s.",
-              "RabbitMQ priorities without aging can starve long jobs. In this workload the longest export waited 5.2× longer than under FIFO.",
+              "Prioritising short jobs has a long-job cost. In this workload RabbitMQ static priority's longest export waited 5.2× longer than under FIFO; v4 Harbinger aging-off runs separately measure higher P99 and long waits.",
             ]}
           />
           <h3 className="sub">Limits of the comparison</h3>
           <Points
             items={[
               "One synthetic workload, one cloud provider and region, two instance types.",
+              "The broker comparison and throughput measurements are the original v3 results. V4 adds separate baseline and aging studies, not a new RabbitMQ/Redis rerun.",
               "Default broker settings, except those listed. RabbitMQ prefetch 1 limits its throughput and is noted wherever it matters.",
               "Harbinger's scheduling arms ran the benchmark build of the broker, which has observation hooks. The broker-cost test ran the production server.",
               "Non-durable modes only. Kafka, Pulsar, managed cloud queues and durable modes were out of scope.",

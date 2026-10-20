@@ -1,4 +1,5 @@
 export const CATEGORIES = [
+  { id: "warmup", label: "Warm-ups & Cool-downs" },
   { id: "fundamentals", label: "Fundamentals" },
   { id: "ball-mastery", label: "Ball Mastery" },
   { id: "footwork", label: "Footwork & Agility" },
@@ -7,6 +8,7 @@ export const CATEGORIES = [
   { id: "dribbling", label: "Dribbling & 1v1" },
   { id: "finishing", label: "Finishing" },
   { id: "possession", label: "Possession & Positional Play" },
+  { id: "games", label: "Small-Sided Games" },
   { id: "defending", label: "Individual Defending" },
   { id: "structure", label: "Defensive Structure" },
   { id: "transition", label: "Transition" },
@@ -34,17 +36,17 @@ export const FORMATS = ["Individual", "Pairs", "Small group", "Unit", "Team"];
 
 export const AGE_GUIDE = [
   {
-    age: "U6–U8",
+    age: "U6–U8 · K–2nd",
     focus: "Play, not drills",
     text: "One ball per player, hundreds of touches, games with stories. 3v3 and 4v4, no lines, no laps. No heading.",
   },
   {
-    age: "U9–U12",
+    age: "U9–U12 · 3rd–6th",
     focus: "The skill window",
     text: "Technique under light pressure: rondos, 1v1s, small-sided games. Rotate positions. No heading at 10 and under.",
   },
   {
-    age: "U13–U15",
+    age: "U13–U15 · 7th–9th",
     focus: "Ideas & units",
     text: "Introduce pressing, lines and transitions. Growth spurts arrive, so manage load and keep conditioning ball-based.",
   },
