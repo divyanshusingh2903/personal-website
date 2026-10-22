@@ -7,13 +7,17 @@ Every page is served as static HTML, so no JavaScript is needed to read it.
 ## Pages
 
 - [Home](/): Overview and bio
-- [Projects](/projects): Harbinger, Forge, Vihayas, PharmFindr, IPELint and more
+- [Projects](/projects): Harbinger, Golden Gate, Forge, Vihayas, PharmFindr, IPELint and more
 - [Research](/research): Publications (DataScribe, Digital Discovery 2026; TRAM-MP, arXiv 2025) and research interests
 - [Experience](/experience): Texas A&M student software engineer and TA; Exabeam software engineering intern
 - [Contact](/contact): Email, GitHub, LinkedIn
 
 ## Projects
 
+- [Golden Gate](/goldengate): Golden Gate (laptop app) sends redacted summaries of the coding projects you pick (Claude Code, Codex, OpenCode) to Golden Gate Bridge (your own server), where an assistant reads them over MCP
+- [Golden Gate MCP tools](/goldengate/mcp): The nine read-only MCP tools Golden Gate Bridge exposes (recent_activity, list_projects, get_project_context, search_work, get_session, list_commits, list_pull_requests, list_artifacts, list_issues), with parameters and real sample responses
+- [Golden Gate use cases](/goldengate/use-cases): Weekly reviews, resuming a project, finding open pull requests, searching past sessions and drafting write-ups from an assistant that reads your Golden Gate Bridge server
+- [Golden Gate security](/goldengate/security): What is never sent, token scopes, the opt-in model summarizer, OAuth, prompt injection and residual risks
 - [Forge](/forge): Personal fork of OpenCode, a coding agent that shows its plan before acting and keeps the human in the loop
 - [Forge docs](/forge/docs): Getting started, agents and edit modes, plan review, memory, Git controls, and differences from OpenCode
 - [Harbinger](/harbinger): ML-predicted processing times plus Multi-Level Feedback Queue scheduling to cut message latency; C++20 gRPC broker

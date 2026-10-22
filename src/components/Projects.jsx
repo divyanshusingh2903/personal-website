@@ -12,6 +12,15 @@ const projects = [
     status: "In Development",
   },
   {
+    title: "Golden Gate",
+    image: "/goldengate-mark.svg",
+    description:
+      "Golden Gate and Golden Gate Bridge: a laptop app and a self-hosted server that let any MCP-capable assistant (Gemini, ChatGPT, Claude) know what you have been working on in Claude Code, Codex and OpenCode. Nothing is shared until you pick a project: sessions are redacted and summarized on your machine, previewed exactly, and pushed to a server you run.",
+    link: "/goldengate",
+    tags: ["Go", "MCP", "Bubble Tea", "SQLite", "OAuth 2.1", "Security"],
+    status: "In Development",
+  },
+  {
     title: "Forge",
     image: "/forge-mark.svg",
     description:

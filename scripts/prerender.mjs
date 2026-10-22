@@ -11,12 +11,16 @@ const SITE_URL = (process.env.SITE_URL || "https://personal-website-479811.web.a
 
 const routes = [
   { path: "/", title: "Divyanshu Singh | Software Engineer", description: "Divyanshu Singh - Software Engineer & Entrepreneur building innovative cloud and pharmaceutical technology solutions." },
-  { path: "/projects", title: "Projects | Divyanshu Singh", description: "Projects by Divyanshu Singh: Harbinger, Forge, Vihayas, PharmFindr, IPELint and more." },
+  { path: "/projects", title: "Projects | Divyanshu Singh", description: "Projects by Divyanshu Singh: Harbinger, Golden Gate, Forge, Vihayas, PharmFindr, IPELint and more." },
   { path: "/research", title: "Research | Divyanshu Singh", description: "Research interests and publications by Divyanshu Singh: DataScribe (Digital Discovery, 2026) and TRAM-MP multi-person motion reconstruction (arXiv, 2025)." },
   { path: "/experience", title: "Experience | Divyanshu Singh", description: "Professional experience and education of Divyanshu Singh." },
   { path: "/contact", title: "Contact | Divyanshu Singh", description: "Contact Divyanshu Singh by email, GitHub or LinkedIn." },
   { path: "/forge", title: "Forge | Divyanshu Singh", description: "Forge: a coding agent, forked from OpenCode, that shows its next move before it makes it and keeps you in the loop." },
   { path: "/forge/docs", title: "Forge Docs | Divyanshu Singh", description: "Forge documentation: getting started, agents and edit modes, plan review, memory, Git controls, and how Forge differs from OpenCode." },
+  { path: "/goldengate", title: "Golden Gate | Divyanshu Singh", description: "Golden Gate: choose what your AI assistant knows. Redacted summaries of the coding projects you pick, sent to a server you run and read over MCP." },
+  { path: "/goldengate/mcp", title: "Golden Gate MCP Tools | Divyanshu Singh", description: "The nine read-only MCP tools Golden Gate Bridge exposes to your assistant: recent_activity, list_projects, get_project_context, search_work, get_session and the commit, pull request, issue and artifact lists." },
+  { path: "/goldengate/use-cases", title: "Golden Gate Use Cases | Divyanshu Singh", description: "What Golden Gate and Golden Gate Bridge let an assistant do: weekly reviews, picking up a project, finding open pull requests, searching past work and drafting write-ups." },
+  { path: "/goldengate/security", title: "Golden Gate Security | Divyanshu Singh", description: "Golden Gate's security model: default deny, exact previews, scoped tokens, the opt-in model summarizer, prompt injection and residual risks." },
   { path: "/harbinger", title: "Harbinger | Divyanshu Singh", description: "Harbinger: ML-based processing-time prediction with Multi-Level Feedback Queue scheduling to reduce message latency, with interactive simulations." },
   { path: "/harbinger/experiments", title: "Harbinger Experiments | Divyanshu Singh", description: "Experiments for the Harbinger project." },
   { path: "/harbinger/benchmarks", title: "Harbinger Benchmarks | Divyanshu Singh", description: "Benchmarks for the Harbinger project." },
