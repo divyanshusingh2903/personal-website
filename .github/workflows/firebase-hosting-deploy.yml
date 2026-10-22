@@ -24,3 +24,6 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PERSONAL_WEBSITE_479811 }}
           channelId: live
           projectId: personal-website-479811
+          # Newer CLI versions require serviceusage.services.get for Hosting deploys.
+          # Keep this pinned until the deploy service account has that permission.
+          firebaseToolsVersion: '15.33.0'
