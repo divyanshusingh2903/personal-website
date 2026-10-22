@@ -103,7 +103,7 @@ const Projects = () => {
                     <img
                       src={project.image}
                       alt={project.title}
-                      className="project-image"
+                      className={`project-image${project.image.endsWith(".svg") ? " project-icon" : ""}`}
                       onClick={() => project.link && window.open(project.link)}
                       style={{ cursor: project.link ? "pointer" : "default" }}
                     />

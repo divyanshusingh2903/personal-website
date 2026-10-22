@@ -233,6 +233,10 @@ body {
   transition: filter 0.2s ease;
 }
 
+.project-icon {
+  object-fit: contain;
+}
+
 .project-card:hover .project-image {
   filter: grayscale(0%);
 }
