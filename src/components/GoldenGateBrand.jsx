@@ -59,14 +59,23 @@ export function RedactDemo() {
   );
 }
 
+// The paths of a product mark, for drawing inside another SVG.
+export function LogoPaths({ name }) {
+  return LOGOS[name].map((p, i) => <path key={i} d={p.d} fillOpacity={p.o} fillRule="evenodd" clipRule="evenodd" />);
+}
+
 // A product mark, drawn in the current text colour.
 export function Logo({ name, className = "gg-logo-mark", label }) {
-  const paths = LOGOS[name];
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor" fillRule="evenodd" role={label ? "img" : undefined} aria-label={label} aria-hidden={label ? undefined : "true"}>
-      {paths.map((p, i) => <path key={i} d={p.d} clipRule={p.evenodd ? "evenodd" : undefined} />)}
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" role={label ? "img" : undefined} aria-label={label} aria-hidden={label ? undefined : "true"}>
+      <LogoPaths name={name} />
     </svg>
   );
+}
+
+// The 24px line icons, for drawing inside another SVG.
+export function IconGlyph({ name }) {
+  return ICONS[name];
 }
 
 // The icons GitHub itself uses for commits, pull requests and issues.

@@ -898,10 +898,10 @@
 .gg-uc-ui > * { pointer-events: auto; }
 .gg-uc-title { position: absolute; left: max(var(--gg-gutter), calc((100% - var(--gg-max)) / 2 + var(--gg-gutter))); top: 4.5%; max-width: 32%; }
 .gg-uc-title h1 { font-size: clamp(2.4rem, 3.6vw, 3.5rem); }
-.gg-uc-title .gg-lede { margin-top: 10px; font-size: clamp(0.9rem, 1.1vw, 1.05rem); max-width: 30ch; }
+.gg-uc-title .gg-lede { color: var(--gg-ink); margin-top: 10px; font-size: clamp(0.9rem, 1.1vw, 1.05rem); max-width: 30ch; }
 .gg-uc-side { position: absolute; isolation: isolate; }
 .gg-uc-sf { left: 9%; top: 52%; }
-.gg-uc-marin { left: 57%; top: 8%; }
+.gg-uc-marin { left: 60%; top: 12%; }
 .gg-uc-side h2 { font-size: clamp(1.2rem, 1.7vw, 1.6rem); }
 .gg-uc-side > p { color: var(--gg-dim); font-size: 0.9rem; margin-top: 2px; }
 .gg-uc-title h1, .gg-uc-title .gg-lede, .gg-uc-side h2, .gg-uc-side > p {
@@ -909,6 +909,11 @@
 }
 .gg-uc-side h2, .gg-uc-side > p { text-shadow: none; }
 .gg-uc-mid { display: none; }
+
+/* On the map the logos are drawn inside the SVG, spread over the land; the HTML lists are for the stacked layout */
+.gg-map-logo { color: var(--gg-ink); fill: currentColor; }
+@media (prefers-reduced-motion: no-preference) { .gg-map-logo { transition: opacity 0.2s ease; } .gg-map-logo:hover { opacity: 0.6; } }
+.gg-uc-side .gg-logos { display: none; }
 
 /* Logos stand directly on the map, with no backdrop or glow */
 .gg-logos { list-style: none; display: flex; flex-wrap: wrap; gap: 16px 20px; margin-top: 14px; max-width: 340px; }
@@ -928,6 +933,7 @@
   .gg-map-svg, .gg-map-credit { display: none; }
   .gg-uc-ui { position: static; display: grid; gap: 0; padding: 0 var(--gg-gutter); max-width: var(--gg-max); margin: 0 auto; }
   .gg-uc-title, .gg-uc-side { position: static; max-width: none; }
+  .gg-uc-side .gg-logos { display: flex; }
   .gg-uc-title { margin-bottom: 28px; }
   .gg-uc-title h1 { font-size: 2.6rem; }
   .gg-uc-side { border: 1px solid var(--gg-line); border-radius: 8px; padding: 20px; background: var(--gg-surface); }

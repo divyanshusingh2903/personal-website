@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
-import { Icon, Logo, Mark } from "./GoldenGateBrand";
+import { Icon, IconGlyph, Logo, LogoPaths, Mark } from "./GoldenGateBrand";
+import { MARIN, SF } from "./goldengatePlacements";
 import GoldenGateShell, { GITHUB_URL } from "./GoldenGateShell";
 
 // Tool names are the MCP tools Golden Gate Bridge serves. All are read-only.
@@ -15,27 +16,47 @@ const ingest = [
   { logo: "openai", name: "ChatGPT" },
 ];
 
-// What can connect, on the Marin side: anything that speaks MCP. Examples only.
+// What can connect, on the Marin side: the names most developers know. Anything that speaks MCP works.
+// The order matters: the first ones land farthest apart.
 const connectors = [
   { logo: "claude", name: "Claude" },
   { logo: "openai", name: "ChatGPT" },
+  { logo: "slack", name: "Slack" },
   { logo: "gemini", name: "Gemini" },
-  { logo: "grok", name: "Grok" },
-  { logo: "metaai", name: "Meta AI" },
-  { logo: "perplexity", name: "Perplexity" },
-  { logo: "mistral", name: "Le Chat" },
   { logo: "cursor", name: "Cursor" },
-  { icon: "assistant", name: "Your agent" },
+  { logo: "grok", name: "Grok" },
+  { logo: "discord", name: "Discord" },
+  { logo: "metaai", name: "Meta AI" },
+  { logo: "githubcopilot", name: "GitHub Copilot" },
+  { logo: "perplexity", name: "Perplexity" },
+  { logo: "notion", name: "Notion" },
+  { logo: "windsurf", name: "Windsurf" },
+  { logo: "zapier", name: "Zapier" },
+  { logo: "teams", name: "Microsoft Teams" },
+  { logo: "telegram", name: "Telegram" },
 ];
 
 // The real coastline and roads are a separate chunk, loaded only on this page.
 const MapPaths = lazy(() => import("./GoldenGateMapPaths"));
 
-// The brand mark laid over the real Golden Gate Bridge: towers 1,280 m apart, centred on the deck.
-// It is drawn at its own stroke weight (3.2 in its 64x48 box) so the lines scale with it, like the logo file.
+// The brand mark, fitted from shore to shore on the real deck line. It is drawn at its own stroke weight (3.2 in its
+// 64x48 box) so the lines scale with it like the logo file; its anchors, plus the round caps, end exactly on the coast.
 const CABLE = "M2 34Q14 30 20 6Q32 46 44 6Q50 30 62 34";
-const MARK_SCALE = 3.73;
-const DECK = { cx: 800.4, cy: 408.4 };
+const SHORE = { left: 670.4, right: 904.1, deck: 502.8 };
+const MARK_SCALE = (SHORE.right - SHORE.left) / 63.2;
+const DECK = { cx: (SHORE.left + SHORE.right) / 2, cy: SHORE.deck };
+
+// A logo placed on the map by its centre, at the map's own scale.
+const LOGO_SIZE = 54;
+function MapLogo({ item, at }) {
+  const [x, y] = at;
+  return (
+    <g className="gg-map-logo" transform={`translate(${x - LOGO_SIZE / 2} ${y - LOGO_SIZE / 2}) scale(${LOGO_SIZE / 24})`}>
+      <title>{item.name}</title>
+      {item.logo ? <LogoPaths name={item.logo} /> : <g fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><IconGlyph name={item.icon} /></g>}
+    </g>
+  );
+}
 
 function Logos({ items }) {
   return (
@@ -58,6 +79,10 @@ function MapHero() {
         <g transform={`translate(${DECK.cx - 32 * MARK_SCALE} ${DECK.cy - 34 * MARK_SCALE}) scale(${MARK_SCALE})`} fill="none" stroke="var(--gg-orange)" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20 4V44M44 4V44" />
           <path d={CABLE} />
+        </g>
+        <g className="gg-map-logos">
+          {ingest.map((p, i) => SF[i] && <MapLogo key={p.name} item={p} at={SF[i]} />)}
+          {connectors.map((p, i) => MARIN[i] && <MapLogo key={p.name} item={p} at={MARIN[i]} />)}
         </g>
       </svg>
 
