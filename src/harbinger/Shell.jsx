@@ -44,6 +44,7 @@ export function Top() {
         <NavLink to="/harbinger/experiments">Experiments</NavLink>
         <NavLink to="/harbinger/benchmarks">Benchmarks</NavLink>
         <NavLink to="/harbinger/comparison">Comparison</NavLink>
+        <NavLink to="/harbinger/paper">Paper</NavLink>
         <GlossaryButton className="hb-navbtn hb-optional" />
         <a className="hb-optional" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
         <Link to="/projects" className="hb-back">← Portfolio</Link>

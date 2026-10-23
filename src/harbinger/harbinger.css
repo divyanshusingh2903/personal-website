@@ -692,3 +692,27 @@ i.brand-icon { background: currentColor; -webkit-mask: var(--icon) center / cont
 .bars-label .brand-icon, .deltas-label .brand-icon { margin: 0; }
 .exp-viz .bars-row { grid-template-columns: minmax(6rem, 12.5rem) minmax(0, 1fr) 4rem; }
 @media (max-width: 36rem) { .exp-viz .bars-row { grid-template-columns: minmax(0, 1fr) auto; } }
+
+/* Paper reader: plain page background, full page width. */
+.pp-paper { margin: 2rem 0 4rem; font-size: 17px; line-height: 1.7; overflow-wrap: break-word; }
+.pp-paper p { margin: 0 0 1.1em; }
+.pp-paper h1 { font-size: 1.8rem; margin: 3.5rem 0 1.2rem; scroll-margin-top: 5rem; }
+.pp-paper h2 { font-size: 1.3rem; margin: 2.4rem 0 0.9rem; scroll-margin-top: 5rem; }
+.pp-paper h3, .pp-paper h4 { font-size: 1.05rem; margin: 1.6rem 0 0.6rem; }
+.pp-paper .header-section-number { margin-right: 0.6em; color: var(--slate); }
+.pp-paper a { color: #1f5fa8; }
+.pp-paper figure { margin: 2rem 0; padding: 1.25rem; background: #fff; border-radius: 6px; }
+.pp-paper figure img { width: 100%; height: auto; display: block; }
+.pp-paper figcaption, .pp-paper caption { font-size: 0.88rem; line-height: 1.5; color: var(--slate); text-align: left; margin-top: 0.8rem; }
+.pp-paper caption { caption-side: top; margin: 0 0 0.6rem; }
+.pp-paper div[id^="tab:"] { margin: 2rem 0; overflow-x: auto; }
+.pp-paper table { border-collapse: collapse; font-size: 0.85rem; line-height: 1.4; min-width: 100%; }
+.pp-paper th, .pp-paper td { padding: 0.35rem 0.7rem; border-bottom: 1px solid #d3d1c9; vertical-align: top; text-align: left; }
+.pp-paper thead th { background: #ecebe4; border-bottom: 1.5px solid var(--slate); }
+.pp-paper code { font-size: 0.88em; background: #ecebe4; padding: 0.05em 0.3em; border-radius: 3px; }
+.pp-abstract { margin: 0 0 2rem; padding: 1rem 1.25rem; border-left: 3px solid var(--slate); background: #ecebe4; font-size: 0.95rem; }
+.pp-abstract h2 { margin: 0 0 0.5rem; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.pp-eq { position: relative; margin: 1.4rem 0; overflow-x: auto; text-align: center; }
+.pp-eqn { position: absolute; right: 0; top: 50%; transform: translateY(-50%); color: var(--slate); }
+.pp-paper .references { font-size: 0.9rem; line-height: 1.55; }
+.pp-paper .csl-entry { margin-bottom: 0.7rem; }

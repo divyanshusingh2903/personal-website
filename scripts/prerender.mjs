@@ -24,6 +24,7 @@ const routes = [
   { path: "/harbinger", title: "Harbinger | Divyanshu Singh", description: "Harbinger: ML-based processing-time prediction with Multi-Level Feedback Queue scheduling to reduce message latency, with interactive simulations." },
   { path: "/harbinger/experiments", title: "Harbinger Experiments | Divyanshu Singh", description: "Experiments for the Harbinger project." },
   { path: "/harbinger/benchmarks", title: "Harbinger Benchmarks | Divyanshu Singh", description: "Benchmarks for the Harbinger project." },
+  { path: "/harbinger/paper", title: "Harbinger Paper | Divyanshu Singh", description: "Paper for the Harbinger project: size-based scheduling for message queues from per-key duration statistics." },
   { path: "/harbinger/comparison", title: "Harbinger Comparison | Divyanshu Singh", description: "Comparison results for the Harbinger project." },
 ];
 
