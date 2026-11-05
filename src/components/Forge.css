@@ -141,16 +141,18 @@
 
 /* ─── Desktop download ──────────────────────────────────── */
 .forge-download {
+  margin-bottom: 32px;
+}
+.forge-download-actions {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 12px 24px;
-  margin-bottom: 32px;
 }
 #forge .forge-download .forge-button { margin-top: 0; }
-.forge-download > span { color: var(--color-text); }
+.forge-download-actions > span { color: var(--color-text); }
 @media (max-width: 30rem) {
-  .forge-download { align-items: flex-start; flex-direction: column; }
+  .forge-download-actions { align-items: flex-start; flex-direction: column; }
 }
 
 /* ─── Install tabs ──────────────────────────────────────── */
@@ -208,6 +210,10 @@
 
 /* ─── Demo video ─────────────────────────────────────────── */
 .forge-preview-section { border-top: 1px solid var(--color-border-weak); }
+#forge .forge-release { margin: 8px 0 0; font-size: 12px; line-height: 160%; }
+#forge .forge-release a { color: var(--color-text); text-decoration: none; }
+#forge .forge-release a:hover { text-decoration: underline; }
+.forge-demo-caption { margin: 12px var(--padding); font-size: 12px; color: var(--color-text-weak); }
 .forge-demo {
   display: block;
   width: 100%;
