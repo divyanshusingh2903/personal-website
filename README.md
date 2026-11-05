@@ -1,62 +1,11 @@
-# Divyanshu Singh - Personal Portfolio
+# Personal Portfolio
 
-Modern, responsive personal portfolio website built with React and Vite.
+Divyanshu Singh’s personal website.
 
-## Features
+## Technologies
 
-- 🎨 Clean, professional design with dark mode toggle
-- 📱 Fully responsive across all devices
-- ⚡ Fast performance with Vite
-- 🚀 Showcases projects including Vihayas and PharmIndr startups
-- 💼 Professional experience and education sections
-- 📄 Downloadable resume
+React 19, React Router, Vite, JavaScript and CSS.
 
-## Tech Stack
+## Deployment
 
-- React 19
-- Vite
-- CSS3 with custom properties
-- Google Fonts (Quicksand)
-
-## Getting Started
-
-### Installation
-
-```bash
-npm install
-```
-
-### Development
-
-```bash
-npm run dev
-```
-
-Visit `http://localhost:5173` to view the site.
-
-### Build
-
-```bash
-npm run build
-```
-
-The build output will be in the `dist` directory.
-
-### Preview Build
-
-```bash
-npm run preview
-```
-
-## Projects Featured
-
-- **Vihayas** - Multi-cloud Infrastructure-as-Code platform
-- **PharmIndr** - CDMO discovery platform for pharmaceutical industry
-- **Football Stats App** - Cloud-native sports statistics application
-- **Scientific Calculator** - Flutter mobile app with 15K+ downloads
-
-## Contact
-
-- Email: divyanshusingh2903@gmail.com
-- GitHub: [divyanshusingh2903](https://github.com/divyanshusingh2903)
-- LinkedIn: [divyanshu-singh2903](https://www.linkedin.com/in/divyanshu-singh2903)
+Hosted on Firebase Hosting. Pushes to `main` trigger GitHub Actions to install dependencies, run `npm run build` and deploy `dist/` to the live site. The build prerenders public pages to static HTML.

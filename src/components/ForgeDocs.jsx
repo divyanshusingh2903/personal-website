@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./Forge.css";
 import "./ForgeDocs.css";
 import { Mark, Wordmark } from "./ForgeBrand";
+import { OPENCODE_VERSION, FORGE_VERSION, FORGE_RELEASE_TAG, FORGE_RELEASE_URL } from "./ForgeRelease";
 
 const GITHUB_URL = "https://github.com/divyanshusingh2903/forge";
 const RELEASES_URL = `${GITHUB_URL}/releases`;
 const OPENCODE_DOCS = "https://opencode.ai/docs";
 
 const nav = [
-  { group: null, items: [["intro", "Intro"], ["getting-started", "Getting started"], ["first-session", "Your first session"]] },
+  { group: null, items: [["intro", "Intro"], ["whats-new", "What’s new"], ["getting-started", "Getting started"], ["first-session", "Your first session"]] },
   {
     group: "Usage",
-    items: [["agents", "Agents"], ["edit-modes", "Edit modes"], ["permissions", "Permissions"], ["plan-review", "Plan review"], ["git", "Git"], ["memory", "Memory"]],
+    items: [["agents", "Agents"], ["edit-modes", "Edit modes"], ["permissions", "Permissions"], ["plan-review", "Plan review"], ["browser", "Browser"], ["context", "Context and compaction"], ["workspace-tools", "Terminals and worktrees"], ["mcp", "MCP connections"], ["git", "Git"], ["memory", "Memory"]],
   },
   { group: "Reference", items: [["vs-opencode", "Forge vs OpenCode"], ["troubleshooting", "Troubleshooting"], ["limitations", "Limitations"], ["contributing", "Contributing"]] },
 ];
@@ -33,6 +34,12 @@ function Note({ children }) {
 
 function ForgeDocs() {
   const [active, setActive] = useState(ids[0]);
+  const { hash } = useLocation();
+
+  // React Router links change the route without the browser's native anchor scroll.
+  useEffect(() => {
+    if (hash) document.getElementById(hash.slice(1))?.scrollIntoView();
+  }, [hash]);
 
   useEffect(() => {
     const prevTitle = document.title;
@@ -101,10 +108,23 @@ function ForgeDocs() {
               Forge is a fork of OpenCode. These docs cover what Forge does differently. Everything else is documented in <External href={OPENCODE_DOCS}>OpenCode’s docs</External>, though parts that assume the terminal UI or the install script don’t apply here.
             </Note>
             <p>
-              <strong>Forge</strong> is an open source AI coding agent that shows its next move before it makes it. It is a desktop app for macOS, Windows and Linux, and a personal project rather than a supported product.
+              <strong>Forge</strong> is an open source AI coding agent with a review-first workflow and approval prompts for edits and shell commands by default. It is a desktop app for macOS, Windows and Linux, and a personal project rather than a supported product.
             </p>
             <img className="docs-shot" src="/forge-plan-review.jpg" alt="Forge presenting a finished plan and asking whether to deny, revise, or accept it" loading="lazy" />
-            <p className="docs-caption">The plan agent presents its plan for review before any code changes.</p>
+            <p className="docs-caption">Plan review in an earlier Forge interface; current controls may differ.</p>
+          </section>
+
+          <section id="whats-new">
+            <h2>What’s new</h2>
+            <p>These docs cover <strong>OpenCode {OPENCODE_VERSION} · Forge {FORGE_VERSION}</strong>. The tag <External href={FORGE_RELEASE_URL}>{FORGE_RELEASE_TAG}</External> combines the upstream engine version and Forge’s own version. Downloads follow the latest published release.</p>
+            <p>The V2 foundation brings richer context inspection, persistent session terminals, worktree shortcuts, guided Claude Agent setup and percentage-based compaction buffers. Forge keeps its edit modes, plan review and local memory alongside the built-in browser and desktop Git workflow. These are capabilities available here, not a claim that each was introduced in 2.2.5 or is exclusive to Forge.</p>
+            <ul className="docs-list">
+              <li><a href="#browser">Browser</a>: shared Chromium tabs, element comments, screenshots and debugging.</li>
+              <li><a href="#context">Context and compaction</a>: inspect what fills the window and reserve headroom.</li>
+              <li><a href="#workspace-tools">Terminals and worktrees</a>: persistent terminals and faster workspace navigation.</li>
+              <li><a href="#mcp">MCP connections</a>: optional integrations; Forge 0.7.4 adds recovery for stale sign-ins from the session popover.</li>
+            </ul>
+            <p>See <External href={RELEASES_URL}>Forge Releases</External> for Forge changes and the <External href={`${GITHUB_URL}/blob/main/CHANGELOG.md`}>OpenCode V2 changelog</External> for inherited engine and desktop changes.</p>
           </section>
 
           <section id="getting-started">
@@ -119,7 +139,7 @@ function ForgeDocs() {
                 <tr><td>Linux</td><td><code>.AppImage</code>, x86_64</td><td><code>.deb</code> and <code>.rpm</code> packages are also built.</td></tr>
               </tbody>
             </table>
-            <p>Other architectures show up on the Releases page when they are published. Minimum OS versions aren’t documented yet.</p>
+            <p>This release also publishes macOS x64, Windows arm64 and Linux arm64 builds on Releases. The download button selects an OS default, not your CPU architecture; choose an alternate build there when needed. Minimum OS versions aren’t documented yet.</p>
             <h3>Which Linux package?</h3>
             <ul className="docs-list">
               <li><strong>AppImage</strong> Works on most distributions. Make it executable and run it, no install needed.</li>
@@ -143,6 +163,7 @@ function ForgeDocs() {
               <li>Pick one of the provider’s models from the model picker next to the prompt.</li>
             </ol>
             <p>Provider and model options are the same as OpenCode’s, so its <External href={`${OPENCODE_DOCS}/providers/`}>providers</External> and <External href={`${OPENCODE_DOCS}/models/`}>models</External> pages apply. Ignore any steps that mention the terminal UI.</p>
+            <p>For <code>Claude Agent</code>, the provider picker guides you through installing Claude Code, signing in with <code>claude auth login</code>, and checking the connection. You supply your own account and authorization; Forge does not include credentials.</p>
             <h3>Updating</h3>
             <p>Forge can check for updates from its app menu. Because the installers aren’t signed, macOS opens the release page instead of installing in place: download the new <code>.dmg</code> and replace the app. You can always get the latest version from <External href={`${RELEASES_URL}/latest`}>Releases</External>, and the full history is on the same page.</p>
           </section>
@@ -151,7 +172,7 @@ function ForgeDocs() {
             <h2>Your first session</h2>
             <p>This walks through the loop Forge is built around: ask, review, approve.</p>
             <ol className="docs-steps">
-              <li>Open a project folder. Forge starts in <code>Manual</code> mode with the <code>build</code> agent, so nothing changes without your say-so.</li>
+              <li>Open a project folder. Unless settings override it, Forge starts in <code>Manual</code> mode with the <code>build</code> agent. Edits and shell commands ask by default; configured permission rules still apply.</li>
               <li>Ask for something small, such as “add a unit test for the date helper”.</li>
               <li>Watch the agent explain its next step. Running tool calls show a live timer.</li>
               <li>When it wants to edit a file or run a command, a permission prompt appears. Press <code>1</code>, <code>2</code> or <code>3</code> to answer, or click.</li>
@@ -165,10 +186,10 @@ function ForgeDocs() {
 
           <section id="agents">
             <h2>Agents</h2>
-            <p>Forge has two primary agents. Switch between them with <code>Tab</code>, and <code>Shift+Tab</code> to cycle back.</p>
+            <p>Forge has two built-in primary agents. Use the mode picker beside the composer, or <code>Cmd/Ctrl+.</code> to cycle forward and <code>Cmd/Ctrl+Shift+.</code> to cycle back. The picker includes Manual, Accept edits, Auto, Plan and custom primary agents.</p>
             <ul className="docs-list">
-              <li><strong>build</strong> The default agent for development work. It asks before every file edit and bash command, and offers to switch to plan mode when a request needs design work first.</li>
-              <li><strong>plan</strong> Researches and designs without touching your code. File edits are denied except for its plan file, and bash still asks first.</li>
+              <li><strong>build</strong> The default agent for development work. Manual asks before edits and shell commands unless configured rules allow them. It offers plan mode when work needs design first.</li>
+              <li><strong>plan</strong> Researches and designs without editing your application files. Edits are restricted to plan files; shell commands follow permission rules.</li>
             </ul>
             <p>Two subagents handle delegated work. Invoke them with <code>@</code> in a message, or let the primary agents call them.</p>
             <ul className="docs-list">
@@ -184,52 +205,102 @@ function ForgeDocs() {
             <table>
               <thead><tr><th>Mode</th><th>Behavior</th></tr></thead>
               <tbody>
-                <tr><td><code>Manual</code></td><td>The default. Every edit and command waits for your approval.</td></tr>
-                <tr><td><code>Accept Edits</code></td><td>File edits are approved automatically. Commands and other permission requests still ask.</td></tr>
-                <tr><td><code>Auto</code></td><td>Every permission request is approved. Toggle with <code>Cmd/Ctrl+Shift+A</code>.</td></tr>
+                <tr><td><code>Manual</code></td><td>The default. Edits and shell commands ask unless configured permission rules say otherwise.</td></tr>
+                <tr><td><code>Accept edits</code></td><td>Edit requests that would ask are approved automatically. Shell commands and other requests follow their permission rules.</td></tr>
+                <tr><td><code>Auto</code></td><td>Requests that would ask are approved automatically; deny rules remain denied. Toggle with <code>Cmd/Ctrl+Shift+A</code>.</td></tr>
                 <tr><td><code>Plan</code></td><td>Switches to the plan agent. Picking any other mode switches back to build.</td></tr>
               </tbody>
             </table>
-            <p>A mode applies to the current session, or to the project when you set it before starting a session. Approving a plan with <code>Accept (Auto)</code> switches the session to <code>Auto</code>. Anything your config sets to <code>deny</code> stays denied in every mode.</p>
+            <p>The picker controls the current session or new-session draft, not the project default. Set <code>Start new sessions in Auto mode</code> in Settings → Preferences, with an override in project settings. Anything your config sets to <code>deny</code> stays denied in every mode.</p>
+            <Note><code>Accept (Auto)</code> in plan review selects <strong>Accept edits</strong>, not full Auto. Shell commands and other requests still follow their permission rules.</Note>
           </section>
 
           <section id="permissions">
             <h2>Permissions</h2>
             <p>Out of the box, agents ask before:</p>
             <ul className="docs-list">
-              <li>editing files and running bash commands</li>
-              <li>touching directories outside the project</li>
-              <li>reading <code>.env</code> files (<code>.env.example</code> is allowed)</li>
+              <li>editing files and running shell commands, unless configured rules override the default</li>
+              <li>reading <code>.env</code> and <code>.env.*</code> files (<code>.env.example</code> is allowed)</li>
             </ul>
-            <p>Override any of these with <code>permission</code> in your config. For example, to let the agent read every <code>.env</code> file without asking:</p>
+            <p>Reading outside the workspace does not universally ask. Add explicit external-directory rules if you need that boundary. V2 uses a <code>permissions</code> array. This example intentionally allows sensitive environment-file reads without asking; only use it if that is what you want:</p>
             <pre><code>{`{
-  "permission": {
-    "read": { "*.env": "allow", "*.env.*": "allow" }
-  }
+  "permissions": [
+    { "action": "read", "resource": "*.env", "effect": "allow" },
+    { "action": "read", "resource": "*.env.*", "effect": "allow" }
+  ]
 }`}</code></pre>
-            <p>Each rule is <code>allow</code>, <code>ask</code> or <code>deny</code>. Forge reads <code>opencode.json</code> or <code>opencode.jsonc</code>, in the project or in your global config folder. See OpenCode’s <External href={`${OPENCODE_DOCS}/permissions/`}>permissions</External> and <External href={`${OPENCODE_DOCS}/config/`}>config</External> pages for the full syntax. Forge’s defaults above are stricter than upstream’s.</p>
+            <p>Each rule names an <code>action</code>, a <code>resource</code> pattern and an <code>effect</code>: <code>allow</code>, <code>ask</code> or <code>deny</code>. Legacy singular <code>permission</code> configuration is migrated. Forge reads <code>opencode.json</code> or <code>opencode.jsonc</code> in the project or global config folder. See OpenCode’s <External href={`${OPENCODE_DOCS}/permissions/`}>permissions</External> and <External href={`${OPENCODE_DOCS}/config/`}>config</External> references, checking examples against the V2 baseline.</p>
           </section>
 
           <section id="plan-review">
             <h2>Plan review</h2>
             <p>The plan agent writes its plan to a Markdown file and shows it in a side panel. When the plan is ready, you choose what happens next:</p>
             <ul className="docs-list">
-              <li><strong>Accept</strong> Hand off to build, approving each edit yourself or letting it run in <code>Auto</code>.</li>
+              <li><strong>Accept (Manual)</strong> Return to Build with normal approval prompts.</li>
+              <li><strong>Accept (Auto)</strong> Return to Build with file edits accepted automatically, not full Auto. Shell commands and other requests follow permission rules.</li>
               <li><strong>Revise</strong> Send the plan back with feedback.</li>
               <li><strong>Deny</strong> Stop without changing any code.</li>
             </ul>
-            <p>If a request needs design work first, the build agent offers to switch into plan mode instead of diving in.</p>
+            <p>The Plan tab opens when the agent presents its plan. Use <code>Review plan</code> to reopen it, or quote passages with comments to request targeted revisions. If a request needs design first, Build offers to switch into Plan.</p>
             <h3>Plan files</h3>
-            <p>Plans are ordinary files, so they persist after the session ends. In a Git project they live in <code>.opencode/plans/</code> inside the repo, named with a timestamp and the session slug. Outside Git they go in Forge’s data folder under <code>plans/</code>. Each planning stretch in a session gets its own file, and the plan agent is allowed to edit only these files. You can open and edit them like any Markdown, and Forge excludes them from the review panel’s Git changes. Add <code>.opencode/plans/</code> to <code>.gitignore</code> if you don’t want to commit them.</p>
+            <p>Plans persist as <code>.opencode/plans/&lt;timestamp&gt;-&lt;generated-slug&gt;.md</code> inside the session’s working directory, including outside Git. Each planning cycle gets a new file. Plan is restricted to plan files. You can edit them like any Markdown; Forge filters them out of Review’s Git changes. Add <code>.opencode/plans/</code> to <code>.gitignore</code> if you don’t want to commit them.</p>
+          </section>
+
+          <section id="browser">
+            <h2>Browser</h2>
+            <p>Forge’s built-in Chromium browser shares the same tabs between you and the agent. Run <code>Open browser</code>, or choose <code>Browser</code> in the side-panel launcher. The default shortcut is <code>Ctrl+Cmd+B</code> on macOS or <code>Ctrl+Alt+B</code> on Windows/Linux.</p>
+            <ol className="docs-steps">
+              <li>Start your app’s development server and open its URL in the browser pane.</li>
+              <li>Ask: “Open my local app, check the sign-in form, and report browser errors.” The agent can inspect pages, interact with forms and capture screenshots.</li>
+              <li>Use the element picker with <code>Cmd/Ctrl+Shift+C</code> to select an element and attach an optional comment to the composer.</li>
+            </ol>
+            <p>Inside the pane, <code>Cmd/Ctrl+L</code> focuses the address, <code>Cmd/Ctrl+T</code> opens a tab and <code>F5</code> reloads. Tools also cover console logs, network requests, performance traces, CPU profiles and memory snapshots. Lighthouse checks accessibility, SEO and best practices—not device emulation or a performance benchmark.</p>
+            <h3>Permissions and boundaries</h3>
+            <ul className="docs-list">
+              <li>A compatible Forge desktop browser must be attached to the session. Browser tools are not a standalone headless service.</li>
+              <li>Inspection is allowed after attachment. Navigation, clicks, typing, evaluation and other actions ask unless permissions or the selected mode allow them.</li>
+              <li>Pages use the connected server’s network: <code>localhost</code> means the server machine, not necessarily your laptop.</li>
+              <li>Agent navigation accepts HTTP, HTTPS and <code>about:blank</code>, not credential-bearing URLs or arbitrary <code>file://</code> paths. Ask it to preview local files instead.</li>
+              <li>Chromium is sandboxed, with Node integration disabled and context isolation/web security enabled. Camera, microphone, geolocation, notifications and device/screen-capture permission requests are blocked.</li>
+              <li>Screenshots require a focused tab and visible desktop window. Uploads and file drops are limited to 5 MiB total per operation.</li>
+            </ul>
+          </section>
+
+          <section id="context">
+            <h2>Context and compaction</h2>
+            <p>Click context usage in the session header to open <code>Context</code>. Inspect estimated contributions from messages, system instructions, tools, MCP, skills, references and memory, alongside cost and compaction headroom. Estimates explain usage; they are not exact provider billing totals.</p>
+            <p>The panel also exposes system-prompt/raw-message views and session export. Run <code>/compact</code> to summarize the conversation manually. To reserve a share of each model’s context window, configure:</p>
+            <pre><code>{`{
+  "compaction": { "buffer": "20%" }
+}`}</code></pre>
+            <p>Numeric token-count buffers still work. When commenting on quoted content, <code>Cmd/Ctrl+Enter</code> sends just the quote and comment, leaving your existing composer draft untouched.</p>
+          </section>
+
+          <section id="workspace-tools">
+            <h2>Terminals and worktrees</h2>
+            <p>Desktop terminals belong to the session. Their names and scrollback survive server restarts and stay synchronized across windows, so you can return to the same workspace.</p>
+            <p>Use <code>Cmd/Ctrl+Alt+O</code> to choose a worktree. Select <code>Choose base branch</code> in the command palette when creating one. Toggle composer shell mode with <code>Cmd/Ctrl+Shift+X</code>. Shell mode runs commands rather than sending them as model prompts.</p>
+          </section>
+
+          <section id="mcp">
+            <h2>MCP connections</h2>
+            <p>Manage integrations in <code>Settings → MCPs</code>, separately from model providers. Optional built-in connections for GitHub, GitLab, Linear, Notion, Sentry and Jira start disabled. Enable the ones you need and complete their setup; authentication differs by server. GitHub supports token or pre-registered OAuth setup.</p>
+            <ol className="docs-steps">
+              <li>Open MCPs, enable a connection and supply the required configuration or sign-in.</li>
+              <li>Check its status in the session MCP popover.</li>
+              <li>If a connection fails or needs sign-in, use the gear beside that server to reconnect or reconfigure it. The failed-server dialog offers <code>Retry</code>.</li>
+            </ol>
+            <p>Forge 0.7.4 adds this session-popover recovery path for stale sign-ins. Custom servers remain supported through OpenCode V2’s MCP configuration.</p>
           </section>
 
           <section id="git">
             <h2>Git</h2>
             <p>The review panel includes Git controls, so you can stay in the app:</p>
             <ul className="docs-list">
-              <li>See live branch and status.</li>
-              <li>Stage and commit changes, with a commit message written by your active model.</li>
-              <li>Stash, pull and push. After committing on a new branch, Forge offers to push it with its upstream.</li>
+              <li>See live branch/status and review uncommitted, branch or session changes.</li>
+              <li>Stage files or folders and commit with a message generated by your active model.</li>
+              <li>Fetch, pull with merge or rebase, push and set upstream on a new branch.</li>
+              <li>Manage stashes. Destructive discard and stash-drop actions ask for confirmation.</li>
             </ul>
           </section>
 
@@ -251,8 +322,8 @@ function ForgeDocs() {
               Moving or renaming a repo changes its key, so Forge starts with empty memory at the new path. The old folder stays under <code>memory/</code>; copy its contents over to keep it.
             </Note>
             <h3>How it works</h3>
-            <p>The agent decides what to save, and every write to the memory folder still asks for approval. It only saves things you said or confirmed, and avoids secrets and temporary task state. The index is loaded at the start of a session and after compaction, up to 100 lines or 12,800 bytes.</p>
-            <p>Primary agents can edit memory with approval. The plan agent can too, so corrections made while planning aren’t lost. Subagents can read memory but can’t write it, so parallel work never races on <code>MEMORY.md</code>.</p>
+            <p>Memory guidance asks the agent to save only things you said or confirmed, avoiding secrets and temporary task state. Writes follow ordinary edit permissions: Manual normally asks; Accept edits and Auto can approve automatically. The index is loaded at session start and after compaction, up to 100 lines or 12,800 bytes.</p>
+            <p>Build can maintain memory notes. Plan remains restricted to plan files, not memory. Subagents receive read-only memory guidance and cannot edit the notes.</p>
             <p>To turn memory off, set <code>memory</code> to <code>false</code> in your config. Existing notes are kept.</p>
           </section>
 
@@ -263,13 +334,13 @@ function ForgeDocs() {
               <thead><tr><th>Area</th><th>In Forge</th></tr></thead>
               <tbody>
                 <tr><td>Providers and models</td><td>Same as OpenCode: <External href={`${OPENCODE_DOCS}/providers/`}>providers</External>, <External href={`${OPENCODE_DOCS}/models/`}>models</External>.</td></tr>
-                <tr><td>Config</td><td>Same files and keys: <External href={`${OPENCODE_DOCS}/config/`}>config</External>. Memory is on by default.</td></tr>
-                <tr><td>Permissions</td><td>Same rule syntax: <External href={`${OPENCODE_DOCS}/permissions/`}>permissions</External>. Forge’s defaults ask more, as described above.</td></tr>
+                <tr><td>Config</td><td>OpenCode V2 config files and schema; check older examples against this baseline. Memory is on by default.</td></tr>
+                <tr><td>Permissions</td><td>V2 action/resource/effect rules. Forge asks for shell/edit by default; mode overrides do not bypass denies.</td></tr>
                 <tr><td>Agents</td><td><External href={`${OPENCODE_DOCS}/agents/`}>agents</External> applies for custom agents. The built-in build and plan agents behave differently.</td></tr>
-                <tr><td>MCP servers</td><td>Same as OpenCode: <External href={`${OPENCODE_DOCS}/mcp-servers/`}>MCP servers</External>. Forge adds a dialog for configuring them.</td></tr>
+                <tr><td>MCP servers</td><td>OpenCode V2 custom servers plus optional built-in connections and <a href="#mcp">setup/recovery UI</a>.</td></tr>
                 <tr><td>Skills, rules, plugins</td><td>Same as OpenCode: <External href={`${OPENCODE_DOCS}/skills/`}>skills</External>, <External href={`${OPENCODE_DOCS}/rules/`}>rules</External>, <External href={`${OPENCODE_DOCS}/plugins/`}>plugins</External>.</td></tr>
-                <tr><td>Edit modes, plan review, Git, memory</td><td>Forge-specific. Documented on this page.</td></tr>
-                <tr><td>Install and interface</td><td>Desktop installers only. OpenCode’s install script, terminal UI and CLI pages don’t apply.</td></tr>
+                <tr><td>Workflow</td><td>Forge modes, plan review and local memory are documented here, alongside browser, Git and inherited desktop capabilities.</td></tr>
+                <tr><td>Install and interface</td><td>These docs cover Forge’s desktop installers. Upstream terminal UI and install-script instructions are not desktop setup instructions.</td></tr>
               </tbody>
             </table>
           </section>
@@ -280,6 +351,10 @@ function ForgeDocs() {
             <p>On macOS and Windows this is usually the unsigned-installer warning. See <a href="#getting-started">first launch</a>. On Linux, check that the AppImage is executable.</p>
             <h3>Forge opens but can’t answer</h3>
             <p>Check that a provider is connected in Settings → Providers and that a model is selected. If the server fails to start, quit Forge fully and reopen it.</p>
+            <h3>The browser is disconnected or can’t reach localhost</h3>
+            <p>Open the session in the Forge desktop app and attach its browser pane. With a remote server, start the app on that server or use an address reachable from it; localhost is not automatically your laptop. See <a href="#browser">Browser</a>.</p>
+            <h3>An MCP connection needs sign-in</h3>
+            <p>Open the session MCP popover, select the gear beside the affected server, and reconnect or reconfigure it, then retry. See <a href="#mcp">MCP connections</a>.</p>
             <h3>Where the logs are</h3>
             <p>Forge writes logs to a <code>logs</code> folder inside its user data directory, with a new timestamped folder for each run (<code>main.log</code>, <code>renderer.log</code>). Logs older than seven days are cleaned up automatically. Attach recent ones when you report a bug.</p>
             <h3>Reporting a bug</h3>
@@ -291,7 +366,9 @@ function ForgeDocs() {
             <ul className="docs-list">
               <li>Forge is a personal project, not a supported product.</li>
               <li>The installers are unsigned, so expect a first-launch warning.</li>
-              <li>There is no terminal UI and no install script. Use the desktop app.</li>
+              <li>These instructions target the desktop app, not upstream’s terminal installation.</li>
+              <li>Browser tools require an attached desktop browser. Network access and localhost are relative to the connected server.</li>
+              <li>Artifacts and schedules remain opt-in through <code>experimental.artifacts</code> and <code>experimental.schedules</code>; they are not enabled by default.</li>
               <li>Memory has no management UI or <code>/memory</code> command, is per project, and doesn’t sync across machines.</li>
               <li>Releases are published manually, so the <External href={RELEASES_URL}>releases page</External> is the changelog.</li>
             </ul>

@@ -18,8 +18,8 @@ Every page is served as static HTML, so no JavaScript is needed to read it.
 - [Golden Gate MCP tools](/goldengate/mcp): The nine read-only MCP tools Golden Gate Bridge exposes (recent_activity, list_projects, get_project_context, search_work, get_session, list_commits, list_pull_requests, list_artifacts, list_issues), with parameters and real sample responses
 - [Golden Gate use cases](/goldengate/use-cases): Weekly reviews, resuming a project, finding open pull requests, searching past sessions and drafting write-ups from an assistant that reads your Golden Gate Bridge server
 - [Golden Gate security](/goldengate/security): What is never sent, token scopes, the opt-in model summarizer, OAuth, prompt injection and residual risks
-- [Forge](/forge): Personal fork of OpenCode, a coding agent that shows its plan before acting and keeps the human in the loop
-- [Forge docs](/forge/docs): Getting started, agents and edit modes, plan review, memory, Git controls, and differences from OpenCode
+- [Forge](/forge): Personal OpenCode V2 desktop fork with review-first plans, edit approvals, built-in browser testing, local memory and Git controls
+- [Forge docs](/forge/docs): Setup, edit modes, plan review, browser testing, context and compaction, MCP connections, persistent terminals, memory and Git
 - [Harbinger](/harbinger): ML-predicted processing times plus Multi-Level Feedback Queue scheduling to cut message latency; C++20 gRPC broker
 - [Harbinger experiments](/harbinger/experiments), [benchmarks](/harbinger/benchmarks), [comparison](/harbinger/comparison)
 

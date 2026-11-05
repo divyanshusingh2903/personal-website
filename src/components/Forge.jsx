@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Forge.css";
 import { Arrow, Mark, Wordmark } from "./ForgeBrand";
+import { OPENCODE_VERSION, FORGE_VERSION, FORGE_RELEASE_URL } from "./ForgeRelease";
 
 const GITHUB_URL = "https://github.com/divyanshusingh2903/forge";
 const RELEASES_URL = `${GITHUB_URL}/releases`;
@@ -55,12 +56,15 @@ function Download() {
 
   return (
     <div className="forge-download">
-      <a className="forge-button" href={url}>
-        <span>{directDownload ? `Download Forge for ${platform.label}` : "View Forge downloads"}</span>
-        <Arrow />
-      </a>
-      {directDownload && <a href={RELEASES_URL}>Other platforms and architectures</a>}
-      {!DOWNLOADS_READY && <span>Installers coming soon. Run Forge from source below.</span>}
+      <div className="forge-download-actions">
+        <a className="forge-button" href={url}>
+          <span>{directDownload ? `Download Forge for ${platform.label}` : "View Forge downloads"}</span>
+          <Arrow />
+        </a>
+        {directDownload && <a href={RELEASES_URL}>Other platforms and architectures</a>}
+        {!DOWNLOADS_READY && <span>Installers coming soon. Run Forge from source below.</span>}
+      </div>
+      <p className="forge-release"><a href={FORGE_RELEASE_URL}>OpenCode {OPENCODE_VERSION} · Forge {FORGE_VERSION}</a></p>
     </div>
   );
 }
@@ -117,20 +121,26 @@ function Install() {
 
 // Shared with OpenCode: what carries over unchanged.
 const inherited = [
-  ["Any model", "Keeps OpenCode’s provider flexibility. The same config works here."],
+  ["Any model", "Keeps OpenCode V2’s provider flexibility, including guided Claude Agent setup."],
   ["Desktop app", "Forge ships as an Electron desktop app for macOS, Windows and Linux."],
   ["Subagents", "@general for multistep work and @explore for fast read-only search, same as upstream."],
-  ["MCP, skills and plugins", "OpenCode’s extension points all still apply, and Forge adds a point-and-click MCP setup dialog."],
+  ["MCP, skills and plugins", "Build on OpenCode V2’s extension points, with optional connections you can configure in the app."],
 ];
 
 // What Forge adds on top of OpenCode.
 const differences = [
-  ["Edit modes", "Choose how much the agent does on its own, from asking every time to full auto."],
-  ["Plan review", "Read the plan, then accept, revise or deny it before a single line changes."],
+  ["Edit modes", "Manual asks before edits and shell commands by default. Choose Accept edits, Auto or Plan to suit the task; explicit deny rules still apply."],
+  ["Plan review", "Review a written plan before implementation, quote passages with feedback, then accept, revise or deny it."],
   ["Native memory", "Keep your project’s context across sessions, stored locally and yours to edit."],
   ["Git in the review panel", "Git actions at your fingertips. Control your version control without leaving the app."],
   ["Faster approvals", "Prompts come preset with keybindings, so approving takes one keystroke."],
-  ["More context for you", "See token usage on every message and know what’s filling the window."],
+];
+
+const capabilities = [
+  ["Built-in browser", "Preview your app in shared Chromium tabs. Inspect elements, test forms, capture screenshots and investigate browser errors while you watch.", "browser"],
+  ["Context you can inspect", "See what messages, tools, MCP, skills and memory contribute to the context window, then compact when you need room.", "context"],
+  ["A workspace that stays with you", "Session terminals keep their names and scrollback across server restarts. Switch worktrees and run shell commands from the composer.", "workspace-tools"],
+  ["Connections you can recover", "Set up optional MCP integrations and recover failed or expired sign-ins from the session popover.", "mcp"],
 ];
 
 function FaqItem({ question, children }) {
@@ -181,7 +191,7 @@ function Forge() {
           <div className="forge-hero-copy">
             <h1>The coding agent that keeps you in the loop</h1>
             <p>
-              Forge shows you its next move before it makes it. <span className="forge-br" />
+              Review the plan. Approve edits and commands by default. <span className="forge-br" />
               The power of OpenCode, with the transparency and human-in-the-loop feel of Claude Code.
             </p>
           </div>
@@ -194,6 +204,7 @@ function Forge() {
           <video className="forge-demo" src="/forge-demo.mp4" aria-label="Forge desktop app demonstration" autoPlay playsInline loop muted controls preload="metadata">
             Your browser does not support video playback.
           </video>
+          <p className="forge-demo-caption">Earlier Forge interface; current controls may differ.</p>
         </section>
 
         <section className="forge-section">
@@ -201,6 +212,18 @@ function Forge() {
             <h3>What is Forge?</h3>
             <p>Forge is my personal fork of OpenCode, steered closer to how Claude Code feels to use: more transparent, and less inclined to act without asking first.</p>
           </div>
+        </section>
+
+        <section className="forge-section" id="now-in-forge">
+          <div className="forge-section-title">
+            <h3>Now in Forge</h3>
+            <p>The OpenCode V2 foundation, with Forge’s review-first workflow. These capabilities are available in the current release—not all are exclusive to Forge or newly introduced in 2.2.5.</p>
+          </div>
+          <ul className="forge-list">
+            {capabilities.map(([title, body, anchor]) => (
+              <li key={anchor}><span>[+]</span><div><strong>{title}</strong> {body} <Link to={`/forge/docs#${anchor}`}>Learn more</Link></div></li>
+            ))}
+          </ul>
         </section>
 
         <section className="forge-section" id="vs-opencode">
@@ -243,7 +266,13 @@ function Forge() {
           </div>
           <ul className="forge-faq">
             <FaqItem question="How is it different from OpenCode?">
-              Forge asks before edits and commands by default, writes plans to a reviewable plan file, remembers your project across sessions, and adds Git controls and crash recovery to the desktop app. See the <a href="#vs-opencode">full comparison</a>.
+              Forge asks before edits and shell commands by default, writes plans to a reviewable plan file, and keeps local project memory. It brings these workflows together with desktop Git controls. Configured permissions and your selected mode still apply. See the <a href="#vs-opencode">full comparison</a>.
+            </FaqItem>
+            <FaqItem question="Can Forge test my app in a browser?">
+              Yes. The built-in browser shares tabs with the agent for inspection, forms, screenshots and debugging. It needs an attached Forge desktop app; localhost refers to the connected server’s machine. See <Link to="/forge/docs#browser">Browser</Link> for permissions and limits.
+            </FaqItem>
+            <FaqItem question="Which version is this based on?">
+              This page covers OpenCode {OPENCODE_VERSION} with Forge {FORGE_VERSION}. The <a href={FORGE_RELEASE_URL}>combined release tag</a> identifies both versions; download links always follow the latest published release.
             </FaqItem>
             <FaqItem question="Is it affiliated with Anthropic or Claude Code?">
               No. Forge is an independent personal project. Claude Code is simply the reference for how the workflow should feel: transparent, collaborative, and with a human in the loop.
