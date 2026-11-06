@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import "./Forge.css";
 import { Arrow, Mark, Wordmark } from "./ForgeBrand";
 import { OPENCODE_VERSION, FORGE_VERSION, FORGE_RELEASE_URL } from "./ForgeRelease";
+import { LATEST_RELEASE_API_URL, LATEST_RELEASE_URL, parseForgeRelease } from "./ForgeLatestRelease";
 
 const GITHUB_URL = "https://github.com/divyanshusingh2903/forge";
 const RELEASES_URL = `${GITHUB_URL}/releases`;
@@ -48,23 +49,37 @@ function getDownloadPlatform() {
 }
 
 function Download() {
-  const [platform] = useState(getDownloadPlatform);
-  const directDownload = DOWNLOADS_READY && platform;
-  const url = directDownload
-    ? `${RELEASES_URL}/latest/download/${platform.asset}`
-    : RELEASES_URL;
+  const [download, setDownload] = useState(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(LATEST_RELEASE_API_URL, { signal: controller.signal })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        const release = parseForgeRelease(data);
+        if (release && !controller.signal.aborted) {
+          setDownload({ release, platform: getDownloadPlatform() });
+        }
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, []);
+
+  const release = download?.release;
+  const platform = download?.platform;
+  const directDownload = platform && release?.downloads[platform.asset];
+  const url = directDownload || release?.url || LATEST_RELEASE_URL;
 
   return (
     <div className="forge-download">
       <div className="forge-download-actions">
         <a className="forge-button" href={url}>
-          <span>{directDownload ? `Download Forge for ${platform.label}` : "View Forge downloads"}</span>
+          <span>{directDownload ? `Download Forge for ${platform.label}` : "View latest release"}</span>
           <Arrow />
         </a>
-        {directDownload && <a href={RELEASES_URL}>Other platforms and architectures</a>}
-        {!DOWNLOADS_READY && <span>Installers coming soon. Run Forge from source below.</span>}
+        {directDownload && <a href={release.url}>Other platforms and architectures</a>}
       </div>
-      <p className="forge-release"><a href={FORGE_RELEASE_URL}>OpenCode {OPENCODE_VERSION} · Forge {FORGE_VERSION}</a></p>
+      <p className="forge-release"><a href={release?.url || LATEST_RELEASE_URL}>{release?.label || "Latest release on GitHub"}</a></p>
     </div>
   );
 }
