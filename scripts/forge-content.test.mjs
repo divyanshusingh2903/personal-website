@@ -33,7 +33,7 @@ after(async () => { await vite?.close(); });
 
 test("both pages render the verified release baseline without browser APIs", () => {
   for (const html of [marketing, docs]) {
-    assert.match(text(html), /OpenCode 2\.2\.5 · Forge 0\.7\.4/);
+    assert.match(text(html), /OpenCode 2\.2\.5 (?:·|with) Forge 0\.7\.4/);
     assert.ok(html.includes(`href="${FORGE_RELEASE_URL}"`));
   }
 });
@@ -91,7 +91,11 @@ test("browser and integration limits are visible with recovery links", () => {
 
 test("SSR download fallback and existing navigation/install controls remain", () => {
   assert.match(marketing, /<div class="forge-download">[\s\S]*?<p class="forge-release">[\s\S]*?<\/p><\/div>/);
-  assert.match(marketing, /href="https:\/\/github.com\/divyanshusingh2903\/forge\/releases"><span>View Forge downloads/);
+  assert.match(marketing, /href="https:\/\/github.com\/divyanshusingh2903\/forge\/releases\/latest"><span>View latest release/);
+  const subtext = marketing.match(/<p class="forge-release">([\s\S]*?)<\/p>/)?.[1];
+  assert.match(subtext, /releases\/latest/);
+  assert.match(text(subtext), /Latest release on GitHub/);
+  assert.doesNotMatch(text(subtext), /Forge \d/);
   assert.match(marketing, /aria-label="Run Forge from source"/);
   assert.match(marketing, /href="\/forge\/docs"/);
   assert.match(docs, /href="\/forge"/);
