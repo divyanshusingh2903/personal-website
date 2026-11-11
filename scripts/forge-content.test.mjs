@@ -33,17 +33,23 @@ after(async () => { await vite?.close(); });
 
 test("both pages render the verified release baseline without browser APIs", () => {
   for (const html of [marketing, docs]) {
-    assert.match(text(html), /OpenCode 2\.2\.5 (?:·|with) Forge 0\.7\.4/);
+    assert.match(text(html), /OpenCode 2\.2\.5 (?:·|with) Forge 0\.8\.0/);
     assert.ok(html.includes(`href="${FORGE_RELEASE_URL}"`));
   }
 });
 
-test("marketing capabilities link to real docs sections", () => {
-  for (const id of ["browser", "context", "workspace-tools", "mcp"]) {
-    assert.ok(marketing.includes(`href="/forge/docs#${id}"`));
-    assert.ok(docs.includes(`<section id="${id}">`));
+test("marketing differences link to real docs sections", () => {
+  for (const id of ["edit-modes", "plan-review", "permissions", "chapters", "pull-requests", "memory", "git"]) {
+    assert.ok(marketing.includes(`href="/forge/docs#${id}"`), id);
+    assert.ok(docs.includes(`<section id="${id}">`), id);
   }
-  assert.match(text(marketing), /Built-in browser/);
+  assert.doesNotMatch(text(marketing), /Now in Forge/);
+});
+
+test("docs screenshots exist and describe the feature", () => {
+  for (const name of ["forge-chapters.webp", "forge-pull-requests.webp", "forge-reference-popover.webp"]) {
+    assert.match(docs, new RegExp(`src="/${name}"[^>]*alt="[^"]{20,}"`), name);
+  }
 });
 
 test("sidebar anchors all resolve exactly once and retain existing deep links", () => {
@@ -52,7 +58,7 @@ test("sidebar anchors all resolve exactly once and retain existing deep links", 
   for (const [, id] of sidebar.matchAll(/href="#([^"]+)"/g)) {
     assert.equal([...docs.matchAll(new RegExp(`<section id="${id}"`, "g"))].length, 1, id);
   }
-  for (const id of ["edit-modes", "plan-review", "git", "memory", "whats-new"]) {
+  for (const id of ["edit-modes", "plan-review", "git", "memory", "whats-new", "chapters", "pull-requests"]) {
     assert.ok(sidebar.includes(`href="#${id}"`));
   }
 });

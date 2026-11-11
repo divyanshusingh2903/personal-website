@@ -142,20 +142,15 @@ const inherited = [
   ["MCP, skills and plugins", "Build on OpenCode V2’s extension points, with optional connections you can configure in the app."],
 ];
 
-// What Forge adds on top of OpenCode.
+// What Forge adds on top of OpenCode, each with its docs section.
 const differences = [
-  ["Edit modes", "Manual asks before edits and shell commands by default. Choose Accept edits, Auto or Plan to suit the task; explicit deny rules still apply."],
-  ["Plan review", "Review a written plan before implementation, quote passages with feedback, then accept, revise or deny it."],
-  ["Native memory", "Keep your project’s context across sessions, stored locally and yours to edit."],
-  ["Git in the review panel", "Git actions at your fingertips. Control your version control without leaving the app."],
-  ["Faster approvals", "Prompts come preset with keybindings, so approving takes one keystroke."],
-];
-
-const capabilities = [
-  ["Built-in browser", "Preview your app in shared Chromium tabs. Inspect elements, test forms, capture screenshots and investigate browser errors while you watch.", "browser"],
-  ["Context you can inspect", "See what messages, tools, MCP, skills and memory contribute to the context window, then compact when you need room.", "context"],
-  ["A workspace that stays with you", "Session terminals keep their names and scrollback across server restarts. Switch worktrees and run shell commands from the composer.", "workspace-tools"],
-  ["Connections you can recover", "Set up optional MCP integrations and recover failed or expired sign-ins from the session popover.", "mcp"],
+  ["Edit modes", "Manual asks before edits and shell commands by default. Choose Accept edits, Auto or Plan to suit the task; explicit deny rules still apply.", "edit-modes"],
+  ["Plan review", "Review a written plan before implementation, quote passages with feedback, then accept, revise or deny it.", "plan-review"],
+  ["Faster approvals", "Prompts come preset with keybindings, so approving takes one keystroke, and proposed file changes show as diffs before you approve them.", "permissions"],
+  ["Chapters", "Pin any message to start a titled chapter, then jump between them from a notch rail beside the transcript. Forge adds one by itself after a compaction or when you link a new issue or pull request.", "chapters"],
+  ["Pull requests that stay tracked", "Forge remembers the pull and merge requests a session opens, with their state and CI. Opt in to auto-fix and it queues a fix when CI fails.", "pull-requests"],
+  ["Native memory", "Keep your project’s context across sessions, stored locally and yours to edit.", "memory"],
+  ["Git in the review panel", "Git actions at your fingertips. Control your version control without leaving the app.", "git"],
 ];
 
 function FaqItem({ question, children }) {
@@ -229,18 +224,6 @@ function Forge() {
           </div>
         </section>
 
-        <section className="forge-section" id="now-in-forge">
-          <div className="forge-section-title">
-            <h3>Now in Forge</h3>
-            <p>The OpenCode V2 foundation, with Forge’s review-first workflow. These capabilities are available in the current release—not all are exclusive to Forge or newly introduced in 2.2.5.</p>
-          </div>
-          <ul className="forge-list">
-            {capabilities.map(([title, body, anchor]) => (
-              <li key={anchor}><span>[+]</span><div><strong>{title}</strong> {body} <Link to={`/forge/docs#${anchor}`}>Learn more</Link></div></li>
-            ))}
-          </ul>
-        </section>
-
         <section className="forge-section" id="vs-opencode">
           <div className="forge-section-title">
             <h3>How Forge differs from OpenCode</h3>
@@ -249,10 +232,10 @@ function Forge() {
             </p>
           </div>
           <ul className="forge-list">
-            {differences.map(([title, body]) => (
-              <li key={title}>
+            {differences.map(([title, body, anchor]) => (
+              <li key={anchor}>
                 <span>[+]</span>
-                <div><strong>{title}</strong> {body}</div>
+                <div><strong>{title}</strong> {body} <Link to={`/forge/docs#${anchor}`}>Learn more</Link></div>
               </li>
             ))}
           </ul>

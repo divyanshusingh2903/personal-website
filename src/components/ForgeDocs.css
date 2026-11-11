@@ -51,6 +51,7 @@
 .docs-content pre { margin: 12px 0 16px; padding: 14px 16px; overflow-x: auto; background: var(--color-background-weak); border: 1px solid var(--color-border-weak); border-radius: 2px; line-height: 160%; }
 .docs-content pre code { font-weight: 400; }
 .docs-shot { display: block; width: 100%; height: auto; margin: 24px 0 8px; border: 1px solid var(--color-border-weak); border-radius: 2px; }
+.docs-shot-narrow { max-width: 460px; }
 .docs-caption { color: var(--color-text-weak); font-size: 12px; }
 
 .docs-note {

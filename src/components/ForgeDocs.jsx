@@ -13,7 +13,7 @@ const nav = [
   { group: null, items: [["intro", "Intro"], ["whats-new", "What’s new"], ["getting-started", "Getting started"], ["first-session", "Your first session"]] },
   {
     group: "Usage",
-    items: [["agents", "Agents"], ["edit-modes", "Edit modes"], ["permissions", "Permissions"], ["plan-review", "Plan review"], ["browser", "Browser"], ["context", "Context and compaction"], ["workspace-tools", "Terminals and worktrees"], ["mcp", "MCP connections"], ["git", "Git"], ["memory", "Memory"]],
+    items: [["agents", "Agents"], ["edit-modes", "Edit modes"], ["permissions", "Permissions"], ["plan-review", "Plan review"], ["browser", "Browser"], ["context", "Context and compaction"], ["chapters", "Chapters"], ["workspace-tools", "Terminals and worktrees"], ["mcp", "MCP connections"], ["git", "Git"], ["pull-requests", "Pull requests"], ["memory", "Memory"]],
   },
   { group: "Reference", items: [["vs-opencode", "Forge vs OpenCode"], ["troubleshooting", "Troubleshooting"], ["limitations", "Limitations"], ["contributing", "Contributing"]] },
 ];
@@ -117,12 +117,20 @@ function ForgeDocs() {
           <section id="whats-new">
             <h2>What’s new</h2>
             <p>These docs cover <strong>OpenCode {OPENCODE_VERSION} · Forge {FORGE_VERSION}</strong>. The tag <External href={FORGE_RELEASE_URL}>{FORGE_RELEASE_TAG}</External> combines the upstream engine version and Forge’s own version. Downloads follow the latest published release.</p>
+            <h3>New in Forge 0.8.0</h3>
+            <ul className="docs-list">
+              <li><a href="#chapters">Chapters</a>: pin messages as titled chapters and jump between them from a notch rail. Forge also starts one after a compaction or a newly linked issue or pull request.</li>
+              <li><a href="#pull-requests">Pull requests</a>: sessions keep track of the pull and merge requests they open, with state, CI and opt-in auto-fix.</li>
+              <li><a href="#reference-popovers">Reference popovers</a>: issue and pull request links show sub-issue progress and CI results, and the popover stays open while you use it.</li>
+              <li><a href="#permissions">Diffs before approval</a>: proposed file changes show in the chat while an edit is waiting for your approval.</li>
+            </ul>
+            <h3>Also in this release</h3>
             <p>The V2 foundation brings richer context inspection, persistent session terminals, worktree shortcuts, guided Claude Agent setup and percentage-based compaction buffers. Forge keeps its edit modes, plan review and local memory alongside the built-in browser and desktop Git workflow. These are capabilities available here, not a claim that each was introduced in 2.2.5 or is exclusive to Forge.</p>
             <ul className="docs-list">
               <li><a href="#browser">Browser</a>: shared Chromium tabs, element comments, screenshots and debugging.</li>
               <li><a href="#context">Context and compaction</a>: inspect what fills the window and reserve headroom.</li>
               <li><a href="#workspace-tools">Terminals and worktrees</a>: persistent terminals and faster workspace navigation.</li>
-              <li><a href="#mcp">MCP connections</a>: optional integrations; Forge 0.7.4 adds recovery for stale sign-ins from the session popover.</li>
+              <li><a href="#mcp">MCP connections</a>: optional integrations, with recovery for stale sign-ins from the session popover.</li>
             </ul>
             <p>See <External href={RELEASES_URL}>Forge Releases</External> for Forge changes and the <External href={`${GITHUB_URL}/blob/main/CHANGELOG.md`}>OpenCode V2 changelog</External> for inherited engine and desktop changes.</p>
           </section>
@@ -175,7 +183,7 @@ function ForgeDocs() {
               <li>Open a project folder. Unless settings override it, Forge starts in <code>Manual</code> mode with the <code>build</code> agent. Edits and shell commands ask by default; configured permission rules still apply.</li>
               <li>Ask for something small, such as “add a unit test for the date helper”.</li>
               <li>Watch the agent explain its next step. Running tool calls show a live timer.</li>
-              <li>When it wants to edit a file or run a command, a permission prompt appears. Press <code>1</code>, <code>2</code> or <code>3</code> to answer, or click.</li>
+              <li>When it wants to edit a file or run a command, a permission prompt appears. For edits, the proposed diff shows in the chat first. Press <code>1</code>, <code>2</code> or <code>3</code> to answer, or click.</li>
               <li>For bigger work, switch to <code>Plan</code> mode first. Review the plan in the side panel, then accept, revise or deny it.</li>
               <li>Review the resulting changes in the review panel, then stage and commit from there.</li>
             </ol>
@@ -222,6 +230,7 @@ function ForgeDocs() {
               <li>editing files and running shell commands, unless configured rules override the default</li>
               <li>reading <code>.env</code> and <code>.env.*</code> files (<code>.env.example</code> is allowed)</li>
             </ul>
+            <p>While an edit waits for approval, its file card in the chat already shows the proposed diff, so you can read the change before you answer.</p>
             <p>Reading outside the workspace does not universally ask. Add explicit external-directory rules if you need that boundary. V2 uses a <code>permissions</code> array. This example intentionally allows sensitive environment-file reads without asking; only use it if that is what you want:</p>
             <pre><code>{`{
   "permissions": [
@@ -276,6 +285,24 @@ function ForgeDocs() {
             <p>Numeric token-count buffers still work. When commenting on quoted content, <code>Cmd/Ctrl+Enter</code> sends just the quote and comment, leaving your existing composer draft untouched.</p>
           </section>
 
+          <section id="chapters">
+            <h2>Chapters</h2>
+            <p>Long sessions often cover several tasks. Chapters are titled markers on the transcript that take you back to each one without scrolling.</p>
+            <h3>Pinning a message</h3>
+            <p>Every user message, and the final reply of each turn, has a pin button next to copy. Pinning starts a chapter at that message, titled from its first line. Click the pin again to remove the chapter.</p>
+            <h3>The notch rail</h3>
+            <p>Each chapter appears as a small notch at the top left of the transcript, under the session name. The notch for the part of the session you are reading is bolder. Hover over the rail to list the chapters, then click one to jump to it, even if it is far back in history. Rename or remove a chapter from the same list.</p>
+            <img className="docs-shot" src="/forge-chapters.webp" width="1159" height="730" alt="The chapters list open over a session: two pinned messages, two issue and pull request chapters and one after a compaction" loading="lazy" />
+            <p className="docs-caption">The chapters list. Icons show what started each one: a pin, a linked issue or pull request, or a compaction.</p>
+            <h3>Automatic chapters</h3>
+            <p>Forge also starts a chapter by itself, without the agent spending any effort on it:</p>
+            <ul className="docs-list">
+              <li><strong>After a compaction</strong> Titled from your next message, or <code>After compaction</code> when the agent continues on its own.</li>
+              <li><strong>A new issue or pull request</strong> When your message links a GitHub or GitLab issue, pull request or merge request the session has not seen, titled with its number and title. Linking it again starts nothing.</li>
+            </ul>
+            <p>Automatic chapters start at the agent’s reply, never at your message. Reverting a session removes the chapters past the revert point. Chapters belong to their session: forks and subagent sessions start without any.</p>
+          </section>
+
           <section id="workspace-tools">
             <h2>Terminals and worktrees</h2>
             <p>Desktop terminals belong to the session. Their names and scrollback survive server restarts and stay synchronized across windows, so you can return to the same workspace.</p>
@@ -302,6 +329,25 @@ function ForgeDocs() {
               <li>Fetch, pull with merge or rebase, push and set upstream on a new branch.</li>
               <li>Manage stashes. Destructive discard and stash-drop actions ask for confirmation.</li>
             </ul>
+          </section>
+
+          <section id="pull-requests">
+            <h2>Pull requests</h2>
+            <p>Forge remembers the GitHub pull requests and GitLab merge requests a session works on, so they don’t get lost once the link scrolls away.</p>
+            <h3>What gets tracked</h3>
+            <p>A request is tracked when the agent creates it, through a connected GitHub or GitLab integration or with <code>gh pr create</code> or <code>glab mr create</code>, or when you ask the agent to track one. A link that is only mentioned is not tracked. The list survives restarts.</p>
+            <h3>The Pull requests tab</h3>
+            <p>Once a session tracks something, a header icon opens the <code>Pull requests</code> tab; the icon shows a dot while CI is failing on an open request. Each row expands into the full reference card, with refresh, copy link and stop tracking. Merged and closed requests fold into their own group and are no longer checked.</p>
+            <img className="docs-shot docs-shot-narrow" src="/forge-pull-requests.webp" width="745" height="780" alt="The Pull requests tab with a merged pull request expanded to show its branch, size, changed files and that all 27 checks passed" loading="lazy" />
+            <p className="docs-caption">The Pull requests tab, with a merged request expanded.</p>
+            <p>If a status lookup fails, Forge keeps the last good status and says why: not signed in, rate-limited or a temporary error. It never shows stale results as passing.</p>
+            <h3>Auto-fix CI</h3>
+            <p>Auto-fix is off by default and set per request. When it is on and CI finishes failing, Forge queues one fix prompt for that commit, at most three attempts, delivered when the agent is idle so it doesn’t interrupt other work. If a fix run is interrupted or fails, auto-fix pauses until you resume it; a green run resets it.</p>
+            <Note>Tracking never merges, closes, reruns CI or pushes on its own. Fixes go through the agent with your usual edit modes and permissions.</Note>
+            <h3 id="reference-popovers">Reference popovers</h3>
+            <p>Hover over an issue or pull request link in the chat to see its card. Issues with sub-issues show how many are complete, not planned or open. Pull requests show their checks on GitHub, or tests and jobs on GitLab, with links to failing ones. The popover stays open while your pointer is over it, so you can click links, select text or refresh it.</p>
+            <img className="docs-shot docs-shot-narrow" src="/forge-reference-popover.webp" width="556" height="234" alt="A reference popover for a GitHub issue showing its title, labels and 3 of 4 sub-issues complete" loading="lazy" />
+            <p className="docs-caption">An issue popover with sub-issue progress.</p>
           </section>
 
           <section id="memory">
@@ -370,6 +416,8 @@ function ForgeDocs() {
               <li>Browser tools require an attached desktop browser. Network access and localhost are relative to the connected server.</li>
               <li>Artifacts and schedules remain opt-in through <code>experimental.artifacts</code> and <code>experimental.schedules</code>; they are not enabled by default.</li>
               <li>Memory has no management UI or <code>/memory</code> command, is per project, and doesn’t sync across machines.</li>
+              <li>Only a turn’s final reply has a pin button; earlier agent messages can’t be pinned.</li>
+              <li>Pull request tracking and automatic chapters cover github.com and gitlab.com only. GitLab CI results and auto-fix need the <code>glab</code> CLI.</li>
               <li>Releases are published manually, so the <External href={RELEASES_URL}>releases page</External> is the changelog.</li>
             </ul>
           </section>
