@@ -149,6 +149,7 @@ const differences = [
   ["Faster approvals", "Prompts come preset with keybindings, so approving takes one keystroke, and proposed file changes show as diffs before you approve them.", "permissions"],
   ["Chapters", "Pin any message to start a titled chapter, then jump between them from a notch rail beside the transcript. Forge adds one by itself after a compaction or when you link a new issue or pull request.", "chapters"],
   ["Pull requests that stay tracked", "Forge remembers the pull and merge requests a session opens, with their state and CI. Opt in to auto-fix and it queues a fix when CI fails.", "pull-requests"],
+  ["Run code blocks in the terminal", "Run a shell block from a reply in the session terminal with one click; the exit code and output go back to the agent.", "run-in-terminal"],
   ["Native memory", "Keep your project’s context across sessions, stored locally and yours to edit.", "memory"],
   ["Git in the review panel", "Git actions at your fingertips. Control your version control without leaving the app.", "git"],
 ];

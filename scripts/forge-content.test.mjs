@@ -2,7 +2,7 @@ import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
 import { createServer } from "vite";
 import { fileURLToPath } from "node:url";
-import { FORGE_RELEASE_URL } from "../src/components/ForgeRelease.js";
+import { FORGE_RELEASE_URL, FORGE_VERSION, OPENCODE_VERSION } from "../src/components/ForgeRelease.js";
 
 let vite;
 let marketing;
@@ -33,7 +33,8 @@ after(async () => { await vite?.close(); });
 
 test("both pages render the verified release baseline without browser APIs", () => {
   for (const html of [marketing, docs]) {
-    assert.match(text(html), /OpenCode 2\.2\.5 (?:·|with) Forge 0\.8\.0/);
+    const escaped = (value) => value.replace(/\./g, "\\.");
+    assert.match(text(html), new RegExp(`OpenCode ${escaped(OPENCODE_VERSION)} (?:·|with) Forge ${escaped(FORGE_VERSION)}`));
     assert.ok(html.includes(`href="${FORGE_RELEASE_URL}"`));
   }
 });
@@ -43,7 +44,18 @@ test("marketing differences link to real docs sections", () => {
     assert.ok(marketing.includes(`href="/forge/docs#${id}"`), id);
     assert.ok(docs.includes(`<section id="${id}">`), id);
   }
+  assert.ok(marketing.includes(`href="/forge/docs#run-in-terminal"`));
+  assert.ok(docs.includes(`<h3 id="run-in-terminal">`));
   assert.doesNotMatch(text(marketing), /Now in Forge/);
+});
+
+test("the stale terminal helper fix is documented where Run points to it", () => {
+  const content = text(docs);
+  assert.ok(docs.includes('<h3 id="run-unsupported">'));
+  assert.ok(docs.includes('href="#run-unsupported"'));
+  assert.match(content, /terminal service does not support shell command execution/);
+  assert.match(content, /pkill -f "opencode-pty daemon"/);
+  assert.match(content, /Forge does not replace it automatically yet/);
 });
 
 test("docs screenshots exist and describe the feature", () => {

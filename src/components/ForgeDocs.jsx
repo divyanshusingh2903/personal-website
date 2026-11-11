@@ -117,12 +117,14 @@ function ForgeDocs() {
           <section id="whats-new">
             <h2>What’s new</h2>
             <p>These docs cover <strong>OpenCode {OPENCODE_VERSION} · Forge {FORGE_VERSION}</strong>. The tag <External href={FORGE_RELEASE_URL}>{FORGE_RELEASE_TAG}</External> combines the upstream engine version and Forge’s own version. Downloads follow the latest published release.</p>
-            <h3>New in Forge 0.8.0</h3>
+            <h3>New in Forge 0.8</h3>
             <ul className="docs-list">
               <li><a href="#chapters">Chapters</a>: pin messages as titled chapters and jump between them from a notch rail. Forge also starts one after a compaction or a newly linked issue or pull request.</li>
               <li><a href="#pull-requests">Pull requests</a>: sessions keep track of the pull and merge requests they open, with state, CI and opt-in auto-fix.</li>
+              <li><a href="#run-in-terminal">Run in terminal</a> (from 0.8.2): run a shell code block from a reply in the session terminal; the result goes back to the agent.</li>
               <li><a href="#reference-popovers">Reference popovers</a>: issue and pull request links show sub-issue progress and CI results, and the popover stays open while you use it.</li>
               <li><a href="#permissions">Diffs before approval</a>: proposed file changes show in the chat while an edit is waiting for your approval.</li>
+              <li>Updating replaces the background server an older release left running (from 0.8.1), so new features work without restarting it by hand.</li>
             </ul>
             <h3>Also in this release</h3>
             <p>The V2 foundation brings richer context inspection, persistent session terminals, worktree shortcuts, guided Claude Agent setup and percentage-based compaction buffers. Forge keeps its edit modes, plan review and local memory alongside the built-in browser and desktop Git workflow. These are capabilities available here, not a claim that each was introduced in 2.2.5 or is exclusive to Forge.</p>
@@ -307,6 +309,9 @@ function ForgeDocs() {
             <h2>Terminals and worktrees</h2>
             <p>Desktop terminals belong to the session. Their names and scrollback survive server restarts and stay synchronized across windows, so you can return to the same workspace.</p>
             <p>Use <code>Cmd/Ctrl+Alt+O</code> to choose a worktree. Select <code>Choose base branch</code> in the command palette when creating one. Toggle composer shell mode with <code>Cmd/Ctrl+Shift+X</code>. Shell mode runs commands rather than sending them as model prompts.</p>
+            <h3 id="run-in-terminal">Run in terminal</h3>
+            <p>Shell code blocks in the agent’s replies have a <code>Run in terminal</code> button next to copy. A click opens the session terminal, or creates one, and runs the command there as if you had typed it, so directory and environment changes persist. When it finishes, the exit code and output go back to the session so the agent can continue. Nothing runs without a click.</p>
+            <p>Clicks on several blocks queue in order. A run is refused while you have unsent text on the prompt line or a command is still running. If it says the terminal service does not support shell command execution, see <a href="#run-unsupported">Troubleshooting</a>.</p>
           </section>
 
           <section id="mcp">
@@ -401,6 +406,14 @@ function ForgeDocs() {
             <p>Open the session in the Forge desktop app and attach its browser pane. With a remote server, start the app on that server or use an address reachable from it; localhost is not automatically your laptop. See <a href="#browser">Browser</a>.</p>
             <h3>An MCP connection needs sign-in</h3>
             <p>Open the session MCP popover, select the gear beside the affected server, and reconnect or reconfigure it, then retry. See <a href="#mcp">MCP connections</a>.</p>
+            <h3 id="run-unsupported">Run in terminal says the terminal service does not support shell command execution</h3>
+            <p>Terminals are held by a small helper process that keeps running after you quit Forge. After an update from a version before 0.8.2, the old helper can keep serving your terminals, and it does not support Run. Forge does not replace it automatically yet, so stop it once:</p>
+            <ol className="docs-steps">
+              <li>Quit Forge completely.</li>
+              <li>Stop the helper. On macOS and Linux run <code>pkill -f "opencode-pty daemon"</code>. On Windows, end <code>opencode-pty.exe</code> in Task Manager.</li>
+              <li>Reopen Forge and open a new terminal, then click <code>Run in terminal</code> again.</li>
+            </ol>
+            <p>This closes your open terminals, and any other app built on OpenCode that shares the helper. A new terminal starts a helper that supports Run.</p>
             <h3>Where the logs are</h3>
             <p>Forge writes logs to a <code>logs</code> folder inside its user data directory, with a new timestamped folder for each run (<code>main.log</code>, <code>renderer.log</code>). Logs older than seven days are cleaned up automatically. Attach recent ones when you report a bug.</p>
             <h3>Reporting a bug</h3>
@@ -418,6 +431,7 @@ function ForgeDocs() {
               <li>Memory has no management UI or <code>/memory</code> command, is per project, and doesn’t sync across machines.</li>
               <li>Only a turn’s final reply has a pin button; earlier agent messages can’t be pinned.</li>
               <li>Pull request tracking and automatic chapters cover github.com and gitlab.com only. GitLab CI results and auto-fix need the <code>glab</code> CLI.</li>
+              <li>Run in terminal is verified with Bash 4.4 or later. Zsh, Fish and PowerShell support is untested, and older Bash doesn’t get the button.</li>
               <li>Releases are published manually, so the <External href={RELEASES_URL}>releases page</External> is the changelog.</li>
             </ul>
           </section>
