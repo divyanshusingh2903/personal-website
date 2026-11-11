@@ -7,6 +7,7 @@ import { LATEST_RELEASE_API_URL, LATEST_RELEASE_URL, parseForgeRelease } from ".
 
 const GITHUB_URL = "https://github.com/divyanshusingh2903/forge";
 const RELEASES_URL = `${GITHUB_URL}/releases`;
+const ISSUES_URL = `${GITHUB_URL}/issues`;
 // Asset names must match the files on the latest GitHub release exactly.
 const DOWNLOADS_READY = true;
 const DOWNLOADS = {
@@ -300,6 +301,7 @@ function Forge() {
         <footer className="forge-footer">
           <div className="forge-footer-cell"><a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a></div>
           <div className="forge-footer-cell"><Link to="/forge/docs">Docs</Link></div>
+          <div className="forge-footer-cell"><a href={ISSUES_URL} target="_blank" rel="noopener noreferrer">Report an issue</a></div>
           <div className="forge-footer-cell"><a href={UPSTREAM_URL} target="_blank" rel="noopener noreferrer">OpenCode <span>[upstream]</span></a></div>
         </footer>
       </div>
