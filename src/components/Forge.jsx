@@ -215,7 +215,7 @@ function Forge() {
           <video className="forge-demo" src="/forge-demo.mp4" aria-label="Forge desktop app demonstration" autoPlay playsInline loop muted controls preload="metadata">
             Your browser does not support video playback.
           </video>
-          <p className="forge-demo-caption">Earlier Forge interface; current controls may differ.</p>
+          <p className="forge-demo-caption">Forge desktop demo: approvals, plan review, chapters, PR tracking, run in terminal, memory, git and the built-in browser.</p>
         </section>
 
         <section className="forge-section">

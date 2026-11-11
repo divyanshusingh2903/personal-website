@@ -212,6 +212,8 @@ function ForgeDocs() {
           <section id="edit-modes">
             <h2>Edit modes</h2>
             <p>The mode picker next to the prompt sets how much the agent can do without asking.</p>
+            <img className="docs-shot docs-shot-narrow" src="/forge-edit-modes.webp" width="600" height="290" alt="The mode picker open above the prompt, listing Manual, Accept Edits, Auto and Plan with Manual selected" loading="lazy" />
+            <p className="docs-caption">The mode picker, with Manual selected.</p>
             <table>
               <thead><tr><th>Mode</th><th>Behavior</th></tr></thead>
               <tbody>
@@ -233,6 +235,8 @@ function ForgeDocs() {
               <li>reading <code>.env</code> and <code>.env.*</code> files (<code>.env.example</code> is allowed)</li>
             </ul>
             <p>While an edit waits for approval, its file card in the chat already shows the proposed diff, so you can read the change before you answer.</p>
+            <img className="docs-shot" src="/forge-edit-approval.webp" width="1360" height="1000" alt="A permission card asking to modify config.ts and config.test.ts, with the proposed test file diff above the Deny, Allow always and Allow once buttons" loading="lazy" />
+            <p className="docs-caption">An edit waiting for approval, with its diff already visible.</p>
             <p>Reading outside the workspace does not universally ask. Add explicit external-directory rules if you need that boundary. V2 uses a <code>permissions</code> array. This example intentionally allows sensitive environment-file reads without asking; only use it if that is what you want:</p>
             <pre><code>{`{
   "permissions": [
@@ -253,6 +257,8 @@ function ForgeDocs() {
               <li><strong>Deny</strong> Stop without changing any code.</li>
             </ul>
             <p>The Plan tab opens when the agent presents its plan. Use <code>Review plan</code> to reopen it, or quote passages with comments to request targeted revisions. If a request needs design first, Build offers to switch into Plan.</p>
+            <img className="docs-shot" src="/forge-plan-comment.webp" width="1360" height="1000" alt="A plan open in the side panel with a quoted passage and an optional comment box, and a revision field with Reject and Send revision buttons beside it" loading="lazy" />
+            <p className="docs-caption">Quoting a passage of the plan and sending a revision.</p>
             <h3>Plan files</h3>
             <p>Plans persist as <code>.opencode/plans/&lt;timestamp&gt;-&lt;generated-slug&gt;.md</code> inside the session’s working directory, including outside Git. Each planning cycle gets a new file. Plan is restricted to plan files. You can edit them like any Markdown; Forge filters them out of Review’s Git changes. Add <code>.opencode/plans/</code> to <code>.gitignore</code> if you don’t want to commit them.</p>
           </section>
@@ -265,6 +271,8 @@ function ForgeDocs() {
               <li>Ask: “Open my local app, check the sign-in form, and report browser errors.” The agent can inspect pages, interact with forms and capture screenshots.</li>
               <li>Use the element picker with <code>Cmd/Ctrl+Shift+C</code> to select an element and attach an optional comment to the composer.</li>
             </ol>
+            <img className="docs-shot" src="/forge-browser.webp" width="1360" height="1000" alt="The built-in browser open on the Forge website beside a session where the agent listed the tab, took a snapshot and reported the page headline" loading="lazy" />
+            <p className="docs-caption">The agent reading the page that is open in the built-in browser.</p>
             <p>Inside the pane, <code>Cmd/Ctrl+L</code> focuses the address, <code>Cmd/Ctrl+T</code> opens a tab and <code>F5</code> reloads. Tools also cover console logs, network requests, performance traces, CPU profiles and memory snapshots. Lighthouse checks accessibility, SEO and best practices—not device emulation or a performance benchmark.</p>
             <h3>Permissions and boundaries</h3>
             <ul className="docs-list">
@@ -311,6 +319,8 @@ function ForgeDocs() {
             <p>Use <code>Cmd/Ctrl+Alt+O</code> to choose a worktree. Select <code>Choose base branch</code> in the command palette when creating one. Toggle composer shell mode with <code>Cmd/Ctrl+Shift+X</code>. Shell mode runs commands rather than sending them as model prompts.</p>
             <h3 id="run-in-terminal">Run in terminal</h3>
             <p>Shell code blocks in the agent’s replies have a <code>Run in terminal</code> button next to copy. A click opens the session terminal, or creates one, and runs the command there as if you had typed it, so directory and environment changes persist. When it finishes, the exit code and output go back to the session so the agent can continue. Nothing runs without a click.</p>
+            <img className="docs-shot" src="/forge-run-in-terminal.webp" width="1360" height="1000" alt="A bash code block in an agent reply next to the session terminal showing the same head command and its three lines of README output" loading="lazy" />
+            <p className="docs-caption">A shell block from a reply, run in the session terminal.</p>
             <p>Clicks on several blocks queue in order. A run is refused while you have unsent text on the prompt line or a command is still running. If it says the terminal service does not support shell command execution, see <a href="#run-unsupported">Troubleshooting</a>.</p>
           </section>
 
@@ -334,6 +344,8 @@ function ForgeDocs() {
               <li>Fetch, pull with merge or rebase, push and set upstream on a new branch.</li>
               <li>Manage stashes. Destructive discard and stash-drop actions ask for confirmation.</li>
             </ul>
+            <img className="docs-shot docs-shot-narrow" src="/forge-git-review.webp" width="749" height="1000" alt="The review panel listing one changed file, config.ts, with its side-by-side diff, a commit message box, Commit All and a Fetch button on the readme-docs branch" loading="lazy" />
+            <p className="docs-caption">The review panel with one changed file and the commit box.</p>
           </section>
 
           <section id="pull-requests">
@@ -358,6 +370,8 @@ function ForgeDocs() {
           <section id="memory">
             <h2>Memory</h2>
             <p>Forge can keep local notes about a project across sessions. It stores a short <code>MEMORY.md</code> index plus optional topic notes, loads the index into new sessions, and proposes updates when it learns something worth keeping. Memory is on by default.</p>
+            <img className="docs-shot docs-shot-narrow" src="/forge-memory.webp" width="605" height="1000" alt="The agent saving a project note after a request to remember it, shown as a new project-conventions note and an updated MEMORY.md index" loading="lazy" />
+            <p className="docs-caption">Forge saving a project note and updating the MEMORY.md index.</p>
             <h3>Memory vs AGENTS.md</h3>
             <p><code>AGENTS.md</code> is shared with your team and committed to the repo. Memory is personal and local, so it can’t be committed by accident. Use memory for your preferences, corrections, and decisions that aren’t obvious from the code. Facts your whole team needs belong in <code>AGENTS.md</code>.</p>
             <h3>Where it lives</h3>

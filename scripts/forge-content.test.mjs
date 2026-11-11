@@ -59,7 +59,18 @@ test("the stale terminal helper fix is documented where Run points to it", () =>
 });
 
 test("docs screenshots exist and describe the feature", () => {
-  for (const name of ["forge-chapters.webp", "forge-pull-requests.webp", "forge-reference-popover.webp"]) {
+  for (const name of [
+    "forge-chapters.webp",
+    "forge-pull-requests.webp",
+    "forge-reference-popover.webp",
+    "forge-edit-modes.webp",
+    "forge-edit-approval.webp",
+    "forge-plan-comment.webp",
+    "forge-browser.webp",
+    "forge-run-in-terminal.webp",
+    "forge-git-review.webp",
+    "forge-memory.webp",
+  ]) {
     assert.match(docs, new RegExp(`src="/${name}"[^>]*alt="[^"]{20,}"`), name);
   }
 });
