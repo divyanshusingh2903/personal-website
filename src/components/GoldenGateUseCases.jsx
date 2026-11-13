@@ -16,24 +16,20 @@ const ingest = [
   { logo: "openai", name: "ChatGPT" },
 ];
 
-// What can connect, on the Marin side: the names most developers know. Anything that speaks MCP works.
-// The order matters: the first ones land farthest apart.
+// What can connect, on the Marin side: the assistants, coding agents and workspace apps most developers know.
+// Anything that speaks MCP works.
 const connectors = [
   { logo: "claude", name: "Claude" },
   { logo: "openai", name: "ChatGPT" },
-  { logo: "slack", name: "Slack" },
   { logo: "gemini", name: "Gemini" },
   { logo: "cursor", name: "Cursor" },
-  { logo: "grok", name: "Grok" },
-  { logo: "discord", name: "Discord" },
-  { logo: "metaai", name: "Meta AI" },
   { logo: "githubcopilot", name: "GitHub Copilot" },
+  { logo: "grok", name: "Grok" },
   { logo: "perplexity", name: "Perplexity" },
-  { logo: "notion", name: "Notion" },
   { logo: "windsurf", name: "Windsurf" },
-  { logo: "zapier", name: "Zapier" },
-  { logo: "teams", name: "Microsoft Teams" },
-  { logo: "telegram", name: "Telegram" },
+  { logo: "metaai", name: "Meta AI" },
+  { logo: "notion", name: "Notion" },
+  { logo: "slack", name: "Slack" },
 ];
 
 // The real coastline and roads are a separate chunk, loaded only on this page.
@@ -112,89 +108,31 @@ function MapHero() {
   );
 }
 
-// Each case plays on the kind of surface it would really appear on, not always a chat window.
-function Surface({ c }) {
-  const s = c.surface;
-  switch (c.kind) {
-    case "chat":
-      return (
-        <div className="gg-chat" aria-label="Sample conversation">
-          <div className="gg-msg gg-msg-q"><span className="gg-avatar" aria-hidden="true">YOU</span><p>{s.ask}</p></div>
-          <div className="gg-tool"><Icon name="server" /><span>Reads</span>{c.tools.map((t) => <code key={t}>{t}</code>)}<span className="gg-dots" aria-hidden="true"><i /><i /><i /></span></div>
-          <div className={`gg-msg gg-msg-a${s.blocked ? " is-blocked" : ""}`}><span className="gg-avatar" aria-hidden="true">AI</span><ul>{s.answer.map((a) => <li key={a}>{a}</li>)}</ul></div>
-          <p className="gg-chat-note">Sample data</p>
-        </div>
-      );
-    case "terminal":
-      return (
-        <div className="gg-surf gg-terminal" aria-label="Sample terminal session">
-          <div className="gg-surf-bar"><i /><i /><i /><span>{s.title}</span></div>
-          <pre>
-            {s.lines.map(([cls, text], i) => <span key={i} className={`gg-tl gg-tl-${cls}`} style={{ "--k": i }}>{text}{"\n"}</span>)}
-          </pre>
-        </div>
-      );
-    case "post":
-      return (
-        <div className="gg-surf gg-post" aria-label="Sample team chat message">
-          <div className="gg-post-head"><span className="gg-avatar gg-avatar-bot" aria-hidden="true">AI</span><strong>{s.who}</strong><time>{s.when}</time></div>
-          <p>{s.text}</p>
-          <ul>{s.items.map((t) => <li key={t}>{t}</li>)}</ul>
-          <div className="gg-post-foot">{c.tools.map((t) => <code key={t}>{t}</code>)}</div>
-        </div>
-      );
-    case "email":
-      return (
-        <div className="gg-surf gg-email" aria-label="Sample email draft">
-          <span className="gg-ribbon">Draft</span>
-          <dl>
-            <div><dt>To</dt><dd>{s.to}</dd></div>
-            <div><dt>Subject</dt><dd>{s.subject}</dd></div>
-          </dl>
-          <p>{s.text}</p>
-          <ul>{s.items.map((t) => <li key={t}>{t}</li>)}</ul>
-        </div>
-      );
-    case "voice":
-      return (
-        <div className="gg-surf gg-voice" aria-label="Sample voice assistant">
-          <div className="gg-voice-orb" aria-hidden="true"><i /><i /><i /><i /><i /></div>
-          <p className="gg-voice-q">{"“"}{s.ask}{"”"}</p>
-          <p className="gg-voice-a">{s.answer}</p>
-        </div>
-      );
-    case "doc":
-      return (
-        <div className="gg-surf gg-doc" aria-label="Sample document">
-          <h3>{s.title}</h3>
-          <p>{s.text}</p>
-          <ul>{s.items.map((t) => <li key={t}>{t}</li>)}</ul>
-        </div>
-      );
-    case "calendar":
-      return (
-        <div className="gg-surf gg-cal" aria-label="Sample calendar prep note">
-          <div className="gg-cal-head"><b>{s.time}</b><span>{s.title}</span></div>
-          <div className="gg-cal-cols">
-            {s.cols.map(([h, items]) => (
-              <div key={h}><h4>{h}</h4><ul>{items.map((t) => <li key={t}>{t}</li>)}</ul></div>
-            ))}
-          </div>
-        </div>
-      );
-    case "editor":
-      return (
-        <div className="gg-surf gg-editor" aria-label="Sample code editor with an agent note">
-          <div className="gg-editor-tab">{s.file}</div>
-          <pre>
-            {s.code.map(([n, text, hot]) => <span key={n} className={hot ? "gg-ed-hot" : undefined}><b>{n}</b>{text}{"\n"}</span>)}
-          </pre>
-          <div className="gg-ed-note"><span className="gg-avatar gg-avatar-bot" aria-hidden="true">AI</span><p>{s.note}</p></div>
-        </div>
-      );
-    default:
-      return null;
+// Each case shows a real screen recording. Drop the file in public/goldengate/clips/<id>.mp4
+// (and optionally <id>.jpg as its poster), then set `clip: true` on the case below.
+// Until then a placeholder says what the recording will show.
+function Clip({ c }) {
+  const src = `/goldengate/clips/${c.id}`;
+  if (c.clip) {
+    return (
+      <figure className="gg-clip">
+        <video src={`${src}.mp4`} poster={c.poster ? `${src}.jpg` : undefined} controls muted playsInline preload="metadata" aria-label={c.shot} />
+        <figcaption>Recorded in {c.via.toLowerCase()}</figcaption>
+      </figure>
+    );
   }
+  return (
+    <figure className="gg-clip gg-clip-empty">
+      <div className="gg-clip-frame" role="img" aria-label={`Recording coming soon: ${c.shot}`}>
+        <span className="gg-clip-play" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5z" /></svg>
+        </span>
+        <span className="gg-clip-tag">Recording coming soon</span>
+        <p className="gg-clip-shot">{c.shot}</p>
+      </div>
+      <figcaption>{c.via}</figcaption>
+    </figure>
+  );
 }
 
 const cases = [
@@ -203,16 +141,9 @@ const cases = [
     title: "A weekly review in one question",
     body: "Standups and weekly updates start with remembering. Your work arrives grouped by project, across every tool.",
     via: "Chat assistant",
-    kind: "chat",
     tools: ["recent_activity", "list_projects"],
-    surface: {
-      ask: "What did I work on this week?",
-      answer: [
-        "pharmfindr: rate-limited review submissions, added gRPC health checks, cursor pagination (PR #42 open)",
-        "forge: token usage on every message",
-        "harbinger: MLFQ cuts p99 latency from 41.7 to 18.2 ms at 5k msgs/s",
-      ],
-    },
+    shot: "Ask a chat assistant “What did I work on this week?” and get an answer grouped by project.",
+    clip: false,
     scope: "Share the projects you would report on. Leave client work out.",
   },
   {
@@ -220,19 +151,9 @@ const cases = [
     title: "Start in one tool, finish in another",
     body: "Your coding agent can read what a different tool did in the same repository, so a new session starts with context.",
     via: "Coding agent",
-    kind: "terminal",
     tools: ["get_project_context"],
-    surface: {
-      title: "~/code/pharmfindr",
-      lines: [
-        ["cmd", "$ codex \"finish the review rate limiter\""],
-        ["dim", "reads get_project_context(\"~/code/pharmfindr\")"],
-        ["out", "Found it. Claude Code started this 2h ago:"],
-        ["out", "  api/reviews.go  rate limit added, tests pass (3d8f6c1)"],
-        ["warn", "Still open: PR #42, no merge seen."],
-        ["out", "Picking up in api/reviews.go."],
-      ],
-    },
+    shot: "Codex picks up a task in the same repository that Claude Code started two hours earlier.",
+    clip: false,
     scope: "Same folder, two tools, one project. Worktrees are filed under their repository.",
   },
   {
@@ -240,14 +161,9 @@ const cases = [
     title: "A Monday nudge for stale pull requests",
     body: "A scheduled agent checks what you opened and never saw merged, and posts it where you will see it.",
     via: "Scheduled agent",
-    kind: "post",
     tools: ["list_pull_requests"],
-    surface: {
-      who: "Weekly agent",
-      when: "Mon 9:00",
-      text: "Open pull requests worth a look:",
-      items: ["pharmfindr #42 opened 2 days ago, no merge seen", "harbinger #17 was only mentioned. Nothing was opened."],
-    },
+    shot: "A scheduled agent posts Monday’s list of pull requests that were opened but never seen merged.",
+    clip: false,
     scope: "Status comes from what the session showed. It does not ask GitHub.",
   },
   {
@@ -255,14 +171,9 @@ const cases = [
     title: "The Friday update, drafted",
     body: "A changelog or status email starts from the commits and issues that actually happened, with the evidence behind each.",
     via: "Email draft",
-    kind: "email",
     tools: ["list_commits", "list_issues"],
-    surface: {
-      to: "team@example.com",
-      subject: "Shipped this week: pharmfindr",
-      text: "Hi all, what went out:",
-      items: ["Fixed the staging OAuth redirect (a41c9e2)", "Cursor pagination for search (7be0d13)", "Rate limit on review submissions (3d8f6c1)", "Filed #51: rate-limit review spam"],
-    },
+    shot: "An email draft of the Friday update, built from the week’s commits and issues.",
+    clip: false,
     scope: "Issue titles and states are sent. Descriptions and comments never are.",
   },
   {
@@ -270,12 +181,9 @@ const cases = [
     title: "Ask out loud on the commute",
     body: "Any voice assistant that can call MCP tools can answer from your recent work without you opening a laptop.",
     via: "Voice assistant",
-    kind: "voice",
     tools: ["recent_activity"],
-    surface: {
-      ask: "What did I ship this week?",
-      answer: "Three things. Pagination for the CDMO search, a rate limit on reviews, and the staging redirect fix.",
-    },
+    shot: "A voice assistant answers “What did I ship this week?” from your recent work.",
+    clip: false,
     scope: "Answers are only as private as the assistant you ask. The token can only read.",
   },
   {
@@ -283,13 +191,9 @@ const cases = [
     title: "A performance review without the scramble",
     body: "Pull a year of pull requests and commits into highlights, while the work is still on your mind and in the record.",
     via: "Document",
-    kind: "doc",
     tools: ["list_pull_requests", "list_commits"],
-    surface: {
-      title: "Highlights, this year",
-      text: "Built from merged and created work:",
-      items: ["Shipped cursor pagination for CDMO search (PR #42)", "Cut MLFQ p99 latency from 41.7 to 18.2 ms at 5k msgs/s", "Added per-message token usage to Forge"],
-    },
+    shot: "A year of pull requests and commits turned into review highlights in a document.",
+    clip: false,
     scope: "Looks back up to 365 days. Only what you chose to share.",
   },
   {
@@ -297,16 +201,9 @@ const cases = [
     title: "Walk into standup ready",
     body: "A calendar assistant can attach yesterday, today and what is still open to the invite, ten minutes before.",
     via: "Calendar assistant",
-    kind: "calendar",
     tools: ["recent_activity", "get_project_context"],
-    surface: {
-      time: "10:00",
-      title: "Team standup",
-      cols: [
-        ["Yesterday", ["Rate limit on review submissions", "gRPC health checks"]],
-        ["Still open", ["PR #42 awaiting merge", "Issue #51 filed"]],
-      ],
-    },
+    shot: "A calendar assistant attaches yesterday and what is still open to the standup invite.",
+    clip: false,
     scope: "Reads summaries, never transcripts.",
   },
   {
@@ -314,18 +211,9 @@ const cases = [
     title: "Don't solve it twice",
     body: "Before an agent starts, it can search your past work and notice you already fixed something like this.",
     via: "Editor agent",
-    kind: "editor",
     tools: ["search_work", "get_session"],
-    surface: {
-      file: "auth/redirect.go",
-      code: [
-        [12, "func redirectURI(env string) string {"],
-        [13, "    // staging callback is stale", true],
-        [14, "    return baseURL + \"/callback\""],
-        [15, "}"],
-      ],
-      note: "You fixed a staging redirect like this 30h ago (a41c9e2, auth/redirect.go). Reuse that approach?",
-    },
+    shot: "An editor agent notices you already fixed a similar redirect bug and offers that approach.",
+    clip: false,
     scope: "Search covers titles and summaries. Raw transcripts never leave your machine.",
   },
   {
@@ -333,12 +221,9 @@ const cases = [
     title: "Bring your chat history along",
     body: "Export claude.ai or ChatGPT and those conversations become projects beside your code, each shared by its own rule.",
     via: "Chat assistant",
-    kind: "chat",
     tools: ["search_work", "get_session"],
-    surface: {
-      ask: "What did I decide about the database schema in my earlier chats?",
-      answer: ["AI claude.ai, “Reviews schema”: ratings get their own table, one row per review."],
-    },
+    shot: "An assistant answers from an imported claude.ai conversation about the database schema.",
+    clip: false,
     scope: "Artifacts and uploads travel as metadata only: id, title and status.",
   },
   {
@@ -346,13 +231,9 @@ const cases = [
     title: "Keep client work out of it",
     body: "Share the projects you choose and deny the rest. A deny rule always wins, even over a broader allow.",
     via: "Chat assistant",
-    kind: "chat",
     tools: ["list_projects"],
-    surface: {
-      ask: "What did I do for client-x this week?",
-      blocked: true,
-      answer: ["I do not see a project called client-x. Only projects you chose to share are available to me."],
-    },
+    shot: "Asking about a denied project: the assistant says it cannot see it.",
+    clip: false,
     scope: "Denied sessions are dropped before they are parsed, and their names are never logged.",
   },
 ];
@@ -387,7 +268,7 @@ function GoldenGateUseCases() {
                     <p className="gg-case-tools"><span>Reads</span>{c.tools.map((t) => <code key={t}>{t}</code>)}</p>
                     <p className="gg-case-scope"><Icon name="shared" /> {c.scope}</p>
                   </div>
-                  <div className="gg-case-surface"><Surface c={c} /></div>
+                  <div className="gg-case-surface"><Clip c={c} /></div>
                 </div>
               </li>
             ))}

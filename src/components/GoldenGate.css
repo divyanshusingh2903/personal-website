@@ -2,21 +2,21 @@
 
 /* Tokens from goldengate/docs/brand/BRAND.md. */
 #goldengate {
-  --gg-orange: #D03A2B;
+  --gg-orange: #C0362C;
   --gg-on-orange: #FFFFFF;
   --gg-bg: #EEF0EE;
   --gg-surface: #FFFFFF;
-  --gg-sunk: #DCE8F0;
-  --gg-line: #93A3AB;
+  --gg-sunk: #E3E7E5;
+  --gg-line: #CBD2D0;
   --gg-ink: #13202A;
-  --gg-dim: #4A5960;
-  --gg-pacific: #0B5F94;
-  --gg-cypress: #137A44;
-  --gg-headland: #B05A00;
-  --gg-alarm: #B8165F;
+  --gg-dim: #56656D;
+  --gg-pacific: #1F5E80;
+  --gg-cypress: #2D6A4A;
+  --gg-headland: #965F00;
+  --gg-alarm: #9B1D5A;
   --gg-twilight: #6A35C2;
   --gg-term-bg: #F8F9F8;
-  --gg-term-cur: #C6DDEE;
+  --gg-term-cur: #D9E6EE;
 
   --gg-display: "Federo", "Josefin Sans", system-ui, sans-serif;
   --gg-text: "Josefin Sans", system-ui, sans-serif;
@@ -37,38 +37,38 @@
   #goldengate:not([data-theme="light"]) {
     --gg-orange: #F0563F;
     --gg-on-orange: #1B0703;
-    --gg-bg: #0D1821;
-    --gg-surface: #132330;
-    --gg-sunk: #0A131A;
-    --gg-line: #233646;
-    --gg-ink: #E5EBEE;
-    --gg-dim: #8D9DA7;
+    --gg-bg: #0A0B0D;
+    --gg-surface: #131518;
+    --gg-sunk: #050607;
+    --gg-line: #26292E;
+    --gg-ink: #E9EBED;
+    --gg-dim: #8F969C;
     --gg-pacific: #7FBADB;
     --gg-cypress: #72C59A;
     --gg-headland: #E8B652;
     --gg-alarm: #F27EB2;
     --gg-twilight: #B9A0E6;
-    --gg-term-bg: #09131B;
-    --gg-term-cur: #1B3446;
+    --gg-term-bg: #070809;
+    --gg-term-cur: #1D2227;
     color-scheme: dark;
   }
 }
 #goldengate[data-theme="dark"] {
   --gg-orange: #F0563F;
   --gg-on-orange: #1B0703;
-  --gg-bg: #0D1821;
-  --gg-surface: #132330;
-  --gg-sunk: #0A131A;
-  --gg-line: #233646;
-  --gg-ink: #E5EBEE;
-  --gg-dim: #8D9DA7;
+  --gg-bg: #0A0B0D;
+  --gg-surface: #131518;
+  --gg-sunk: #050607;
+  --gg-line: #26292E;
+  --gg-ink: #E9EBED;
+  --gg-dim: #8F969C;
   --gg-pacific: #7FBADB;
   --gg-cypress: #72C59A;
   --gg-headland: #E8B652;
   --gg-alarm: #F27EB2;
   --gg-twilight: #B9A0E6;
-  --gg-term-bg: #09131B;
-  --gg-term-cur: #1B3446;
+  --gg-term-bg: #070809;
+  --gg-term-cur: #1D2227;
   color-scheme: dark;
 }
 
@@ -170,7 +170,7 @@
   font-weight: 600;
   text-decoration: none;
   padding: 12px 22px 10px;
-  border-radius: 8px;
+  border-radius: 0;
   border: 1px solid var(--gg-line);
   color: var(--gg-ink);
   background: var(--gg-surface);
@@ -181,28 +181,12 @@
 .gg-hero-art { display: flex; justify-content: center; }
 .gg-hero-mark { width: 100%; max-width: 420px; height: auto; color: var(--gg-orange); stroke-width: 2.2; }
 
-/* The cable draws itself once; fog drifts through the towers. Nothing else moves. */
+/* The cable draws itself once on load. */
 .gg-cable { stroke-dasharray: 1; stroke-dashoffset: 1; animation: gg-draw 1.8s cubic-bezier(.45, 0, .25, 1) .2s forwards; }
 @keyframes gg-draw { to { stroke-dashoffset: 0; } }
 
-.gg-fog { position: absolute; inset: 0; pointer-events: none; }
-.gg-fog span {
-  position: absolute;
-  width: 60%;
-  height: 120px;
-  border-radius: 50%;
-  background: var(--gg-surface);
-  filter: blur(48px);
-  opacity: 0.55;
-  animation: gg-fog 38s linear infinite;
-}
-.gg-fog span:first-child { top: 46%; left: -60%; }
-.gg-fog span:last-child { top: 64%; left: -60%; animation-delay: -19s; opacity: 0.4; }
-@keyframes gg-fog { to { transform: translateX(270%); } }
-
 @media (prefers-reduced-motion: reduce) {
   .gg-cable { animation: none; stroke-dashoffset: 0; }
-  .gg-fog span { animation: none; display: none; }
 }
 
 @media (max-width: 860px) {
@@ -216,6 +200,7 @@
 .gg-section { padding: 96px 0; border-bottom: 1px solid var(--gg-line); }
 .gg-section-sunk { background: var(--gg-sunk); }
 .gg-section h2 { font-size: 2.6rem; }
+.gg-section > .gg-wrap > h2 { padding-bottom: 14px; border-bottom: 3px double var(--gg-line); }
 @media (max-width: 720px) {
   .gg-section { padding: 64px 0; }
   .gg-section h2 { font-size: 1.8rem; }
@@ -233,8 +218,8 @@
 .gg-flow li {
   position: relative;
   background: var(--gg-surface);
-  border: 1px solid var(--gg-line);
-  border-radius: 8px;
+  border: 3px double var(--gg-line);
+  border-radius: 0;
   padding: 24px;
 }
 /* A cable between steps, with an arrowhead where it meets the next card */
@@ -297,7 +282,7 @@
 .gg-segment {
   display: inline-flex;
   border: 1px solid var(--gg-line);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 3px;
   background: var(--gg-surface);
   margin-bottom: 16px;
@@ -308,7 +293,7 @@
   color: var(--gg-dim);
   background: transparent;
   border: 0;
-  border-radius: 5px;
+  border-radius: 0;
   padding: 7px 14px 5px;
   cursor: pointer;
 }
@@ -317,7 +302,7 @@
 /* Security */
 .gg-sec-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 40px; }
 @media (max-width: 820px) { .gg-sec-grid { grid-template-columns: 1fr; } }
-.gg-card { background: var(--gg-surface); border: 1px solid var(--gg-line); border-radius: 8px; padding: 24px; min-width: 0; }
+.gg-card { background: var(--gg-surface); border: 3px double var(--gg-line); border-radius: 0; padding: 24px; min-width: 0; }
 .gg-card h3 { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .gg-card p { color: var(--gg-dim); font-size: 0.95rem; }
 .gg-scopes { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
@@ -325,7 +310,7 @@
 .gg-scopes thead th { border-top: 0; font: 500 0.72rem var(--gg-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gg-dim); }
 .gg-scopes td { color: var(--gg-dim); }
 
-.gg-revoke-rows { border: 1px solid var(--gg-line); border-radius: 8px; background: var(--gg-surface); }
+.gg-revoke-rows { border: 3px double var(--gg-line); border-radius: 0; background: var(--gg-surface); }
 .gg-revoke-rows > div {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
@@ -343,7 +328,7 @@
   position: relative;
   background: var(--gg-surface);
   border: 1px solid var(--gg-line);
-  border-radius: 8px;
+  border-radius: 0;
   margin-top: 16px;
 }
 .gg-code pre {
@@ -410,7 +395,7 @@
 .gg-footer-legal { width: 100%; font-size: 0.875rem; color: var(--gg-dim); }
 
 /* Screenshots from the real TUI, one per theme; the page theme decides which shows. */
-.gg-shot { display: block; border: 1px solid var(--gg-line); border-radius: 8px; overflow: hidden; background: var(--gg-term-bg); }
+.gg-shot { display: block; border: 1px solid var(--gg-line); border-radius: 0; overflow: hidden; background: var(--gg-term-bg); }
 .gg-shot img { display: block; width: 100%; height: auto; }
 .gg-only-dark { display: none !important; }
 @media (prefers-color-scheme: dark) {
@@ -479,7 +464,7 @@
 .gg-card-never h3 .gg-icon, .gg-card-warn h3 .gg-icon { color: var(--gg-alarm); }
 .gg-split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 32px; }
 @media (max-width: 760px) { .gg-split { grid-template-columns: 1fr; } }
-.gg-table-wrap { margin-top: 24px; overflow-x: auto; background: var(--gg-surface); border: 1px solid var(--gg-line); border-radius: 8px; padding: 8px 20px; }
+.gg-table-wrap { margin-top: 24px; overflow-x: auto; background: var(--gg-surface); border: 3px double var(--gg-line); border-radius: 0; padding: 8px 20px; }
 .gg-table-wrap .gg-scopes { font-size: 0.95rem; }
 .gg-table-wrap .gg-scopes tbody tr:first-child th, .gg-table-wrap .gg-scopes tbody tr:first-child td { border-top: 1px solid var(--gg-line); }
 #goldengate .gg-section .gg-revoke-rows { margin-top: 24px; }
@@ -503,7 +488,7 @@
   padding: 12px 16px 10px;
   border-left: 3px solid var(--gg-orange);
   background: var(--gg-surface);
-  border-radius: 0 8px 8px 0;
+  border-radius: 0;
   font-weight: 600;
   max-width: 60ch;
 }
@@ -520,10 +505,12 @@
 }
 
 /* ─── Motion ──────────────────────────────────────────────
-   Everything below that moves sits inside a no-preference media query, so visitors who
+   Three things move, each once: the hero cable, the redaction sweep, and the strike-through on
+   the security page's "Stays on your machine" list.
+   No loops, no hover lifts. Everything sits inside a no-preference media query, so visitors who
    reduce motion get the finished state. Scroll reveals are only armed by script (data-motion). */
 
-/* The redaction demo: ink sweeps over the key, then draws back to reveal the marker */
+/* The redaction demo: ink sweeps over the key once, then draws back to reveal the marker */
 .gg-rd {
   margin-top: 16px;
   padding: 10px 12px 9px;
@@ -546,77 +533,26 @@
 .gg-rd-bar { position: absolute; inset: -1px -2px; background: var(--gg-ink); border-radius: 2px; clip-path: inset(0 0 0 100%); }
 
 @media (prefers-reduced-motion: no-preference) {
-  .gg-rd-orig { animation: gg-rd-orig 7s infinite; }
-  .gg-rd-after { animation: gg-rd-after 7s infinite; }
-  .gg-rd-bar { animation: gg-rd-bar 7s infinite; }
-  @keyframes gg-rd-orig { 0%, 44% { opacity: 1; } 45%, 95% { opacity: 0; } 100% { opacity: 1; } }
-  @keyframes gg-rd-after { 0%, 52% { opacity: 0; } 62%, 90% { opacity: 1; } 96%, 100% { opacity: 0; } }
+  /* Plays once when scrolled into view, then rests on the redacted line */
+  #goldengate[data-motion="on"] .gg-rd:not(.is-in) .gg-rd-orig { opacity: 1; }
+  #goldengate[data-motion="on"] .gg-rd:not(.is-in) .gg-rd-after { opacity: 0; }
+  #goldengate[data-motion="on"] .gg-rd.is-in .gg-rd-orig { animation: gg-rd-orig 3.4s both; }
+  #goldengate[data-motion="on"] .gg-rd.is-in .gg-rd-after { animation: gg-rd-after 3.4s both; }
+  #goldengate[data-motion="on"] .gg-rd.is-in .gg-rd-bar { animation: gg-rd-bar 3.4s both; }
+  @keyframes gg-rd-orig { 0%, 44% { opacity: 1; } 45%, 100% { opacity: 0; } }
+  @keyframes gg-rd-after { 0%, 52% { opacity: 0; } 62%, 100% { opacity: 1; } }
   @keyframes gg-rd-bar {
     0%, 30% { clip-path: inset(0 100% 0 0); }
     44% { clip-path: inset(0 0 0 0); }
-    62% { clip-path: inset(0 0 0 100%); }
-    100% { clip-path: inset(0 0 0 100%); }
+    62%, 100% { clip-path: inset(0 0 0 100%); }
   }
 
-  /* Page load */
-  @keyframes gg-rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-  @keyframes gg-fade { from { opacity: 0; } to { opacity: 1; } }
-
-  /* Cards lift a little on hover */
-  .gg-card-lift { transition: transform 0.2s ease, border-color 0.2s ease; }
-  .gg-card-lift:hover { transform: translateY(-3px); border-color: var(--gg-ink); }
-
-  /* A pulse runs along each cable, left to right (top to bottom on a phone) */
-  .gg-flow li + li::before {
-    background: linear-gradient(90deg, transparent, var(--gg-orange) 50%, transparent) -30px 0 / 30px 100% no-repeat, var(--gg-line);
-    animation: gg-pulse 2.6s linear infinite;
-    animation-delay: calc(var(--i, 0) * 0.45s);
-  }
-  @keyframes gg-pulse { from { background-position: -30px 0, 0 0; } to { background-position: 60px 0, 0 0; } }
-  @media (max-width: 560px) {
-    .gg-flow li + li::before { background: linear-gradient(180deg, transparent, var(--gg-orange) 50%, transparent) 0 -30px / 100% 30px no-repeat, var(--gg-line); animation-name: gg-pulse-y; }
-    @keyframes gg-pulse-y { from { background-position: 0 -30px, 0 0; } to { background-position: 0 60px, 0 0; } }
-  }
-
-  /* The cable under the bridge icon on an open card pulses once when it arrives */
-  .gg-card-icon { transition: transform 0.4s ease; }
-  .gg-card-lift:hover .gg-card-icon { transform: scale(1.12); }
 }
 
-.gg-card-icon { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 8px; background: var(--gg-sunk); color: var(--gg-ink); margin-bottom: 14px; }
+#goldengate .gg-card-lift:hover { border-color: var(--gg-ink); }
+.gg-card-icon { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 0; background: var(--gg-sunk); color: var(--gg-ink); margin-bottom: 14px; }
 .gg-promises-4 .gg-card h3 { display: block; }
 
-/* Sample assistant conversations (use cases) */
-.gg-chat { background: var(--gg-surface); border: 1px solid var(--gg-line); border-radius: 8px; padding: 18px; display: grid; gap: 12px; min-width: 0; }
-.gg-msg { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; align-items: start; }
-.gg-avatar { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font: 500 0.6rem var(--gg-mono); letter-spacing: 0.04em; background: var(--gg-sunk); color: var(--gg-dim); }
-.gg-msg-a .gg-avatar { background: var(--gg-orange); color: var(--gg-on-orange); }
-.gg-msg p, .gg-msg ul { font-size: 0.95rem; line-height: 1.5; }
-.gg-msg-q p { font-weight: 600; padding-top: 5px; }
-.gg-msg-a ul { list-style: none; display: grid; gap: 6px; padding: 8px 12px; background: var(--gg-bg); border-radius: 8px; border: 1px solid var(--gg-line); }
-.gg-msg-a li { padding-left: 14px; position: relative; color: var(--gg-ink); }
-.gg-msg-a li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--gg-cypress); }
-.gg-msg-a.is-blocked li::before { background: var(--gg-alarm); }
-.gg-tool { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-left: 44px; font: 500 0.72rem var(--gg-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--gg-dim); }
-#goldengate .gg-tool code { text-transform: none; letter-spacing: 0; color: var(--gg-pacific); border: 1px solid var(--gg-line); background: var(--gg-bg); }
-.gg-dots { display: inline-flex; gap: 3px; }
-.gg-dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--gg-dim); display: block; }
-.gg-chat-note { font: 500 0.68rem var(--gg-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--gg-dim); text-align: right; }
-
-@media (prefers-reduced-motion: no-preference) {
-  /* The conversation plays once when scrolled into view */
-  #goldengate[data-motion="on"] .gg-chat:not(.is-in) .gg-msg,
-  #goldengate[data-motion="on"] .gg-chat:not(.is-in) .gg-tool { opacity: 0; }
-  #goldengate[data-motion="on"] .gg-chat.is-in .gg-msg-q { animation: gg-rise 0.5s ease 0.25s both; }
-  #goldengate[data-motion="on"] .gg-chat.is-in .gg-tool { animation: gg-rise 0.4s ease 0.9s both; }
-  #goldengate[data-motion="on"] .gg-chat.is-in .gg-tool .gg-dots { animation: gg-dots-out 0.3s ease 2.3s both; }
-  #goldengate[data-motion="on"] .gg-chat.is-in .gg-msg-a { animation: gg-rise 0.6s ease 2.4s both; }
-  .gg-dots i { animation: gg-blink 1s ease-in-out infinite; }
-  .gg-dots i:nth-child(2) { animation-delay: 0.15s; }
-  .gg-dots i:nth-child(3) { animation-delay: 0.3s; }
-  @keyframes gg-blink { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
-  @keyframes gg-dots-out { to { opacity: 0; } }
-}
 .gg-case-grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 40px; align-items: start; }
 @media (max-width: 900px) { .gg-case-grid { grid-template-columns: 1fr; gap: 20px; } }
 
@@ -633,7 +569,7 @@
 .gg-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .gg-cross-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 40px; }
 @media (max-width: 760px) { .gg-cross-grid { grid-template-columns: 1fr; } }
-.gg-cross { border: 1px solid var(--gg-line); border-radius: 8px; padding: 24px; background: var(--gg-surface); }
+.gg-cross { border: 3px double var(--gg-line); border-radius: 0; padding: 24px; background: var(--gg-surface); }
 .gg-cross h3 { display: flex; align-items: center; gap: 10px; }
 .gg-cross > p { color: var(--gg-dim); font-size: 0.95rem; margin: 6px 0 18px; }
 .gg-cross-yes h3 .gg-icon { color: var(--gg-cypress); }
@@ -643,7 +579,9 @@
 .gg-cross li::before { font: 500 0.9rem var(--gg-mono); flex: none; }
 .gg-cross-yes li::before { content: "\25CF"; color: var(--gg-cypress); }
 .gg-cross-no li::before { content: "\2715"; color: var(--gg-alarm); }
-.gg-cross-no li { color: var(--gg-dim); text-decoration: line-through; text-decoration-color: var(--gg-alarm); text-decoration-thickness: 1.5px; }
+.gg-cross-no li { color: var(--gg-dim); }
+/* The strike is a background line (so it can be drawn across on scroll), centred on Josefin's x-height */
+.gg-strike { background: linear-gradient(var(--gg-alarm), var(--gg-alarm)) 0 50% / 100% 1.5px no-repeat; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .gg-sec-grid { margin-top: 16px; }
 .gg-sec-grid .gg-card h3 { display: flex; }
 
@@ -655,7 +593,7 @@
 .gg-matrix .is-no { color: var(--gg-alarm); opacity: 0.8; }
 .gg-table-wrap .gg-matrix { margin: 0; }
 
-.gg-details { margin-top: 24px; border: 1px solid var(--gg-line); border-radius: 8px; background: var(--gg-surface); }
+.gg-details { margin-top: 24px; border: 3px double var(--gg-line); border-radius: 0; background: var(--gg-surface); }
 .gg-details summary { cursor: pointer; padding: 14px 18px 12px; font-weight: 600; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .gg-details summary::-webkit-details-marker { display: none; }
 .gg-details summary::after { content: "+"; font: 400 1.4rem var(--gg-mono); color: var(--gg-dim); line-height: 1; transition: transform 0.25s ease; }
@@ -664,14 +602,9 @@
 .gg-details .gg-defs { margin: 0 18px 18px; padding: 0; border-top: 1px solid var(--gg-line); }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* Crossing items slide across and settle; blocked ones stop short and are struck out */
-  #goldengate[data-motion="on"] .gg-cross:not(.is-in) li { opacity: 0; }
-  #goldengate[data-motion="on"] .gg-cross-yes.is-in li { animation: gg-cross 0.7s cubic-bezier(.2, .7, .2, 1) calc(0.25s + var(--k) * 0.12s) both; }
-  #goldengate[data-motion="on"] .gg-cross-no.is-in li { animation: gg-stop 0.8s ease calc(0.25s + var(--k) * 0.12s) both; }
-  @keyframes gg-cross { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: none; } }
-  @keyframes gg-stop { 0% { opacity: 0; transform: translateX(-36px); } 45% { opacity: 1; transform: translateX(6px); } 60% { transform: translateX(-4px); } 100% { opacity: 1; transform: none; } }
-  #goldengate[data-motion="on"] .gg-table-wrap:not(.is-in) .gg-matrix td span:first-child { opacity: 0; transform: scale(0.4); }
-  .gg-matrix td span:first-child { display: inline-block; transition: opacity 0.4s ease calc(0.3s + var(--k, 0) * 60ms), transform 0.4s cubic-bezier(.3, 1.6, .5, 1) calc(0.3s + var(--k, 0) * 60ms); }
+  /* Items that stay on your machine are struck through, one after another. Nothing else in the lists moves. */
+  #goldengate[data-motion="on"] .gg-cross-no:not(.is-in) .gg-strike { background-size: 0 1.5px; }
+  #goldengate[data-motion="on"] .gg-cross-no .gg-strike { transition: background-size 0.5s ease calc(0.35s + var(--k) * 0.12s); }
 }
 
 /* ─── MCP page ─────────────────────────────────────────── */
@@ -691,7 +624,7 @@
 .gg-explorer-tab {
   display: flex; align-items: center; gap: 10px;
   width: 100%; text-align: left; cursor: pointer;
-  padding: 9px 12px 7px; border-radius: 8px;
+  padding: 9px 12px 7px; border-radius: 0;
   background: transparent; border: 1px solid transparent; color: var(--gg-ink);
   transition: background 0.15s ease, border-color 0.15s ease;
 }
@@ -706,8 +639,7 @@
 }
 @media (max-width: 420px) { .gg-explorer-group { grid-template-columns: 1fr; } }
 
-.gg-explorer-panel { background: var(--gg-surface); border: 1px solid var(--gg-line); border-radius: 8px; padding: 24px; min-width: 0; }
-@media (prefers-reduced-motion: no-preference) { .gg-explorer-panel { animation: gg-swap 0.35s ease both; } @keyframes gg-swap { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: none; } } }
+.gg-explorer-panel { background: var(--gg-surface); border: 3px double var(--gg-line); border-radius: 0; padding: 24px; min-width: 0; }
 .gg-explorer-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .gg-explorer-head h3 { font-size: 1.3rem; }
 #goldengate .gg-explorer-head code { background: none; padding: 0; font-size: 1.1rem; }
@@ -723,7 +655,7 @@
 .gg-params td { color: var(--gg-dim); }
 .gg-params td:nth-child(2) { white-space: nowrap; font-family: var(--gg-mono); font-size: 0.8rem; }
 
-.gg-sample { margin-top: 20px; border: 1px solid var(--gg-line); border-radius: 8px; overflow: hidden; background: var(--gg-term-bg); }
+.gg-sample { margin-top: 20px; border: 1px solid var(--gg-line); border-radius: 0; overflow: hidden; background: var(--gg-term-bg); }
 .gg-sample-bar { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 8px 14px; border-bottom: 1px solid var(--gg-line); font: 500 0.72rem var(--gg-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--gg-dim); }
 #goldengate .gg-sample-bar code { background: none; padding: 0; text-transform: none; letter-spacing: 0; color: var(--gg-pacific); overflow-wrap: anywhere; }
 .gg-sample pre { margin: 0; padding: 14px; font-size: 0.78rem; line-height: 1.5; overflow-x: auto; white-space: pre; color: var(--gg-ink); max-height: 380px; overflow-y: auto; }
@@ -735,7 +667,7 @@
 .gg-m-redact { background: var(--gg-ink); color: var(--gg-bg); border-radius: 2px; padding: 0 2px; }
 
 /* The wrapped response */
-.gg-frame { margin: 32px 0 0; border: 1px solid var(--gg-line); border-radius: 8px; background: var(--gg-term-bg); overflow: hidden; }
+.gg-frame { margin: 32px 0 0; border: 1px solid var(--gg-line); border-radius: 0; background: var(--gg-term-bg); overflow: hidden; }
 .gg-frame pre { margin: 0; padding: 16px 16px 16px 8px; font-size: 0.78rem; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
 .gg-frame-line { display: block; padding-left: 34px; position: relative; }
 .gg-frame-notice { color: var(--gg-headland); }
@@ -774,75 +706,26 @@
 .gg-cross-plain li { text-decoration: none; color: var(--gg-ink); }
 .gg-chips-no .gg-chips-label { border: 0; background: none; font: 500 0.72rem var(--gg-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gg-dim); padding: 6px 4px 0 0; }
 
-/* ─── Use cases: surfaces ──────────────────────────────── */
-.gg-surf { background: var(--gg-surface); border: 1px solid var(--gg-line); border-radius: 8px; overflow: hidden; position: relative; min-width: 0; padding: 18px; font-size: 0.95rem; }
-.gg-surf ul { list-style: none; display: grid; gap: 6px; }
-.gg-surf li { position: relative; padding-left: 16px; }
-.gg-surf li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--gg-cypress); }
-.gg-avatar-bot { background: var(--gg-orange); color: var(--gg-on-orange); }
+/* Use-case clips: real screen recordings. Until a clip exists, a framed placeholder says what it will show. */
 .gg-case-surface { min-width: 0; }
-
-.gg-terminal { padding: 0; background: var(--gg-term-bg); }
-.gg-surf-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--gg-line); font: 500 0.72rem var(--gg-mono); letter-spacing: 0.08em; color: var(--gg-dim); }
-.gg-surf-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--gg-line); display: block; }
-.gg-surf-bar span { margin-left: 8px; }
-.gg-terminal pre { margin: 0; padding: 16px; font-size: 0.8rem; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
-.gg-tl { display: block; }
-.gg-tl-cmd { color: var(--gg-ink); font-weight: 500; }
-.gg-tl-dim { color: var(--gg-pacific); }
-.gg-tl-out { color: var(--gg-ink); }
-.gg-tl-warn { color: var(--gg-headland); }
-
-.gg-post-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-.gg-post-head time { margin-left: auto; font: 500 0.72rem var(--gg-mono); color: var(--gg-dim); }
-.gg-post > p { margin-bottom: 8px; }
-.gg-post-foot { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
-#goldengate .gg-post-foot code { color: var(--gg-pacific); border: 1px solid var(--gg-line); background: var(--gg-bg); }
-
-.gg-ribbon { position: absolute; top: 14px; right: 14px; font: 500 0.68rem var(--gg-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gg-headland); border: 1px solid var(--gg-headland); border-radius: 4px; padding: 2px 6px 1px; }
-.gg-email dl { display: grid; gap: 6px; padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px solid var(--gg-line); padding-right: 64px; }
-.gg-email dl > div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; }
-.gg-email dt { font: 500 0.72rem var(--gg-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--gg-dim); padding-top: 3px; }
-.gg-email dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
-.gg-email > p { margin-bottom: 8px; }
-
-.gg-voice { display: grid; justify-items: center; text-align: center; gap: 14px; padding: 28px 22px; }
-.gg-voice-orb { display: flex; align-items: center; justify-content: center; gap: 5px; width: 84px; height: 84px; border-radius: 50%; background: var(--gg-orange); }
-.gg-voice-orb i { display: block; width: 5px; height: 30px; border-radius: 3px; background: var(--gg-on-orange); transform: scaleY(0.4); }
-.gg-voice-orb i:nth-child(2), .gg-voice-orb i:nth-child(4) { height: 40px; }
-.gg-voice-orb i:nth-child(3) { height: 52px; }
-.gg-voice-q { font-weight: 600; }
-.gg-voice-a { color: var(--gg-dim); max-width: 36ch; }
-@media (prefers-reduced-motion: no-preference) {
-  .gg-voice-orb i { animation: gg-bars 1.1s ease-in-out infinite; }
-  .gg-voice-orb i:nth-child(2) { animation-delay: 0.12s; }
-  .gg-voice-orb i:nth-child(3) { animation-delay: 0.24s; }
-  .gg-voice-orb i:nth-child(4) { animation-delay: 0.36s; }
-  .gg-voice-orb i:nth-child(5) { animation-delay: 0.48s; }
-  @keyframes gg-bars { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
+.gg-clip { margin: 0; }
+.gg-clip video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; background: var(--gg-term-bg); border: 1px solid var(--gg-line); }
+.gg-clip-empty .gg-clip-frame {
+  aspect-ratio: 16 / 10;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  padding: 24px;
+  text-align: center;
+  background: var(--gg-term-bg);
+  border: 3px double var(--gg-line);
 }
-
-.gg-doc { padding: 26px 24px; }
-.gg-doc h3 { font-family: var(--gg-display); font-weight: 400; font-size: 1.5rem; letter-spacing: 0.02em; }
-.gg-doc > p { color: var(--gg-dim); margin: 6px 0 14px; }
-.gg-doc li::before { content: "\2713"; width: auto; height: auto; background: none; top: 0; color: var(--gg-cypress); font-weight: 600; }
-
-.gg-cal-head { display: flex; align-items: center; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--gg-line); margin-bottom: 14px; }
-.gg-cal-head b { background: var(--gg-orange); color: var(--gg-on-orange); border-radius: 4px; padding: 3px 9px 1px; font: 500 0.85rem var(--gg-mono); }
-.gg-cal-head span { font-weight: 600; }
-.gg-cal-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-@media (max-width: 480px) { .gg-cal-cols { grid-template-columns: 1fr; } }
-.gg-cal-cols h4 { font: 500 0.72rem var(--gg-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gg-dim); margin-bottom: 8px; }
-.gg-cal-cols > div:nth-child(2) li::before { background: var(--gg-headland); }
-
-.gg-editor { padding: 0; }
-.gg-editor-tab { padding: 8px 14px 6px; font: 500 0.78rem var(--gg-mono); border-bottom: 1px solid var(--gg-line); background: var(--gg-bg); color: var(--gg-ink); }
-.gg-editor pre { margin: 0; padding: 12px 0; font-size: 0.8rem; line-height: 1.7; overflow-x: auto; background: var(--gg-term-bg); }
-.gg-editor pre span { display: block; padding: 0 14px 0 0; white-space: pre; }
-.gg-editor pre b { display: inline-block; width: 40px; text-align: right; padding-right: 14px; font-weight: 400; color: var(--gg-dim); }
-.gg-ed-hot { background: color-mix(in srgb, var(--gg-headland) 18%, transparent); }
-.gg-ed-note { display: flex; gap: 10px; align-items: flex-start; padding: 14px; border-top: 1px solid var(--gg-line); }
-.gg-ed-note p { font-size: 0.92rem; }
+.gg-clip-play { width: 56px; height: 56px; display: grid; place-items: center; border: 1px solid var(--gg-line); border-radius: 50%; color: var(--gg-dim); }
+.gg-clip-play svg { width: 20px; height: 20px; margin-left: 3px; }
+.gg-clip-tag { font: 500 0.72rem var(--gg-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gg-dim); }
+.gg-clip-shot { max-width: 40ch; color: var(--gg-ink); font-size: 0.95rem; }
+.gg-clip figcaption { margin-top: 10px; font: 500 0.72rem var(--gg-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--gg-dim); }
 
 /* Cases alternate sides on wide screens */
 .gg-case-num em { font-style: normal; margin-left: 10px; color: var(--gg-orange); letter-spacing: 0.06em; }
@@ -851,22 +734,6 @@
   .gg-case.is-flip .gg-case-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); }
   .gg-case.is-flip .gg-case-text { order: 2; }
   .gg-case.is-flip .gg-case-surface { order: 1; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  /* Each surface plays once when it scrolls into view */
-  #goldengate[data-motion="on"] .gg-surf:not(.is-in) :is(.gg-tl, li, .gg-ed-note, .gg-voice-q, .gg-voice-a, .gg-cal-cols > div) { opacity: 0; }
-  #goldengate[data-motion="on"] .gg-surf.is-in .gg-tl { animation: gg-rise 0.45s ease calc(0.3s + var(--k) * 0.45s) both; }
-  #goldengate[data-motion="on"] .gg-surf.is-in li { animation: gg-rise 0.5s ease both; }
-  #goldengate[data-motion="on"] .gg-surf.is-in li:nth-child(1) { animation-delay: 0.3s; }
-  #goldengate[data-motion="on"] .gg-surf.is-in li:nth-child(2) { animation-delay: 0.55s; }
-  #goldengate[data-motion="on"] .gg-surf.is-in li:nth-child(3) { animation-delay: 0.8s; }
-  #goldengate[data-motion="on"] .gg-surf.is-in li:nth-child(4) { animation-delay: 1.05s; }
-  #goldengate[data-motion="on"] .gg-surf.is-in .gg-ed-note { animation: gg-rise 0.5s ease 0.9s both; }
-  #goldengate[data-motion="on"] .gg-surf.is-in .gg-voice-q { animation: gg-rise 0.5s ease 0.3s both; }
-  #goldengate[data-motion="on"] .gg-surf.is-in .gg-voice-a { animation: gg-rise 0.5s ease 1.2s both; }
-  #goldengate[data-motion="on"] .gg-surf.is-in .gg-cal-cols > div:nth-child(1) { animation: gg-rise 0.5s ease 0.3s both; }
-  #goldengate[data-motion="on"] .gg-surf.is-in .gg-cal-cols > div:nth-child(2) { animation: gg-rise 0.5s ease 0.7s both; }
 }
 
 /* ─── Use cases: full-width map hero ───────────────────── */
@@ -912,7 +779,6 @@
 
 /* On the map the logos are drawn inside the SVG, spread over the land; the HTML lists are for the stacked layout */
 .gg-map-logo { color: var(--gg-ink); fill: currentColor; }
-@media (prefers-reduced-motion: no-preference) { .gg-map-logo { transition: opacity 0.2s ease; } .gg-map-logo:hover { opacity: 0.6; } }
 .gg-uc-side .gg-logos { display: none; }
 
 /* Logos stand directly on the map, with no backdrop or glow */
@@ -920,10 +786,6 @@
 .gg-uc-marin .gg-logos { max-width: 170px; }
 .gg-logos li { display: grid; place-items: center; width: 38px; height: 38px; color: var(--gg-ink); }
 .gg-logos .gg-logo-mark, .gg-logos .gg-icon { width: 34px; height: 34px; }
-@media (prefers-reduced-motion: no-preference) {
-  .gg-logos li { transition: transform 0.2s ease; }
-  .gg-logos li:hover { transform: translateY(-3px) scale(1.08); }
-}
 .gg-map-credit { position: absolute; right: 10px; bottom: 8px; font-size: 0.7rem; color: var(--gg-dim) !important; text-decoration: none !important; background: color-mix(in srgb, var(--gg-surface) 75%, transparent); padding: 2px 6px 0; border-radius: 4px; }
 .gg-map-credit:hover { text-decoration: underline !important; }
 
@@ -936,7 +798,7 @@
   .gg-uc-side .gg-logos { display: flex; }
   .gg-uc-title { margin-bottom: 28px; }
   .gg-uc-title h1 { font-size: 2.6rem; }
-  .gg-uc-side { border: 1px solid var(--gg-line); border-radius: 8px; padding: 20px; background: var(--gg-surface); }
+  .gg-uc-side { border: 3px double var(--gg-line); border-radius: 0; padding: 20px; background: var(--gg-surface); }
   .gg-uc-marin .gg-logos { max-width: none; }
   .gg-uc-side h2, .gg-uc-side > p, .gg-uc-title h1, .gg-uc-title .gg-lede { text-shadow: none; }
   .gg-uc-mid { display: grid; place-items: center; height: 72px; }

@@ -96,7 +96,6 @@ function GoldenGate() {
   return (
     <GoldenGateShell title="Golden Gate | Choose what your assistant knows">
       <section className="gg-hero">
-        <div className="gg-fog" aria-hidden="true"><span /><span /></div>
         <div className="gg-wrap gg-hero-inner">
           <div className="gg-hero-copy">
             <h1>Choose what your assistant knows.</h1>

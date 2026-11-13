@@ -6,9 +6,10 @@ import { Mark } from "./GoldenGateBrand";
 export const GITHUB_URL = "https://github.com/divyanshusingh2903/goldengate";
 const THEME_KEY = "gg-theme";
 
-// Visuals that play once when they scroll into view. Armed from here, after mount, so the
-// prerendered page is fully visible without JavaScript and for visitors who reduce motion.
-const REVEAL = ".gg-table-wrap, .gg-chat, .gg-cross, .gg-surf";
+// The only visuals that play on scroll, each once: the redaction sweep and the security strike-through.
+// Armed from here, after mount, so the prerendered page is fully visible without JavaScript and
+// for visitors who reduce motion.
+const REVEAL = ".gg-rd, .gg-cross";
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 // The page follows the OS theme until the visitor picks one; saved per browser.

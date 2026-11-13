@@ -160,7 +160,7 @@ function GoldenGateSecurity() {
             </div>
             <div className="gg-cross gg-cross-no">
               <h3><Icon name="denied" /> Stays on your machine</h3>
-              <ul>{neverSent.map((t, i) => <li key={t} style={{ "--k": i }}>{t}</li>)}</ul>
+              <ul>{neverSent.map((t, i) => <li key={t} style={{ "--k": i }}><span className="gg-strike">{t}</span></li>)}</ul>
             </div>
           </div>
           <div className="gg-tiles">
