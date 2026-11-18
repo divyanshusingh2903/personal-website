@@ -708,9 +708,9 @@ i.brand-icon { background: currentColor; -webkit-mask: var(--icon) center / cont
 .pp-paper div[id^="tab:"] { margin: 2rem 0; overflow-x: auto; }
 .pp-paper table { border-collapse: collapse; font-size: 0.85rem; line-height: 1.4; min-width: 100%; }
 .pp-paper th, .pp-paper td { padding: 0.35rem 0.7rem; border-bottom: 1px solid #d3d1c9; vertical-align: top; text-align: left; }
-.pp-paper thead th { background: #ecebe4; border-bottom: 1.5px solid var(--slate); }
-.pp-paper code { font-size: 0.88em; background: #ecebe4; padding: 0.05em 0.3em; border-radius: 3px; }
-.pp-abstract { margin: 0 0 2rem; padding: 1rem 1.25rem; border-left: 3px solid var(--slate); background: #ecebe4; font-size: 0.95rem; }
+.pp-paper thead th { background: var(--bg-raised); border-bottom: 1.5px solid var(--slate); }
+.pp-paper code { font-size: 0.88em; background: var(--bg-raised); padding: 0.05em 0.3em; border-radius: 3px; }
+.pp-abstract { margin: 0 0 2rem; padding: 1rem 1.25rem; border-left: 3px solid var(--slate); background: var(--bg-raised); color: var(--fg); font-size: 0.95rem; }
 .pp-abstract h2 { margin: 0 0 0.5rem; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.08em; }
 .pp-eq { position: relative; margin: 1.4rem 0; overflow-x: auto; text-align: center; }
 .pp-eqn { position: absolute; right: 0; top: 50%; transform: translateY(-50%); color: var(--slate); }
