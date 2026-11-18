@@ -739,3 +739,19 @@
 .gg-risks p { color: var(--gg-dim); }
 .gg-risks strong { color: var(--gg-ink); font-weight: 600; }
 #goldengate #revoke .gg-revoke-rows { margin-top: 24px; }
+
+/* Docs pages: the sidebar lists pages, the open page shows its sections. */
+.gg-d-eyebrow { display: block; margin-bottom: 8px; font: 500 0.72rem var(--gg-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gg-dim); }
+#goldengate .gg-d-group a.gg-d-page { display: block; padding: 4px 0; box-shadow: none; font: 500 0.72rem var(--gg-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gg-dim); }
+#goldengate .gg-d-group a.gg-d-page:hover { color: var(--gg-ink); box-shadow: none; }
+#goldengate .gg-d-group a.gg-d-page[aria-current="page"] { color: var(--gg-ink); font-weight: 500; box-shadow: none; }
+.gg-d-group ul { margin-top: 4px; }
+.gg-d-pager { display: flex; justify-content: space-between; gap: 16px; margin-top: 56px; padding-top: 24px; border-top: 3px double var(--gg-line); }
+#goldengate .gg-d-pager a { display: flex; flex-direction: column; gap: 2px; padding: 12px 18px 10px; min-width: 40%; border: 1px solid var(--gg-line); background: var(--gg-surface); color: var(--gg-ink); text-decoration: none; font-family: var(--gg-display); font-size: 1.15rem; }
+.gg-d-pager a:hover { border-color: var(--gg-field, var(--gg-dim)); }
+.gg-d-pager a span { font: 500 0.72rem var(--gg-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gg-dim); }
+.gg-d-pager .gg-d-next { text-align: right; margin-left: auto; }
+
+.gg-d-shot { margin: 14px 0 6px; max-width: 520px; }
+.gg-d-shot img { display: block; width: 100%; height: auto; border: 1px solid var(--gg-line); background: var(--gg-term-bg); }
+.gg-d-shot figcaption { margin-top: 6px; font-size: 0.85rem; color: var(--gg-dim); }

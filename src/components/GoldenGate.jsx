@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import MapArt from "./GoldenGateMap";
 import GoldenGateShell, { Clip, Code, GitHubButton } from "./GoldenGateShell";
 
-const INSTALL = "go install github.com/divyanshusingh2903/goldengate/cmd/...@v1.0.1";
+const INSTALL = "go install github.com/divyanshusingh2903/goldengate/cmd/...@v1.1.1";
 
 // The dashcam clip is 4:15 to 6:30 of a POV drive across the bridge; the readout counts the clip's own time from zero.
 const DRIVE = { start: 0, src: "/goldengate/drive.mp4", poster: "/goldengate/drive-poster.jpg", credit: "https://www.youtube.com/watch?v=NcA8KTXyEUQ&t=255s" };

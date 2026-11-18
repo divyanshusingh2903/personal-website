@@ -389,7 +389,7 @@ function GoldenGateMcp() {
               </div>
             ))}
           </div>
-          <p className="gg-more"><Link to="/goldengate/docs#connect">Setup steps in the docs</Link></p>
+          <p className="gg-more"><Link to="/goldengate/docs/assistants#connect">Setup steps in the docs</Link></p>
         </div>
       </section>
     </GoldenGateShell>

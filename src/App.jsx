@@ -46,6 +46,7 @@ function App() {
         <Route path="/goldengate/use-cases" element={<GoldenGateUseCases />} />
         <Route path="/goldengate/mcp" element={<GoldenGateMcp />} />
         <Route path="/goldengate/docs" element={<GoldenGateDocs />} />
+        <Route path="/goldengate/docs/:slug" element={<GoldenGateDocs />} />
         <Route path="/harbinger" element={<Harbinger />} />
         <Route path="/harbinger/experiments" element={<HarbingerExperiments />} />
         <Route path="/harbinger/benchmarks" element={<HarbingerBenchmarks />} />
