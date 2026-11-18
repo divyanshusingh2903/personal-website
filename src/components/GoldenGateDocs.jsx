@@ -289,7 +289,7 @@ function DeployPage() {
           rows={[
             [<a href="#deploy-vm">Your own VM</a>, "Yes", "A disk, systemd, and Caddy for HTTPS. The most direct route."],
             [<a href="#deploy-railway">Railway</a>, "Yes", "A container with a volume and a generated HTTPS domain."],
-            [<a href="#deploy-vercel">Vercel</a>, "To try it only", "It runs the image, but as a function: no disk that survives and it scales to zero. You would lose your data."],
+            [<a href="#deploy-cloudflare">Cloudflare Tunnel</a>, "Yes, in front of a server you run", "HTTPS and a public address for a server on a VM, a home computer or your laptop. No ports to open."],
           ]}
         />
         <p>Whichever host you pick, the finish is the same. Open <code>https://bridge.example.com/healthz</code> (it prints <code>200</code>), then connect your laptop. The upload token goes to your OS keyring and the assistant token is printed once:</p>
@@ -347,34 +347,26 @@ function DeployPage() {
         <Note>Railway shows the admin secret to anyone who can open the project, so share the project only with people you would trust with it. After <code>goldengate init</code> you don't need the secret again except to change which assistant sees what.</Note>
         <p>The same image runs anywhere that runs containers: <code>docker run -d -p 8080:8080 -v gg-data:/data -e GOLDENGATE_ADMIN_TOKEN=… ghcr.io/divyanshusingh2903/goldengatebridge:1.1.1</code> behind your own HTTPS. The Dockerfile is <a href={`${GITHUB_URL}/blob/main/deploy/Dockerfile`} target="_blank" rel="noopener noreferrer">deploy/Dockerfile</a> if you want to build it yourself.</p>
       </Sec>
-      <Sec id="deploy-vercel" title="Vercel">
-        <p>Vercel can run a Docker image (the container runtime is in beta). It serves it from a function: the container starts on a request, runs on port 80 unless you set <code>PORT</code>, and is stopped after about five minutes without traffic. There is no disk that survives, so the server's database is lost whenever the container is replaced, and two containers at once would each keep their own database. In a test the data was gone after about ten idle minutes: the laptop's stored upload token was refused (<code>goldengate doctor</code> says so) and everything had to be sent again.</p>
-        <Note><strong>Use this to try Golden Gate, not to keep your data.</strong> Use version 1.0.1 or later: 1.0.0 answered assistants with a 403 on Vercel. For a server you rely on, use a <a href="#deploy-vm">VM</a> or <a href="#deploy-railway">Railway</a>. After a restart on Vercel you would run <code>goldengate init</code> again and send everything again.</Note>
+      <Sec id="deploy-cloudflare" title="Cloudflare">
+        <p>Cloudflare has two products that look like hosts. One fits and one does not.</p>
+        <h3>Cloudflare Tunnel: fits</h3>
+        <p>A tunnel gives a server you run a public HTTPS address without opening any port and without Caddy or nginx: a small program, <code>cloudflared</code>, runs next to the server and connects out to Cloudflare. The server can be on a VM, a home computer, or your laptop. It is up only while that machine is on, so use a VM for something an assistant should always reach.</p>
+        <p>Run the server on the machine as in <a href="#deploy-vm">Your own VM</a> (with <code>--addr 127.0.0.1:8080 --behind-tls-proxy</code>), then pick one of two ways to expose it. Use version 1.0.1 or later: older servers answered a tunnel's requests to <code>/mcp</code> with a 403.</p>
+        <p><strong>To try it in a minute</strong> (no account, no domain), run the server and then:</p>
+        <Code>{"cloudflared tunnel --url http://localhost:8080"}</Code>
+        <p>It prints an address like <code>https://random-words.trycloudflare.com</code>. Use that as the server URL in <code>goldengate init</code> and as the connector URL for an assistant. The address changes every time you start it, and Cloudflare limits these quick tunnels to 200 requests at once and no server-sent events (the bridge doesn't use them). It is for testing.</p>
+        <p><strong>For an address that stays</strong> you need a domain on Cloudflare:</p>
         <ol className="gg-d-steps">
-          <li>Make an empty folder and add a file named <code>Dockerfile</code>. It starts from the published image and keeps the database in <code>/tmp</code>, the only writable place:
-            <Code>{'FROM ghcr.io/divyanshusingh2903/goldengatebridge:1.1.1\nCMD ["serve", "--behind-tls-proxy", "--db", "/tmp/bridge.db"]'}</Code>
-          </li>
-          <li>Install the Vercel CLI, sign in, and link the folder to a new project (accept the defaults):
-            <Code>{"npm i -g vercel\nvercel login\nvercel link"}</Code>
-          </li>
-          <li>Add the admin secret, and tell Vercel which port the server listens on (it routes to port 80 otherwise). Paste the output of <code>openssl rand -base64 32</code> when asked, and keep a copy:
-            <Code>{"vercel env add GOLDENGATE_ADMIN_TOKEN production\nvercel env add PORT production    # enter 8080"}</Code>
-          </li>
-          <li>Make sure Vercel treats the project as a container. With only a <code>Dockerfile</code> in the folder it picks that by itself. If it detects another framework, force it:
-            <Code>{"vercel project update --framework container --yes"}</Code>
-          </li>
-          <li>Deploy to production:
-            <Code>{"vercel deploy --prod"}</Code>
-            You can also push the folder to a Git repository connected to the project; it deploys the same way. The first build pulls the image, so it takes a minute.
-          </li>
-          <li>Open <code>https://your-project.vercel.app/healthz</code>, which shows <code>{"{"}"status":"ok"{"}"}</code>. It prints <code>200</code> (the first request after idle is slow while the container starts). If you see a Vercel sign-in page instead, Deployment Protection is on for that URL; turn it off for production in the project settings, because an assistant can't sign in to it.</li>
-          <li>Connect your laptop, pasting the admin secret when asked:
-            <Code>{"goldengate init --server https://your-project.vercel.app"}</Code>
+          <li>In the Cloudflare dashboard open <strong>Networking → Tunnels</strong>, choose <strong>Create Tunnel</strong>, and name it (for example <code>bridge</code>).</li>
+          <li>Copy the install command the dashboard shows for your system and run it on the machine that runs the server. It installs <code>cloudflared</code> as a service that starts on boot and carries the tunnel's token. The dashboard's command looks like <code>sudo cloudflared service install &lt;token&gt;</code>.</li>
+          <li>On the tunnel's <strong>Public Hostnames</strong> tab choose <strong>Add a public hostname</strong>: a subdomain such as <code>bridge</code>, your domain, service type <strong>HTTP</strong>, URL <code>localhost:8080</code>.</li>
+          <li>Wait until the tunnel shows <strong>Healthy</strong>, then open <code>https://bridge.example.com/healthz</code> and connect your laptop:
+            <Code>{"goldengate init --server https://bridge.example.com"}</Code>
           </li>
         </ol>
-        <Check items={[<><code>/healthz</code> prints <code>200</code> on the production URL.</>, <>An assistant connected with the token lists the projects you shared. If it later sees nothing, the container was replaced: run <code>goldengate init</code> and send again.</>]} />
-        <p>Vercel limits to know: a request can run up to 5 minutes on the free plan (longer on paid plans), request bodies are capped at 4.5 MB, and a container gets 2 GB of memory by default.</p>
-        <p>If your domain lives on Vercel, you can still point a subdomain at a better host. Under <strong>Domains → DNS Records</strong>, add an <code>A</code> record to your VM's address, or a <code>CNAME</code> from <code>bridge</code> to your Railway domain.</p>
+        <p>For OAuth, set the server's public address to that hostname (<code>--public-url https://bridge.example.com</code> or <code>GOLDENGATE_PUBLIC_URL</code>). Cloudflare's own page for these steps is <a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel" target="_blank" rel="noopener noreferrer">Create a tunnel (dashboard)</a>, in case the buttons have moved.</p>
+        <h3>Workers and Containers: do not fit</h3>
+        <p>Workers run JavaScript, not the Go server. Cloudflare Containers do run Docker images, but their disk is ephemeral: when an instance goes to sleep its next start uses a fresh disk from the image, so the database would be lost, and Containers need a paid Workers plan. Keeping the file on object storage through a FUSE mount is not safe for SQLite, which needs real file locks.</p>
       </Sec>
       <Sec id="deploy-update" title="Update a deployment">
         <p>A release is a version tag. Updating replaces the server program and keeps your database, which the new server upgrades in place. Do these in order, whichever host you use:</p>
@@ -387,8 +379,8 @@ function DeployPage() {
         <h3>Docker</h3>
         <Code>{"docker pull ghcr.io/divyanshusingh2903/goldengatebridge:1.1.1\ndocker stop bridge && docker rm bridge\ndocker run -d --name bridge -p 8080:8080 -v gg-data:/data \\\n  -e GOLDENGATE_ADMIN_TOKEN=… ghcr.io/divyanshusingh2903/goldengatebridge:1.1.1"}</Code>
         <p>The <code>gg-data</code> volume, and so your data, stays. To back it up first, stop the container and copy <code>bridge.db</code> out of the volume.</p>
-        <h3>Your own VM</h3>
-        <p>Build the new version for Linux and copy it over, as in <a href="#deploy-vm">Your own VM</a>, then on the VM:</p>
+        <h3>Your own VM, or behind a Cloudflare Tunnel</h3>
+        <p>The tunnel keeps running; only the server program changes. Build the new version for Linux and copy it over, as in <a href="#deploy-vm">Your own VM</a>, then on the VM:</p>
         <Code>{"sudo systemctl stop goldengatebridge\nsudo cp /var/lib/goldengate/bridge.db /var/lib/goldengate/bridge.db.bak\nsudo install -m 755 goldengatebridge /usr/local/bin/\nsudo systemctl start goldengatebridge\ngoldengatebridge version"}</Code>
         <p>To go back, stop the service, put the old program back and, if the database was upgraded, restore <code>bridge.db.bak</code> over <code>bridge.db</code>.</p>
         <h3>Railway</h3>
@@ -403,8 +395,6 @@ function DeployPage() {
         </li>
         </ol>
         <p>Pin a version tag rather than <code>:latest</code>, so you decide when an update happens. To go back, set the old tag again (and restore a backup of the volume if the database was upgraded).</p>
-        <h3>Vercel</h3>
-        <p>Change the tag in the first line of your <code>Dockerfile</code> and deploy again with <code>vercel deploy --prod</code>. Everything on a Vercel server is lost when the container is replaced anyway, so there is nothing to back up. Run <code>goldengate init</code> and send again.</p>
         <h3>The laptop app</h3>
         <Code>{"go install github.com/divyanshusingh2903/goldengate/cmd/...@v1.1.1\ngoldengate version"}</Code>
         <p>Your settings and what has been sent stay in <code>~/.config/goldengate</code> and <code>~/.local/state/goldengate</code>.</p>
@@ -521,7 +511,7 @@ const pages = [
   { slug: "terminal-ui", title: "Terminal UI", lede: "The keys and screens of the goldengate terminal app.", Body: TerminalUiPage, sections: [["tui", "Getting around"], ["tui-projects", "Projects"], ["tui-send", "Send"], ["tui-inbox", "Inbox"], ["tui-agents", "Agents"], ["tui-settings", "Server and settings"]] },
   { slug: "web-app", title: "Web app", lede: "The same product in your browser, with goldengate ui.", Body: WebAppPage, sections: [["web", "Open the web app"], ["web-screens", "Screens"]] },
   { slug: "assistants", title: "Assistants", lede: "Connect Claude, ChatGPT and other assistants, and choose what each one sees.", Body: AssistantsPage, sections: [["connect", "Connect an assistant"], ["second-agent", "More assistants"], ["oauth", "OAuth"]] },
-  { slug: "deploy", title: "Deploy", lede: "Put the server on a public HTTPS address, and keep it up to date: your own VM, Railway, and what does not fit.", Body: DeployPage, sections: [["deploy", "Deploy behind HTTPS"], ["deploy-vm", "Your own VM"], ["deploy-railway", "Railway"], ["deploy-vercel", "Vercel"], ["deploy-update", "Update a deployment"]] },
+  { slug: "deploy", title: "Deploy", lede: "Put the server on a public HTTPS address, and keep it up to date: your own VM, Railway, Cloudflare Tunnel, and what does not fit.", Body: DeployPage, sections: [["deploy", "Deploy behind HTTPS"], ["deploy-vm", "Your own VM"], ["deploy-railway", "Railway"], ["deploy-cloudflare", "Cloudflare"], ["deploy-update", "Update a deployment"]] },
   { slug: "automation", title: "Automation", lede: "Trust levels, rules, receipts and sending in the background.", Body: AutomationPage, sections: [["rules", "Trust levels and rules"], ["receipts", "Receipts"], ["offers", "Offers"], ["background", "Send in the background"]] },
   { slug: "reference", title: "Reference", lede: "Chat exports, sources, every command, troubleshooting and clean up.", Body: ReferencePage, sections: [["chats", "Chat exports"], ["sources", "Sources"], ["cli", "Commands"], ["troubleshooting", "Troubleshooting"], ["uninstall", "Clean up"]] },
 ];
