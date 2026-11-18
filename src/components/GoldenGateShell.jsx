@@ -57,6 +57,56 @@ export function Shot({ name, ext = "webp", alt, width = 1760, height = 1282, eag
   );
 }
 
+// A screen recording that plays muted on a loop while it is on screen, and stays on its poster
+// (with controls) for visitors who reduce motion. `themed` clips come as -light and -dark files and
+// the page theme decides which shows; a clip with one look is used as it is.
+function ClipVideo({ src, poster, label, width, height, className }) {
+  const ref = useRef(null);
+  const [reduce, setReduce] = useState(false);
+
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReduce(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    // A hidden theme variant has no box, so it never intersects and never plays.
+    const io = new IntersectionObserver(([entry]) => {
+      if (mq.matches) v.pause();
+      else if (entry.isIntersecting) v.play().catch(() => {});
+      else v.pause();
+    });
+    io.observe(v);
+    return () => {
+      mq.removeEventListener("change", sync);
+      io.disconnect();
+    };
+  }, []);
+
+  return (
+    <video ref={ref} className={className} width={width} height={height} muted loop playsInline preload="metadata" poster={poster} controls={reduce} aria-label={label} aria-hidden={label ? undefined : "true"}>
+      <source src={src} type="video/mp4" />
+    </video>
+  );
+}
+
+export function Clip({ name, poster, alt, width, height, themed = true }) {
+  if (!themed) {
+    return (
+      <span className="gg-shot">
+        <ClipVideo src={`/goldengate/${name}.mp4`} poster={`/goldengate/${poster}`} label={alt} width={width} height={height} />
+      </span>
+    );
+  }
+  return (
+    <span className="gg-shot">
+      <ClipVideo className="gg-only-light" src={`/goldengate/${name}-light.mp4`} poster={`/goldengate/${name}-light-poster.jpg`} label={alt} width={width} height={height} />
+      <ClipVideo className="gg-only-dark" src={`/goldengate/${name}-dark.mp4`} poster={`/goldengate/${name}-dark-poster.jpg`} width={width} height={height} />
+    </span>
+  );
+}
+
 // One request per page load for the repository's star count, shared by every GitHub button; kept for the tab's session.
 const STARS_KEY = "gg-stars";
 let starsRequest = null;

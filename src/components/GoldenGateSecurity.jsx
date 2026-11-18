@@ -36,6 +36,14 @@ const optIn = [
   ["redact", "Prompt injection", "Every answer is marked as data, and every tool only reads."],
 ];
 
+// What keeps you in charge once something is shared.
+const control = [
+  ["project", "An inbox", "New sessions of a shared project wait for you. A session that changes after approval waits again."],
+  ["shared", "Rules only narrow", "A rule acts inside what you already share. A block always wins, before anything is read."],
+  ["token", "Per-agent access", "Every assistant sees only the projects you grant it. A new project is visible to none."],
+  ["sync", "Receipts and retract", "Every automatic send is logged with its rule. Retract a session and it is deleted from the server."],
+];
+
 const risks = [
   ["A compromised server", "leaks its summaries. Keep sensitive projects at titles-only."],
   ["Regex redaction", "can miss a secret."],
@@ -44,6 +52,8 @@ const risks = [
 ];
 
 const revoke = [
+  ["Retract one session", "goldengate sessions retract <id>"],
+  ["Undo an automatic send", "goldengate receipts retract <receipt-id> --all"],
   ["Unshare and delete", "goldengate share remove ~/code/myproject --delete-from-server"],
   ["New assistant token", "goldengate token rotate assistant"],
   ["Remove an OAuth app", "goldengatebridge oauth clients delete <id>"],
@@ -106,7 +116,22 @@ function GoldenGateSecurity() {
         </div>
       </section>
 
-      <section className="gg-section" id="opt-in">
+      <section className="gg-section" id="control">
+        <div className="gg-wrap">
+          <h2>You stay in charge</h2>
+          <div className="gg-l-grid">
+            {control.map(([icon, title, body]) => (
+              <div className="gg-l-cell" key={title}>
+                <span className="gg-card-icon"><Icon name={icon} /></span>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="gg-section gg-section-sunk" id="opt-in">
         <div className="gg-wrap">
           <h2>Off unless you turn it on</h2>
           <div className="gg-l-grid">
@@ -121,7 +146,7 @@ function GoldenGateSecurity() {
         </div>
       </section>
 
-      <section className="gg-section gg-section-sunk" id="revoke">
+      <section className="gg-section" id="revoke">
         <div className="gg-wrap gg-split">
           <div>
             <h2>What can still go wrong</h2>

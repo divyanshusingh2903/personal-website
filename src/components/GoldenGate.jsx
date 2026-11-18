@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import MapArt from "./GoldenGateMap";
-import GoldenGateShell, { Code, GitHubButton, Shot } from "./GoldenGateShell";
+import GoldenGateShell, { Clip, Code, GitHubButton } from "./GoldenGateShell";
 
-const INSTALL = "go install github.com/divyanshusingh2903/goldengate/cmd/...@latest";
+const INSTALL = "go install github.com/divyanshusingh2903/goldengate/cmd/...@v1.0.1";
 
-// The dashcam clip is 0:45 to 6:30 of a POV drive across the bridge; the readout counts the clip's own time from zero.
-const DRIVE = { start: 0, src: "/goldengate/drive.mp4", poster: "/goldengate/drive-poster.jpg", credit: "https://www.youtube.com/watch?v=NcA8KTXyEUQ&t=45s" };
+// The dashcam clip is 4:15 to 6:30 of a POV drive across the bridge; the readout counts the clip's own time from zero.
+const DRIVE = { start: 0, src: "/goldengate/drive.mp4", poster: "/goldengate/drive-poster.jpg", credit: "https://www.youtube.com/watch?v=NcA8KTXyEUQ&t=255s" };
 
 // The read tools Golden Gate Bridge serves over MCP.
 const tools = ["recent_activity", "get_project_context", "search_work", "get_work_item", "list_pull_requests", "get_session"];
@@ -85,8 +85,8 @@ function Drive() {
           <div className="gg-wrap">
             <div>
               <span className="gg-l-timecode" aria-hidden="true">00:{pad(Math.floor(clock / 60))}:{pad(clock % 60)}</span>
-              <h2>Ten minutes, start to finish.</h2>
-              <p>About as long as the drive across.</p>
+              <h2>Set up in ten minutes.</h2>
+              <p>The drive across takes about two.</p>
             </div>
             <div className="gg-actions">
               <Link className="gg-btn gg-btn-primary" to="/goldengate/docs#install">Quickstart</Link>
@@ -117,13 +117,11 @@ function GoldenGate() {
             </div>
           </div>
           <figure className="gg-l-term">
-            <Shot
+            <Clip
               name="walkthrough"
-              ext="gif"
-              width={1200}
-              height={874}
-              eager
-              alt="The Golden Gate TUI: moving through the project list, searching for vihayas, sharing it, previewing its summary, then reviewing and sending until every shared project shows synced."
+              width={1500}
+              height={836}
+              alt="The Golden Gate TUI: searching for vihayas and sharing it, blocking client-acme, sharing three more projects, previewing a summary, then reviewing and sending twelve sessions until every shared project shows sent."
             />
             <figcaption><span><kbd>space</kbd> share</span><span><kbd>p</kbd> preview</span><span><kbd>s</kbd> send</span><span className="gg-l-sp" /><span>Recorded from the real TUI, synthetic sessions.</span></figcaption>
           </figure>
@@ -144,25 +142,28 @@ function GoldenGate() {
       </section>
 
       <section className="gg-l-band gg-section-sunk">
-        <div className="gg-wrap gg-l-split">
-          <div>
-            <h2>Ask what you shipped.</h2>
-            <ul className="gg-l-tools">{tools.map((t) => <li key={t}>{t}</li>)}</ul>
-            <p className="gg-l-more"><Link to="/goldengate/mcp">Every MCP tool</Link> · <Link to="/goldengate/use-cases">Use cases</Link></p>
-          </div>
-          <div className="gg-l-chat" aria-label="Example conversation in an assistant">
-            <div className="gg-l-msg-u">What did I ship on Golden Gate this week?</div>
-            <div className="gg-l-call"><b>golden-gate</b> · recent_activity(project: "Golden Gate", days: 5)</div>
-            <div className="gg-l-msg-a">
-              <p>Three merged pull requests across Claude Code, Codex and Cursor:</p>
-              <ul>
-                <li><span className="gg-l-tag">CC</span><span>Summarizer steps down from an unsupported reasoning setting on any 400. <span className="gg-l-ref">PR #110</span></span></li>
-                <li><span className="gg-l-tag">CX</span><span>Settings says when a tool is off for every project. <span className="gg-l-ref">PR #111</span></span></li>
-                <li><span className="gg-l-tag">CU</span><span>Web UI aligned with the brand. <span className="gg-l-ref">PR #109</span></span></li>
-              </ul>
-              <p className="gg-l-ref">One open thread: the OAuth approval page has no tests yet.</p>
+        <div className="gg-wrap">
+          <div className="gg-l-ask">
+            <div>
+              <h2>Ask what you shipped.</h2>
+              <p className="gg-l-sub">Codex, connected to a Golden Gate Bridge, answers from the week's sessions.</p>
+            </div>
+            <div>
+              <ul className="gg-l-tools">{tools.map((t) => <li key={t}>{t}</li>)}</ul>
+              <p className="gg-l-more"><Link to="/goldengate/mcp">Every MCP tool</Link> · <Link to="/goldengate/use-cases">Use cases</Link></p>
             </div>
           </div>
+          <figure className="gg-l-term">
+            <Clip
+              name="ask-codex-dark"
+              poster="ask-codex-poster.jpg"
+              themed={false}
+              width={1500}
+              height={836}
+              alt="Codex in a terminal. The question: I have been working a lot on goldengate this past week, can you tell me what has been achieved. Codex reads the week's sessions from Golden Gate Bridge and lists five areas of progress with pull request links: the web app, sharing controls, better agent context, new sources and setup polish."
+            />
+            <figcaption><span>Real Codex, real answer from the bridge.</span><span className="gg-l-sp" /><span>Most of that week was built with Claude Code; Codex reads it back.</span></figcaption>
+          </figure>
         </div>
       </section>
 

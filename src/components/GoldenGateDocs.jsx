@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import GoldenGateShell, { Code, GITHUB_URL } from "./GoldenGateShell";
 
 // Written from goldengate/docs/GUIDE.md and the README; keep them in step when commands or screens change.
@@ -8,7 +8,8 @@ const nav = [
   { group: "Start", items: [["overview", "Overview"], ["install", "Install"], ["server", "Run the server"], ["setup", "First-run setup"]] },
   { group: "Terminal UI", items: [["tui", "Getting around"], ["tui-projects", "Projects"], ["tui-send", "Send"], ["tui-inbox", "Inbox"], ["tui-agents", "Agents"], ["tui-settings", "Server and settings"]] },
   { group: "Web app", items: [["web", "Open the web app"], ["web-screens", "Screens"]] },
-  { group: "Assistants", items: [["connect", "Connect an assistant"], ["second-agent", "More assistants"], ["deploy", "Deploy behind HTTPS"], ["oauth", "OAuth"]] },
+  { group: "Assistants", items: [["connect", "Connect an assistant"], ["second-agent", "More assistants"], ["oauth", "OAuth"]] },
+  { group: "Deploy", items: [["deploy", "Deploy behind HTTPS"], ["deploy-vm", "Your own VM"], ["deploy-railway", "Railway"], ["deploy-firebase", "Firebase and Google Cloud"], ["deploy-vercel", "Vercel"]] },
   { group: "Automation", items: [["rules", "Trust levels and rules"], ["receipts", "Receipts"], ["offers", "Offers"], ["background", "Send in the background"]] },
   { group: "Reference", items: [["chats", "Chat exports"], ["sources", "Sources"], ["cli", "Commands"], ["troubleshooting", "Troubleshooting"], ["uninstall", "Clean up"]] },
 ];
@@ -50,34 +51,76 @@ function Sec({ id, title, children }) {
 const k = (s) => <kbd>{s}</kbd>;
 const c = (s) => <code>{s}</code>;
 
+// The sticky header covers the top of the viewport, so a section sits a little below it.
+const OFFSET = 88;
+
+// Jump, don't glide: the page's smooth scrolling would chase a target that moves while layout settles.
+function scrollToId(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const delta = el.getBoundingClientRect().top - OFFSET + 1;
+  if (Math.abs(delta) > 2) window.scrollTo({ top: window.scrollY + delta, behavior: "instant" });
+}
+
+// Scroll to a section now and again as fonts and layout settle. Returns a cleanup.
+function settleOn(id) {
+  scrollToId(id);
+  const timers = [setTimeout(() => scrollToId(id), 150), setTimeout(() => scrollToId(id), 600)];
+  document.fonts?.ready.then(() => scrollToId(id));
+  return () => timers.forEach(clearTimeout);
+}
+
 function GoldenGateDocs() {
   const [active, setActive] = useState(ids[0]);
   const { hash } = useLocation();
 
-  // Router links change the route without the browser's own anchor scroll.
-  useEffect(() => {
-    if (hash) document.getElementById(hash.slice(1))?.scrollIntoView();
-  }, [hash]);
+  const navigate = useNavigate();
 
-  // Highlight the section nearest the top of the viewport.
+  // The page scrolls by itself here, so the browser's own smooth anchor scrolling must not compete.
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible[0]) setActive(visible[0].target.id);
-      },
-      { rootMargin: "-80px 0px -65% 0px" },
-    );
-    ids.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-    return () => observer.disconnect();
+    const root = document.documentElement;
+    const before = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+    return () => { root.style.scrollBehavior = before; };
+  }, []);
+
+  // Deep links and back/forward.
+  useEffect(() => (hash ? settleOn(decodeURIComponent(hash.slice(1))) : undefined), [hash]);
+
+  // Every in-page link jumps the same way, including a repeat click on the current section.
+  const onLinkClick = (e) => {
+    const a = e.target.closest?.('a[href^="#"]');
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+    e.preventDefault();
+    const id = decodeURIComponent(a.getAttribute("href").slice(1));
+    if (location.hash !== `#${id}`) navigate({ hash: id });
+    settleOn(id);
+  };
+
+  // Highlight the last section whose top has passed under the header, or the last one at the page end.
+  useEffect(() => {
+    const update = () => {
+      const atEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+      let current = ids[0];
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= OFFSET + 8) current = id;
+      }
+      setActive(atEnd ? ids[ids.length - 1] : current);
+    };
+    const onScroll = update; // about 25 rect reads per event; cheap, and needs no animation frame
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   return (
     <GoldenGateShell title="Docs | Golden Gate">
-      <div className="gg-wrap gg-d">
+      <div className="gg-wrap gg-d" onClick={onLinkClick}>
         <aside className="gg-d-side">
           <nav aria-label="Docs">
             {nav.map((g) => (
@@ -114,9 +157,9 @@ function GoldenGateDocs() {
           </Sec>
 
           <Sec id="install" title="Install">
-            <p>There are no packaged releases yet. Build both programs with Go 1.26 or later:</p>
-            <Code>{"go install github.com/divyanshusingh2903/goldengate/cmd/...@latest"}</Code>
-            <p>They land in <code>$(go env GOPATH)/bin</code>. Put that folder on your <code>PATH</code> and check both run:</p>
+            <p>The current version is <strong>1.0.1</strong>. The laptop app (<code>goldengate</code>) is one Go program; build it with Go 1.26 or later. This also installs <code>goldengatebridge</code>, the server, which you can run from source or, more easily, as a published image (see <a href="#deploy">Deploy</a>).</p>
+            <Code>{"go install github.com/divyanshusingh2903/goldengate/cmd/...@v1.0.1"}</Code>
+<p>They land in <code>$(go env GOPATH)/bin</code>. Put that folder on your <code>PATH</code> and check both run:</p>
             <Code>{'export PATH="$HOME/go/bin:$PATH"\ngoldengate version && goldengatebridge version'}</Code>
             <p>See what Golden Gate can read. Nothing goes over the network:</p>
             <Code>{"goldengate doctor"}</Code>
@@ -241,7 +284,7 @@ function GoldenGateDocs() {
                 [<>{c("+")} {c("-")}</>, "A change you made that is not applied yet"],
               ]}
             />
-            <p>{k("space")} ticks or unticks, {k("enter")} shows your changes and applies them only when you confirm, {k("v")} shows exactly what the highlighted assistant can read now, {k("d")} lists its tokens ({k("R")} revokes one), {k("u")} clears pending changes.</p>
+            <p>{k("space")} ticks or unticks, {k("enter")} shows your changes and applies them only when you confirm, {k("v")} shows exactly what the highlighted assistant can read now, {k("d")} lists its tokens ({k("R")} revokes one, {k("N")} makes a new one), {k("u")} clears pending changes.</p>
           </Sec>
 
           <Sec id="tui-settings" title="Server and settings">
@@ -259,14 +302,15 @@ function GoldenGateDocs() {
             <Table
               head={["Screen", "What you do there"]}
               rows={[
-                [<strong>Setup</strong>, "Tools found; connect with the admin secret or a pairing code. The assistant token is shown once, with a copy button."],
+                [<strong>Overview</strong>, "Where things stand: what waits, what was sent, and a timeline of automatic sends."],
+                [<strong>Setup</strong>, "Leads with the connected server (status, upload token, connector address); the form to connect or reconnect opens on request. Connect with the admin secret or a pairing code. The assistant token is shown once, with a copy button."],
                 [<strong>Projects</strong>, <>{c("●")} shared, {c("○")} not shared, {c("◐")} partly, {c("✕")} blocked. Views, search, show as folders. The card says in words what happens to each project: share, block, preview, tools, named project, undo.</>],
                 [<strong>Preview</strong>, "The exact payload per session, redactions highlighted, and what changed since the last send."],
                 [<strong>Send</strong>, "Step 1 Review, nothing leaves. Step 2 Send, with progress per project. A failure offers retry; what arrived is not sent again."],
                 [<strong>Inbox</strong>, "Offers first, then sessions waiting by project with Approve all. Per session: approve, exclude, edit summary, undo, retract."],
                 [<strong>Receipts</strong>, "Each automatic send, the rule that sent each session, retract per session."],
                 [<strong>Server</strong>, "Reachability, the upload token, what the server holds, delete a project there."],
-                [<strong>Agents</strong>, "A grid of projects by assistants. Ticks are staged in a review card and apply only when you confirm. Tokens with revoke, and View as."],
+                [<strong>Agents</strong>, "A grid of projects by assistants. Ticks are staged in a review card and apply only when you confirm. A card per assistant with its tokens: revoke, make a new token (shown once), and View as."],
                 [<strong>Settings</strong>, "Share level, look-back, tools, redaction patterns, git checks, summarizer with a write-only API key and a test call."],
               ]}
             />
@@ -300,10 +344,99 @@ function GoldenGateDocs() {
           </Sec>
 
           <Sec id="deploy" title="Deploy behind HTTPS">
-            <p>For hosted assistants, run the server where they can reach it, behind TLS. Golden Gate Bridge refuses plain HTTP on a public address unless TLS is configured or <code>--behind-tls-proxy</code> is given.</p>
-            <Code>{'export GOLDENGATE_ADMIN_TOKEN="$(openssl rand -base64 32)"\ngoldengatebridge serve --addr :8080 --behind-tls-proxy --db /data/bridge.db'}</Code>
-            <p>Then connect your laptop. The upload token goes to your OS keyring; the assistant token is printed once:</p>
+            <p>Hosted assistants can't reach your laptop, so the server needs a public HTTPS address. Golden Gate Bridge is one Go program and one SQLite file. It refuses plain HTTP on a public address unless TLS is configured or <code>--behind-tls-proxy</code> is given.</p>
+            <p>So a host has to give it three things: <strong>HTTPS</strong>, a <strong>disk that survives restarts</strong>, and <strong>one always-on process</strong> (no scale-to-zero, one replica).</p>
+            <Table
+              head={["Host", "Fits?", "Why"]}
+              rows={[
+                [<a href="#deploy-vm">Your own VM</a>, "Yes", "A disk, systemd, and Caddy for HTTPS. The most direct route."],
+                [<a href="#deploy-railway">Railway</a>, "Yes", "A container with a volume and a generated HTTPS domain."],
+                [<a href="#deploy-firebase">Firebase</a>, "Not by itself", "Firebase hosts sites and functions, not a server with a disk. Use a Google Cloud VM."],
+                [<a href="#deploy-vercel">Vercel</a>, "To try it only", "It runs the image, but as a function: no disk that survives and it scales to zero. You would lose your data."],
+              ]}
+            />
+            <p>Whichever host you pick, the finish is the same. Open <code>https://bridge.example.com/healthz</code> (it prints <code>200</code>), then connect your laptop. The upload token goes to your OS keyring and the assistant token is printed once:</p>
             <Code>{"goldengate init --server https://bridge.example.com"}</Code>
+            <Note>Images are versioned (<code>1.0.1</code>, <code>1.0</code>, <code>1</code>, <code>latest</code>), for amd64 and arm64. Keep one copy of the server, with one database. Don't run two instances against the same data.</Note>
+          </Sec>
+
+          <Sec id="deploy-vm" title="Your own VM">
+            <p>Any Linux VM works (Hetzner, DigitalOcean, EC2, a Compute Engine instance). These steps assume Ubuntu, a DNS <code>A</code> record for <code>bridge.example.com</code> pointing at the VM, and ports 80 and 443 open.</p>
+            <p><strong>1. Build for Linux on your laptop and copy it over.</strong> The server has no C dependencies.</p>
+            <Code>{'GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go install github.com/divyanshusingh2903/goldengate/cmd/goldengatebridge@v1.0.1\nscp "$(go env GOPATH)/bin/linux_amd64/goldengatebridge" you@bridge.example.com:'}</Code>
+            <p>If your laptop is already Linux on amd64, the file is in <code>$(go env GOPATH)/bin</code> without the <code>linux_amd64</code> folder. Use <code>GOARCH=arm64</code> for an Arm VM.</p>
+            <p><strong>2. On the VM, add a user, a data folder and the admin secret.</strong></p>
+            <Code>{'sudo install -m 755 goldengatebridge /usr/local/bin/\nsudo useradd --system --create-home --home-dir /var/lib/goldengate --shell /usr/sbin/nologin goldengate\nsudo install -d -m 700 /etc/goldengate\necho "GOLDENGATE_ADMIN_TOKEN=$(openssl rand -base64 32)" | sudo tee /etc/goldengate/bridge.env >/dev/null\nsudo chmod 600 /etc/goldengate/bridge.env'}</Code>
+            <p><strong>3. Run it as a service.</strong> Save this as <code>/etc/systemd/system/goldengatebridge.service</code>:</p>
+            <Code>{'[Unit]\nDescription=Golden Gate Bridge\nAfter=network-online.target\n\n[Service]\nUser=goldengate\nEnvironmentFile=/etc/goldengate/bridge.env\nExecStart=/usr/local/bin/goldengatebridge serve --addr 127.0.0.1:8080 --behind-tls-proxy --db /var/lib/goldengate/bridge.db\nRestart=on-failure\nNoNewPrivileges=true\nProtectSystem=strict\nReadWritePaths=/var/lib/goldengate\nProtectHome=true\nPrivateTmp=true\n\n[Install]\nWantedBy=multi-user.target'}</Code>
+            <Code>{"sudo systemctl daemon-reload && sudo systemctl enable --now goldengatebridge"}</Code>
+            <p><strong>4. Put Caddy in front for HTTPS.</strong> It gets and renews the certificate by itself.</p>
+            <Code>{'sudo apt install -y caddy\nsudo tee /etc/caddy/Caddyfile >/dev/null <<\'EOF\'\nbridge.example.com {\n\treverse_proxy 127.0.0.1:8080\n}\nEOF\nsudo systemctl reload caddy'}</Code>
+            <p><strong>5. Connect your laptop without copying the admin secret.</strong> Make a single-use pairing code on the VM, then use it on your laptop:</p>
+            <Code>{'sudo -u goldengate goldengatebridge --db /var/lib/goldengate/bridge.db pair\n# on your laptop:\ngoldengate init --server https://bridge.example.com --pair-code <code>'}</Code>
+            <Check items={[<><code>curl -s -o /dev/null -w "%{"{http_code}"}\n" https://bridge.example.com/healthz</code> prints <code>200</code>.</>, <>After a reboot, <code>systemctl status goldengatebridge</code> says active.</>, <>Back up <code>/var/lib/goldengate/bridge.db</code>. It is the only state.</>]} />
+          </Sec>
+
+          <Sec id="deploy-railway" title="Railway">
+            <p>Railway runs the published image, keeps the database on a volume, and gives you an HTTPS address. There is nothing to build and no Dockerfile to write. A new Railway account includes trial credit, which is enough to try this.</p>
+            <Code>{"ghcr.io/divyanshusingh2903/goldengatebridge:1.0.1"}</Code>
+            <p>Use a version tag like <code>:1.0.1</code> to keep the server from changing under you, <code>:1.0</code> or <code>:1</code> for patch or minor updates, or <code>:latest</code> for the newest release.</p>
+            <ol className="gg-d-steps">
+              <li>Go to <a href="https://railway.com/new" target="_blank" rel="noopener noreferrer">railway.com/new</a> and choose <strong>Docker Image</strong>. Paste the image above and press <kbd>Enter</kbd>. Railway creates the project and starts pulling the image. The first start fails until step 2 is done, because the server refuses to run without an admin secret.</li>
+              <li>Open the service, then <strong>Variables → New Variable</strong>. Name it <code>GOLDENGATE_ADMIN_TOKEN</code> and give it this value, which makes Railway generate a long random secret for you, then click <strong>Add</strong>:
+                <Code>{"${{secret(48)}}"}</Code>
+              </li>
+              <li>Close the service panel to see the project canvas. Right-click the service, choose <strong>Attach volume</strong>, type <code>/data</code> as the mount path and press <kbd>Enter</kbd>. Without the volume, the database is lost on every deploy.</li>
+              <li>Click <strong>Deploy</strong> in the bar at the bottom (it says "Apply 4 changes") to apply the variable and the volume.</li>
+              <li>Open the service's <strong>Settings → Networking</strong> and click <strong>Generate Domain</strong>. Railway finds port 8080 by itself and gives you an address like <code>https://your-service-production.up.railway.app</code>. Leave the service at one replica.</li>
+              <li>Open <code>https://your-service-production.up.railway.app/healthz</code>. It shows <code>{"{"}"status":"ok"{"}"}</code>.</li>
+              <li>Read your admin secret: <strong>Variables</strong>, then the eye icon next to <code>GOLDENGATE_ADMIN_TOKEN</code>. On your laptop, connect and paste it when asked:
+                <Code>{"goldengate init --server https://your-service-production.up.railway.app"}</Code>
+              </li>
+            </ol>
+            <Check items={[<>Share a project and send it, and an assistant connected with the assistant token lists it. A wrong token gets <code>401</code>.</>, <>Open the service's <strong>Deployments</strong>, choose <strong>⋮ → Redeploy</strong>, and when it is active again the project and your tokens are still there. That shows the volume works.</>]} />
+            <Note>Railway shows the admin secret to anyone who can open the project, so share the project only with people you would trust with it. After <code>goldengate init</code> you don't need the secret again except to change which assistant sees what.</Note>
+            <p>The same image runs anywhere that runs containers: <code>docker run -d -p 8080:8080 -v gg-data:/data -e GOLDENGATE_ADMIN_TOKEN=… ghcr.io/divyanshusingh2903/goldengatebridge:1.0.1</code> behind your own HTTPS. The Dockerfile is <a href={`${GITHUB_URL}/blob/main/deploy/Dockerfile`} target="_blank" rel="noopener noreferrer">deploy/Dockerfile</a> if you want to build it yourself.</p>
+          </Sec>
+
+          <Sec id="deploy-firebase" title="Firebase and Google Cloud">
+            <p>Firebase Hosting serves static files, and Cloud Functions are short-lived, so neither can hold a SQLite file. Two Google Cloud routes do work:</p>
+            <ul className="gg-d-steps">
+              <li><strong>A Compute Engine VM (recommended).</strong> Create a small Ubuntu VM, give it a static external IP, open ports 80 and 443, and follow <a href="#deploy-vm">Your own VM</a>. A Firebase project can use the same Google Cloud project.</li>
+              <li><strong>Cloud Run with a Filestore (NFS) volume.</strong> Deploy the image (Cloud Run reads public registries through an Artifact Registry remote repository) with <code>gcloud run deploy</code> at one instance minimum and one maximum, and mount a Filestore share at <code>/data</code>. Filestore has a monthly cost even when idle, and a share is writable by root only by default, which the image's root user satisfies.</li>
+            </ul>
+            <Note>Don't mount a Cloud Storage bucket at <code>/data</code>. It doesn't lock files, and SQLite needs locks.</Note>
+            <p>You can put Firebase Hosting in front with a rewrite to the Cloud Run service, but it adds nothing here: Cloud Run already gives you an HTTPS address, and a custom domain maps straight to it.</p>
+          </Sec>
+
+          <Sec id="deploy-vercel" title="Vercel">
+            <p>Vercel can run a Docker image (the container runtime is in beta). It serves it from a function: the container starts on a request, runs on port 80 unless you set <code>PORT</code>, and is stopped after about five minutes without traffic. There is no disk that survives, so the server's database is lost whenever the container is replaced, and two containers at once would each keep their own database. In a test the data was gone after about ten idle minutes: the laptop's stored upload token was refused (<code>goldengate doctor</code> says so) and everything had to be sent again.</p>
+            <Note><strong>Use this to try Golden Gate, not to keep your data.</strong> Use version 1.0.1 or later: 1.0.0 answered assistants with a 403 on Vercel. For a server you rely on, use a <a href="#deploy-vm">VM</a> or <a href="#deploy-railway">Railway</a>. After a restart on Vercel you would run <code>goldengate init</code> again and send everything again.</Note>
+            <ol className="gg-d-steps">
+              <li>Make an empty folder and add a file named <code>Dockerfile</code>. It starts from the published image and keeps the database in <code>/tmp</code>, the only writable place:
+                <Code>{'FROM ghcr.io/divyanshusingh2903/goldengatebridge:1.0.1\nCMD ["serve", "--behind-tls-proxy", "--db", "/tmp/bridge.db"]'}</Code>
+              </li>
+              <li>Install the Vercel CLI, sign in, and link the folder to a new project (accept the defaults):
+                <Code>{"npm i -g vercel\nvercel login\nvercel link"}</Code>
+              </li>
+              <li>Add the admin secret, and tell Vercel which port the server listens on (it routes to port 80 otherwise). Paste the output of <code>openssl rand -base64 32</code> when asked, and keep a copy:
+                <Code>{"vercel env add GOLDENGATE_ADMIN_TOKEN production\nvercel env add PORT production    # enter 8080"}</Code>
+              </li>
+              <li>Make sure Vercel treats the project as a container. With only a <code>Dockerfile</code> in the folder it picks that by itself. If it detects another framework, force it:
+                <Code>{"vercel project update --framework container --yes"}</Code>
+              </li>
+              <li>Deploy to production:
+                <Code>{"vercel deploy --prod"}</Code>
+                You can also push the folder to a Git repository connected to the project; it deploys the same way. The first build pulls the image, so it takes a minute.
+              </li>
+              <li>Open <code>https://your-project.vercel.app/healthz</code>, which shows <code>{"{"}"status":"ok"{"}"}</code>. It prints <code>200</code> (the first request after idle is slow while the container starts). If you see a Vercel sign-in page instead, Deployment Protection is on for that URL; turn it off for production in the project settings, because an assistant can't sign in to it.</li>
+              <li>Connect your laptop, pasting the admin secret when asked:
+                <Code>{"goldengate init --server https://your-project.vercel.app"}</Code>
+              </li>
+            </ol>
+            <Check items={[<><code>/healthz</code> prints <code>200</code> on the production URL.</>, <>An assistant connected with the token lists the projects you shared. If it later sees nothing, the container was replaced: run <code>goldengate init</code> and send again.</>]} />
+            <p>Vercel limits to know: a request can run up to 5 minutes on the free plan (longer on paid plans), request bodies are capped at 4.5 MB, and a container gets 2 GB of memory by default.</p>
+            <p>If your domain lives on Vercel, you can still point a subdomain at a better host. Under <strong>Domains → DNS Records</strong>, add an <code>A</code> record to your VM's address, or a <code>CNAME</code> from <code>bridge</code> to your Railway domain.</p>
           </Sec>
 
           <Sec id="oauth" title="OAuth">
@@ -384,8 +517,8 @@ function GoldenGateDocs() {
                 ["Single sessions", c("goldengate sessions list|include|exclude|retract|edit <id>")],
                 ["Stop sharing and delete from the server", c("goldengate share remove ~/code/app --delete-from-server")],
                 ["New assistant token", c("goldengate token rotate assistant")],
-                ["Assistants and grants", c("goldengate agents list|add|grant|revoke|token|limit|remove")],
-                ["Summarizer", c("goldengate summarizer use heuristic|anthropic|openai|gemini|ollama|custom")],
+                ["Assistants and grants", c("goldengate agents list|add|rename|grant|revoke|token|limit|remove")],
+                ["Summarizer", c("goldengate summarizer use heuristic|anthropic|openai|gemini|opencode|custom")],
               ]}
             />
             <p><code>goldengate &lt;command&gt; --help</code> explains any of them.</p>

@@ -242,7 +242,7 @@
 
 /* Screenshots from the real TUI, one per theme; the page theme decides which shows. */
 .gg-shot { display: block; border: 1px solid var(--gg-line); border-radius: 0; overflow: hidden; background: var(--gg-term-bg); }
-.gg-shot img { display: block; width: 100%; height: auto; }
+.gg-shot img, .gg-shot video { display: block; width: 100%; height: auto; }
 .gg-only-dark { display: none !important; }
 @media (prefers-color-scheme: dark) {
   #goldengate:not([data-theme="light"]) .gg-only-light { display: none !important; }
@@ -518,7 +518,7 @@
 .gg-l-term figcaption { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; padding: 8px 16px 6px; font: 400 0.78rem var(--gg-mono); color: var(--gg-dim); }
 .gg-l-term figcaption { border-top: 1px solid var(--gg-line); }
 .gg-l-term .gg-shot { display: block; }
-.gg-l-term .gg-shot img { display: block; width: 100%; height: auto; }
+.gg-l-term .gg-shot img, .gg-shot video { display: block; width: 100%; height: auto; }
 .gg-l-sp { flex: 1; }
 @media (max-width: 900px) { .gg-l-hero-top { grid-template-columns: minmax(0, 1fr); } .gg-l-hero { padding-top: 40px; } }
 
@@ -526,6 +526,10 @@
 .gg-l-band-tight { padding-bottom: 96px; }
 #goldengate .gg-l-band h2 { font-size: clamp(2rem, 4vw, 2.8rem); }
 .gg-l-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 56px; align-items: center; }
+.gg-l-ask { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 56px; align-items: end; }
+.gg-l-ask .gg-l-tools { margin-top: 0; }
+.gg-l-ask + .gg-l-term { margin-top: 40px; }
+@media (max-width: 900px) { .gg-l-ask { grid-template-columns: minmax(0, 1fr); gap: 28px; } }
 .gg-l-sub { color: var(--gg-dim); margin-top: 16px; max-width: 34ch; font-size: 1.1rem; }
 .gg-l-more { margin-top: 28px; font-size: 0.95rem; }
 @media (max-width: 900px) { .gg-l-split { grid-template-columns: minmax(0, 1fr); gap: 36px; } .gg-l-band { padding: 64px 0; } }

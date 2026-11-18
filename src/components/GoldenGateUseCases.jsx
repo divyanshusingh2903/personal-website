@@ -70,7 +70,7 @@ const cases = [
     body: "Codex picks up where Claude Code stopped, in the same repo.",
     via: "Coding agent",
     ask: "Pick up the redirect fix Claude Code started.",
-    call: 'get_project_context(project: "~/code/pharmfindr")',
+    call: 'get_project_context(project: "pharmfindr")',
     tools: ["get_project_context"],
     scope: "Worktrees are filed under their repository.",
   },
