@@ -13,6 +13,7 @@ import GoldenGate from "./components/GoldenGate";
 import GoldenGateSecurity from "./components/GoldenGateSecurity";
 import GoldenGateUseCases from "./components/GoldenGateUseCases";
 import GoldenGateMcp from "./components/GoldenGateMcp";
+import GoldenGateDocs from "./components/GoldenGateDocs";
 import Harbinger from "./components/Harbinger";
 import HarbingerExperiments from "./components/HarbingerExperiments";
 import HarbingerBenchmarks from "./components/HarbingerBenchmarks";
@@ -44,6 +45,7 @@ function App() {
         <Route path="/goldengate/security" element={<GoldenGateSecurity />} />
         <Route path="/goldengate/use-cases" element={<GoldenGateUseCases />} />
         <Route path="/goldengate/mcp" element={<GoldenGateMcp />} />
+        <Route path="/goldengate/docs" element={<GoldenGateDocs />} />
         <Route path="/harbinger" element={<Harbinger />} />
         <Route path="/harbinger/experiments" element={<HarbingerExperiments />} />
         <Route path="/harbinger/benchmarks" element={<HarbingerBenchmarks />} />

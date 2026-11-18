@@ -1,58 +1,12 @@
-import { lazy, Suspense } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Icon, IconGlyph, Logo, LogoPaths, Mark } from "./GoldenGateBrand";
-import { MARIN, SF } from "./goldengatePlacements";
-import GoldenGateShell, { GITHUB_URL } from "./GoldenGateShell";
+import { Icon, Logo, Mark } from "./GoldenGateBrand";
+import MapArt from "./GoldenGateMap";
+import { connectors, ingest } from "./goldengateSources";
+import GoldenGateShell from "./GoldenGateShell";
 
 // Tool names are the MCP tools Golden Gate Bridge serves. All are read-only.
 // The sessions in every sample are invented; scheduling, posting and sending are done by whatever MCP client you connect.
-
-// What Golden Gate reads, on the San Francisco side.
-const ingest = [
-  { logo: "claudecode", name: "Claude Code" },
-  { logo: "codex", name: "Codex" },
-  { logo: "opencode", name: "OpenCode" },
-  { logo: "claude", name: "claude.ai" },
-  { logo: "openai", name: "ChatGPT" },
-];
-
-// What can connect, on the Marin side: the assistants, coding agents and workspace apps most developers know.
-// Anything that speaks MCP works.
-const connectors = [
-  { logo: "claude", name: "Claude" },
-  { logo: "openai", name: "ChatGPT" },
-  { logo: "gemini", name: "Gemini" },
-  { logo: "cursor", name: "Cursor" },
-  { logo: "githubcopilot", name: "GitHub Copilot" },
-  { logo: "grok", name: "Grok" },
-  { logo: "perplexity", name: "Perplexity" },
-  { logo: "windsurf", name: "Windsurf" },
-  { logo: "metaai", name: "Meta AI" },
-  { logo: "notion", name: "Notion" },
-  { logo: "slack", name: "Slack" },
-];
-
-// The real coastline and roads are a separate chunk, loaded only on this page.
-const MapPaths = lazy(() => import("./GoldenGateMapPaths"));
-
-// The brand mark, fitted from shore to shore on the real deck line. It is drawn at its own stroke weight (3.2 in its
-// 64x48 box) so the lines scale with it like the logo file; its anchors, plus the round caps, end exactly on the coast.
-const CABLE = "M2 34Q14 30 20 6Q32 46 44 6Q50 30 62 34";
-const SHORE = { left: 670.4, right: 904.1, deck: 502.8 };
-const MARK_SCALE = (SHORE.right - SHORE.left) / 63.2;
-const DECK = { cx: (SHORE.left + SHORE.right) / 2, cy: SHORE.deck };
-
-// A logo placed on the map by its centre, at the map's own scale.
-const LOGO_SIZE = 54;
-function MapLogo({ item, at }) {
-  const [x, y] = at;
-  return (
-    <g className="gg-map-logo" transform={`translate(${x - LOGO_SIZE / 2} ${y - LOGO_SIZE / 2}) scale(${LOGO_SIZE / 24})`}>
-      <title>{item.name}</title>
-      {item.logo ? <LogoPaths name={item.logo} /> : <g fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><IconGlyph name={item.icon} /></g>}
-    </g>
-  );
-}
 
 function Logos({ items }) {
   return (
@@ -69,18 +23,7 @@ function Logos({ items }) {
 function MapHero() {
   return (
     <section className="gg-uc-hero">
-      <svg className="gg-map-svg" viewBox="0 0 1600 712" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A map of the Golden Gate strait: San Francisco on the left, Marin County on the right, joined by the bridge">
-        <rect className="gg-map-water" width="1600" height="712" />
-        <Suspense fallback={null}><MapPaths /></Suspense>
-        <g transform={`translate(${DECK.cx - 32 * MARK_SCALE} ${DECK.cy - 34 * MARK_SCALE}) scale(${MARK_SCALE})`} fill="none" stroke="var(--gg-orange)" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20 4V44M44 4V44" />
-          <path d={CABLE} />
-        </g>
-        <g className="gg-map-logos">
-          {ingest.map((p, i) => SF[i] && <MapLogo key={p.name} item={p} at={SF[i]} />)}
-          {connectors.map((p, i) => MARIN[i] && <MapLogo key={p.name} item={p} at={MARIN[i]} />)}
-        </g>
-      </svg>
+      <MapArt />
 
       <div className="gg-uc-ui">
         <div className="gg-uc-title">
@@ -108,147 +51,215 @@ function MapHero() {
   );
 }
 
-// Each case shows a real screen recording. Drop the file in public/goldengate/clips/<id>.mp4
-// (and optionally <id>.jpg as its poster), then set `clip: true` on the case below.
-// Until then a placeholder says what the recording will show.
-function Clip({ c }) {
-  const src = `/goldengate/clips/${c.id}`;
-  if (c.clip) {
-    return (
-      <figure className="gg-clip">
-        <video src={`${src}.mp4`} poster={c.poster ? `${src}.jpg` : undefined} controls muted playsInline preload="metadata" aria-label={c.shot} />
-        <figcaption>Recorded in {c.via.toLowerCase()}</figcaption>
-      </figure>
-    );
-  }
-  return (
-    <figure className="gg-clip gg-clip-empty">
-      <div className="gg-clip-frame" role="img" aria-label={`Recording coming soon: ${c.shot}`}>
-        <span className="gg-clip-play" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5z" /></svg>
-        </span>
-        <span className="gg-clip-tag">Recording coming soon</span>
-        <p className="gg-clip-shot">{c.shot}</p>
-      </div>
-      <figcaption>{c.via}</figcaption>
-    </figure>
-  );
-}
-
+// Each case plays its screen recording once public/goldengate/clips/<id>.mp4 exists and `clip: true` is set below
+// (add <id>.jpg and `poster: true` for a poster frame). Until then the stage shows the question and the tool call it makes.
 const cases = [
   {
     id: "weekly",
     title: "A weekly review in one question",
-    body: "Standups and weekly updates start with remembering. Your work arrives grouped by project, across every tool.",
+    body: "Your week, grouped by project, across every tool.",
     via: "Chat assistant",
+    ask: "What did I work on this week?",
+    call: 'recent_activity(days: 7)',
     tools: ["recent_activity", "list_projects"],
-    shot: "Ask a chat assistant “What did I work on this week?” and get an answer grouped by project.",
-    clip: false,
-    scope: "Share the projects you would report on. Leave client work out.",
+    scope: "Only the projects you share.",
   },
   {
     id: "handoff",
     title: "Start in one tool, finish in another",
-    body: "Your coding agent can read what a different tool did in the same repository, so a new session starts with context.",
+    body: "Codex picks up where Claude Code stopped, in the same repo.",
     via: "Coding agent",
+    ask: "Pick up the redirect fix Claude Code started.",
+    call: 'get_project_context(project: "~/code/pharmfindr")',
     tools: ["get_project_context"],
-    shot: "Codex picks up a task in the same repository that Claude Code started two hours earlier.",
-    clip: false,
-    scope: "Same folder, two tools, one project. Worktrees are filed under their repository.",
+    scope: "Worktrees are filed under their repository.",
   },
   {
     id: "nudge",
-    title: "A Monday nudge for stale pull requests",
-    body: "A scheduled agent checks what you opened and never saw merged, and posts it where you will see it.",
+    title: "A Monday nudge for stale PRs",
+    body: "A scheduled agent posts what you opened and never saw merged.",
     via: "Scheduled agent",
+    ask: "Every Monday: which of my PRs never merged?",
+    call: 'list_pull_requests(status: "created")',
     tools: ["list_pull_requests"],
-    shot: "A scheduled agent posts Monday’s list of pull requests that were opened but never seen merged.",
-    clip: false,
-    scope: "Status comes from what the session showed. It does not ask GitHub.",
+    scope: "Status as of the session, not live from GitHub.",
   },
   {
     id: "writeup",
     title: "The Friday update, drafted",
-    body: "A changelog or status email starts from the commits and issues that actually happened, with the evidence behind each.",
+    body: "Built from the commits and issues that actually happened.",
     via: "Email draft",
+    ask: "Draft my Friday update from this week's commits.",
+    call: "list_commits(days: 5)",
     tools: ["list_commits", "list_issues"],
-    shot: "An email draft of the Friday update, built from the week’s commits and issues.",
-    clip: false,
-    scope: "Issue titles and states are sent. Descriptions and comments never are.",
+    scope: "Issue titles and states only, never comments.",
   },
   {
     id: "voice",
     title: "Ask out loud on the commute",
-    body: "Any voice assistant that can call MCP tools can answer from your recent work without you opening a laptop.",
+    body: "Any voice assistant that speaks MCP can answer, no laptop needed.",
     via: "Voice assistant",
+    ask: "What did I ship this week?",
+    call: "recent_activity(days: 7)",
     tools: ["recent_activity"],
-    shot: "A voice assistant answers “What did I ship this week?” from your recent work.",
-    clip: false,
-    scope: "Answers are only as private as the assistant you ask. The token can only read.",
+    scope: "The token can only read.",
   },
   {
     id: "brag",
-    title: "A performance review without the scramble",
-    body: "Pull a year of pull requests and commits into highlights, while the work is still on your mind and in the record.",
+    title: "A performance review, no scramble",
+    body: "A year of PRs and commits, turned into highlights.",
     via: "Document",
+    ask: "Pull my highlights from the past year.",
+    call: "list_pull_requests(days: 365)",
     tools: ["list_pull_requests", "list_commits"],
-    shot: "A year of pull requests and commits turned into review highlights in a document.",
-    clip: false,
-    scope: "Looks back up to 365 days. Only what you chose to share.",
+    scope: "Looks back up to 365 days.",
   },
   {
     id: "standup",
     title: "Walk into standup ready",
-    body: "A calendar assistant can attach yesterday, today and what is still open to the invite, ten minutes before.",
+    body: "Yesterday and what's still open, attached to the invite.",
     via: "Calendar assistant",
+    ask: "Attach yesterday and what's open to my standup.",
+    call: "recent_activity(days: 1)",
     tools: ["recent_activity", "get_project_context"],
-    shot: "A calendar assistant attaches yesterday and what is still open to the standup invite.",
-    clip: false,
-    scope: "Reads summaries, never transcripts.",
+    scope: "Summaries, never transcripts.",
   },
   {
     id: "redo",
     title: "Don't solve it twice",
-    body: "Before an agent starts, it can search your past work and notice you already fixed something like this.",
+    body: "Your agent notices you already fixed something like this.",
     via: "Editor agent",
+    ask: "Have I fixed a redirect bug like this before?",
+    call: 'search_work(query: "redirect")',
     tools: ["search_work", "get_session"],
-    shot: "An editor agent notices you already fixed a similar redirect bug and offers that approach.",
-    clip: false,
-    scope: "Search covers titles and summaries. Raw transcripts never leave your machine.",
+    scope: "Searches titles and summaries only.",
   },
   {
     id: "chats",
     title: "Bring your chat history along",
-    body: "Export claude.ai or ChatGPT and those conversations become projects beside your code, each shared by its own rule.",
+    body: "claude.ai and ChatGPT exports become projects beside your code.",
     via: "Chat assistant",
+    ask: "What did we decide about the database schema?",
+    call: 'search_work(query: "schema")',
     tools: ["search_work", "get_session"],
-    shot: "An assistant answers from an imported claude.ai conversation about the database schema.",
-    clip: false,
-    scope: "Artifacts and uploads travel as metadata only: id, title and status.",
+    scope: "Chats are shared only by their own rule.",
   },
   {
     id: "clients",
     title: "Keep client work out of it",
-    body: "Share the projects you choose and deny the rest. A deny rule always wins, even over a broader allow.",
+    body: "Deny a project and the assistant never sees it. Deny always wins.",
     via: "Chat assistant",
+    ask: "What did I do for client-acme?",
+    call: "list_projects()",
+    answer: "I can't see a project called client-acme.",
     tools: ["list_projects"],
-    shot: "Asking about a denied project: the assistant says it cannot see it.",
-    clip: false,
-    scope: "Denied sessions are dropped before they are parsed, and their names are never logged.",
+    scope: "Denied sessions are dropped before parsing.",
   },
 ];
 
-const fits = [
-  "You work across several AI coding tools and lose track of what you did where.",
-  "You want an assistant, agent or app to answer questions about your own recent work.",
-  "You are comfortable running one small server, and want to decide exactly what is on it.",
-];
+const STEP_MS = 7000;
+const num = (i) => String(i + 1).padStart(2, "0");
 
-const notFor = [
-  "A hosted service. There is none: one deployment serves one person, or a small team that trusts each other.",
-  "Something that acts. Golden Gate Bridge only reads. Scheduling, posting and sending is done by the tool you connect.",
-  "Live status. Sessions are summarized when you sync.",
-];
+function Stage({ c, i, onEnded }) {
+  const src = `/goldengate/clips/${c.id}`;
+  return (
+    <div className="gg-ucp-screen">
+      <div className="gg-ucp-bar" aria-hidden="true">
+        <span className="gg-ucp-dots"><i /><i /><i /></span>
+        <span>{c.via}</span>
+        <span>{num(i)} / {num(cases.length - 1)}</span>
+      </div>
+      {c.clip ? (
+        <video key={c.id} src={`${src}.mp4`} poster={c.poster ? `${src}.jpg` : undefined} autoPlay muted playsInline controls onEnded={onEnded} aria-label={`${c.title}: ${c.ask}`} />
+      ) : (
+        <div className="gg-ucp-mock" key={c.id}>
+          <div className="gg-l-msg-u">{c.ask}</div>
+          <div className="gg-l-call"><b>golden-gate</b> · {c.call}</div>
+          {c.answer ? <div className="gg-l-msg-a"><p>{c.answer}</p></div> : <div className="gg-ucp-typing" aria-hidden="true"><i /><i /><i /></div>}
+          <span className="gg-ucp-soon">Recording coming soon</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CasePlayer() {
+  const [active, setActive] = useState(0);
+  const [auto, setAuto] = useState(true);
+  const [hold, setHold] = useState(false);
+  const rootRef = useRef(null);
+  const c = cases[active];
+  const next = useCallback(() => setActive((i) => (i + 1) % cases.length), []);
+
+  // Without a recording, the cases step on their own while the player is on screen, until the visitor picks one.
+  useEffect(() => {
+    if (!auto || hold || c.clip || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const t = setTimeout(next, STEP_MS);
+    return () => clearTimeout(t);
+  }, [auto, hold, active, c.clip, next]);
+
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(([e]) => setHold(!e.isIntersecting), { threshold: 0.3 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const pick = (i) => {
+    setAuto(false);
+    setActive(i);
+  };
+
+  const onKey = (e) => {
+    const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+    if (!step) return;
+    e.preventDefault();
+    const i = (active + step + cases.length) % cases.length;
+    pick(i);
+    document.getElementById(`case-tab-${cases[i].id}`)?.focus();
+  };
+
+  const running = auto && !hold && !c.clip;
+
+  return (
+    <div className="gg-ucp" ref={rootRef} onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)}>
+      <div className="gg-ucp-list" role="tablist" aria-orientation="vertical" aria-label="Use cases" onKeyDown={onKey}>
+        {cases.map((x, i) => (
+          <button
+            key={x.id}
+            id={`case-tab-${x.id}`}
+            role="tab"
+            aria-selected={i === active}
+            aria-controls="case-panel"
+            tabIndex={i === active ? 0 : -1}
+            className="gg-ucp-tab"
+            onClick={() => pick(i)}
+          >
+            <span className="gg-ucp-num">{num(i)}</span>
+            <span className="gg-ucp-title">{x.title}</span>
+            <span className="gg-ucp-via">{x.via}</span>
+            {i === active && running && <span className="gg-ucp-progress" style={{ "--ms": `${STEP_MS}ms` }} key={active} aria-hidden="true" />}
+          </button>
+        ))}
+      </div>
+
+      <div className="gg-ucp-panel" id="case-panel" role="tabpanel" aria-labelledby={`case-tab-${c.id}`}>
+        <Stage c={c} i={active} onEnded={auto ? next : undefined} />
+        <div className="gg-ucp-info">
+          <div>
+            <h3>{c.title}</h3>
+            <p>{c.body}</p>
+          </div>
+          <div className="gg-ucp-meta">
+            <p className="gg-uc-tools">{c.tools.map((t) => <code key={t}>{t}</code>)}</p>
+            <p className="gg-ucp-scope"><Icon name="shared" /> {c.scope}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function GoldenGateUseCases() {
   return (
@@ -257,39 +268,10 @@ function GoldenGateUseCases() {
 
       <section className="gg-section">
         <div className="gg-wrap">
-          <ol className="gg-cases">
-            {cases.map((c, i) => (
-              <li className={`gg-case${i % 2 ? " is-flip" : ""}`} id={c.id} key={c.id}>
-                <div className="gg-case-grid">
-                  <div className="gg-case-text">
-                    <span className="gg-case-num">{String(i + 1).padStart(2, "0")} <em>via {c.via}</em></span>
-                    <h2>{c.title}</h2>
-                    <p className="gg-case-body">{c.body}</p>
-                    <p className="gg-case-tools"><span>Reads</span>{c.tools.map((t) => <code key={t}>{t}</code>)}</p>
-                    <p className="gg-case-scope"><Icon name="shared" /> {c.scope}</p>
-                  </div>
-                  <div className="gg-case-surface"><Clip c={c} /></div>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section className="gg-section gg-section-sunk">
-        <div className="gg-wrap">
-          <div className="gg-split">
-            <div className="gg-card">
-              <h3><Icon name="shared" /> Who it fits</h3>
-              <ul>{fits.map((t) => <li key={t}>{t}</li>)}</ul>
-            </div>
-            <div className="gg-card">
-              <h3><Icon name="denied" /> What it is not</h3>
-              <ul>{notFor.map((t) => <li key={t}>{t}</li>)}</ul>
-            </div>
-          </div>
+          <h2>What people ask it.</h2>
+          <CasePlayer />
           <p className="gg-more">
-            Every tool is read-only, and the token cannot write or delete. See <Link to="/goldengate/mcp">the MCP tools</Link>, <Link to="/goldengate/security">Security</Link>, or the <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">repository</a>.
+            Golden Gate Bridge only reads. Scheduling, posting and sending are done by the tool you connect. <Link to="/goldengate/mcp">See every tool</Link>.
           </p>
         </div>
       </section>
