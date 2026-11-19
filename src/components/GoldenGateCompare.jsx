@@ -23,13 +23,13 @@ function GoldenGateCompare() {
 
       <section className="gg-section" id="products">
         <div className="gg-wrap">
-          <div className="gg-chips" role="tablist" aria-label="Kind of product">
+          <div className="gg-kinds" role="tablist" aria-label="Kind of product">
             {[{ id: "all", label: "All" }, ...KINDS].map((k) => (
               <button
                 key={k.id}
                 role="tab"
                 aria-selected={kind === k.id}
-                className="gg-chip"
+                className="gg-kind"
                 onClick={() => setKind(k.id)}
               >
                 {k.label}
@@ -37,7 +37,7 @@ function GoldenGateCompare() {
               </button>
             ))}
           </div>
-          <p className="gg-more gg-chips-blurb">{blurb ?? "Everything below stores, searches or serves your AI history in some way."}</p>
+          <p className="gg-more gg-kinds-blurb">{blurb ?? "Everything below stores, searches or serves your AI history in some way."}</p>
 
           <ul className="gg-pgrid">
             {shown.map((p) => (
