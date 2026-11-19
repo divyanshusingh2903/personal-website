@@ -223,6 +223,7 @@ function GoldenGateShell({ title, children }) {
             <Link to="/goldengate/docs">Docs</Link>
             <Link to="/goldengate/use-cases">Use cases</Link>
             <Link to="/goldengate/mcp">MCP</Link>
+            <Link to="/goldengate/compare">Compare</Link>
             <Link to="/goldengate/security">Security</Link>
             <GitHubButton className="gg-gh-nav" />
             <button className="gg-theme" onClick={toggleTheme} aria-label="Switch between light and dark">
@@ -243,6 +244,7 @@ function GoldenGateShell({ title, children }) {
             <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
             <Link to="/goldengate/use-cases">Use cases</Link>
             <Link to="/goldengate/mcp">MCP</Link>
+            <Link to="/goldengate/compare">Compare</Link>
             <Link to="/goldengate/security">Security</Link>
             <a href={`${GITHUB_URL}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer">Apache-2.0</a>
             <Link to="/projects">More projects</Link>

@@ -755,3 +755,21 @@
 .gg-d-shot { margin: 14px 0 6px; max-width: 520px; }
 .gg-d-shot img { display: block; width: 100%; height: auto; border: 1px solid var(--gg-line); background: var(--gg-term-bg); }
 .gg-d-shot figcaption { margin-top: 6px; font-size: 0.85rem; color: var(--gg-dim); }
+
+/* ─── Compare page ─────────────────────────────────────── */
+.gg-compare { width: 100%; border-collapse: collapse; font-size: 0.92rem; text-align: left; min-width: 720px; }
+.gg-compare thead th { padding: 8px 12px 12px; font: 500 0.72rem var(--gg-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--gg-dim); vertical-align: bottom; }
+.gg-compare thead th:nth-child(2) { color: var(--gg-ink); }
+.gg-compare tbody th { padding: 12px 12px 10px 0; width: 14%; font-weight: 600; vertical-align: top; border-top: 1px solid var(--gg-line); }
+.gg-compare tbody td { padding: 12px 12px 10px; vertical-align: top; border-top: 1px solid var(--gg-line); color: var(--gg-dim); }
+.gg-compare tbody td:nth-child(2) { color: var(--gg-ink); background: var(--gg-sunk); }
+.gg-table-wrap .gg-compare { margin: 0; }
+
+.gg-cmp-grid { margin-top: 32px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .gg-cmp-grid { grid-template-columns: minmax(0, 1fr); } }
+.gg-cmp { background: var(--gg-surface); border: 3px double var(--gg-line); padding: 22px 24px 20px; display: grid; gap: 10px; align-content: start; }
+.gg-cmp h3 { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.gg-cmp h3 span { font: 500 0.72rem var(--gg-mono); letter-spacing: 0.08em; color: var(--gg-dim); flex: none; }
+#goldengate .gg-cmp h3 a { font-weight: 600; }
+.gg-cmp p { color: var(--gg-dim); }
+.gg-cmp p strong { color: var(--gg-ink); font-weight: 600; }
