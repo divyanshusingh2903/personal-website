@@ -223,11 +223,12 @@ function GoldenGateShell({ title, children }) {
             <Link to="/goldengate/docs">Docs</Link>
             <Link to="/goldengate/use-cases">Use cases</Link>
             <Link to="/goldengate/mcp">MCP</Link>
+            <Link to="/goldengate/compare">Compare</Link>
             <Link to="/goldengate/security">Security</Link>
             <GitHubButton className="gg-gh-nav" />
-            <button className="gg-theme" onClick={toggleTheme} aria-label="Switch between light and dark">
-              <span className="gg-theme-light">Dark</span>
-              <span className="gg-theme-dark">Light</span>
+            <button className="gg-theme" onClick={toggleTheme} aria-label="Switch between light and dark" title="Switch between light and dark">
+              <svg className="gg-theme-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" /></svg>
+              <svg className="gg-theme-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
             </button>
           </nav>
         </div>
@@ -243,6 +244,7 @@ function GoldenGateShell({ title, children }) {
             <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
             <Link to="/goldengate/use-cases">Use cases</Link>
             <Link to="/goldengate/mcp">MCP</Link>
+            <Link to="/goldengate/compare">Compare</Link>
             <Link to="/goldengate/security">Security</Link>
             <a href={`${GITHUB_URL}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer">Apache-2.0</a>
             <Link to="/projects">More projects</Link>

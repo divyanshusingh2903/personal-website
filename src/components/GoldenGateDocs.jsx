@@ -68,8 +68,13 @@ function StartPage() {
         />
       </Sec>
       <Sec id="install" title="Install">
-        <p>The current version is <strong>1.1.1</strong>. The laptop app (<code>goldengate</code>) is one Go program; build it with Go 1.26 or later. This also installs <code>goldengatebridge</code>, the server, which you can run from source or, more easily, as a published image (see <Link to="/goldengate/docs/deploy#deploy">Deploy</Link>).</p>
-        <Code>{"go install github.com/divyanshusingh2903/goldengate/cmd/...@v1.1.1"}</Code>
+        <p><strong>Two minutes, on one computer.</strong> The current version is <strong>1.1.3</strong>. Download the archive for your system from the <a href="https://github.com/divyanshusingh2903/goldengate/releases/latest" target="_blank" rel="noopener noreferrer">releases page</a> (Linux amd64 shown; macOS, Linux arm64 and Windows are there too). It holds both programs and needs no Go toolchain.</p>
+        <Code>{'curl -sL https://github.com/divyanshusingh2903/goldengate/releases/download/v1.1.3/goldengate_1.1.3_linux_amd64.tar.gz | tar xz\ncd goldengate_1.1.3_linux_amd64\nexport GOLDENGATE_ADMIN_TOKEN="$(openssl rand -base64 32)"\n./goldengatebridge serve --addr 127.0.0.1:8080 --db bridge.db &'}</Code>
+        <p>Then connect this computer to that server and open the web app. It prints your assistant token once; save it.</p>
+        <Code>{"./goldengate init --server http://127.0.0.1:8080 --non-interactive\n./goldengate ui"}</Code>
+        <p>Pick a project, look at the exact preview, send. The rest of this page explains each step, and <Link to="/goldengate/docs/deploy#deploy">Deploy</Link> covers a server your assistants can reach.</p>
+        <p>To build from source instead, you need Go 1.26 or later. This installs <code>goldengatebridge</code> too:</p>
+        <Code>{"go install github.com/divyanshusingh2903/goldengate/cmd/...@v1.1.3"}</Code>
 <p>They land in <code>$(go env GOPATH)/bin</code>. Put that folder on your <code>PATH</code> and check both run:</p>
         <Code>{'export PATH="$HOME/go/bin:$PATH"\ngoldengate version && goldengatebridge version'}</Code>
         <p>See what Golden Gate can read. Nothing goes over the network:</p>

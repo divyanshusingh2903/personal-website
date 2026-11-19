@@ -4,6 +4,7 @@ import { createServer } from "vite";
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { products } from "../src/components/goldengateCompare.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
@@ -27,12 +28,14 @@ const routes = [
   { path: "/goldengate/docs/reference", title: "Reference | Golden Gate Docs | Divyanshu Singh", description: "Golden Gate chat exports, sources, every command, troubleshooting and clean up." },
   { path: "/goldengate/mcp", title: "Golden Gate MCP Tools | Divyanshu Singh", description: "The ten read-only MCP tools Golden Gate Bridge exposes to your assistant: recent_activity, list_projects, get_project_context, search_work, get_session, get_work_item and the commit, pull request, issue and artifact lists." },
   { path: "/goldengate/use-cases", title: "Golden Gate Use Cases | Divyanshu Singh", description: "What Golden Gate and Golden Gate Bridge let an assistant do: weekly reviews, picking up a project, finding open pull requests, searching past work and drafting write-ups." },
+  { path: "/goldengate/compare", title: "Golden Gate Compared | Divyanshu Singh", description: "Golden Gate next to Supermemory, Mem0, Zep, Letta, Cognee, Basic Memory, Pieces and the session-search tools: what each offers and how Golden Gate differs." },
   { path: "/goldengate/security", title: "Golden Gate Security | Divyanshu Singh", description: "Golden Gate's security model: default deny, exact previews, the approval inbox, scoped tokens and per-agent access, receipts, the opt-in model summarizer, prompt injection and residual risks." },
   { path: "/harbinger", title: "Harbinger | Divyanshu Singh", description: "Harbinger: ML-based processing-time prediction with Multi-Level Feedback Queue scheduling to reduce message latency, with interactive simulations." },
   { path: "/harbinger/experiments", title: "Harbinger Experiments | Divyanshu Singh", description: "Experiments for the Harbinger project." },
   { path: "/harbinger/benchmarks", title: "Harbinger Benchmarks | Divyanshu Singh", description: "Benchmarks for the Harbinger project." },
   { path: "/harbinger/paper", title: "Harbinger Paper | Divyanshu Singh", description: "Paper for the Harbinger project: size-based scheduling for message queues from per-key duration statistics." },
   { path: "/harbinger/comparison", title: "Harbinger Comparison | Divyanshu Singh", description: "Comparison results for the Harbinger project." },
+  ...products.map((p) => ({ path: `/goldengate/compare/${p.slug}`, title: `Golden Gate vs ${p.name} | Divyanshu Singh`, description: `Golden Gate compared with ${p.name}: ${p.tagline}` })),
 ];
 
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");

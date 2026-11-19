@@ -85,8 +85,8 @@ function Drive() {
           <div className="gg-wrap">
             <div>
               <span className="gg-l-timecode" aria-hidden="true">00:{pad(Math.floor(clock / 60))}:{pad(clock % 60)}</span>
-              <h2>Set up in ten minutes.</h2>
-              <p>The drive across takes about two.</p>
+              <h2>Set up in two minutes.</h2>
+              <p>On your laptop first, with nothing to deploy. The drive across takes about two too.</p>
             </div>
             <div className="gg-actions">
               <Link className="gg-btn gg-btn-primary" to="/goldengate/docs#install">Quickstart</Link>
