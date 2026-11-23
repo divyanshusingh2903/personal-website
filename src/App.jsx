@@ -1,6 +1,7 @@
 import { lazy, Suspense, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
+import ScrollToTop from "./components/ScrollToTop";
 import Hero from "./components/Hero";
 import About from "./components/About";
 import Projects from "./components/Projects";
@@ -34,6 +35,7 @@ function App() {
 
   return (
     <div className={isDark ? "dark" : ""}>
+      <ScrollToTop />
       <Header isDark={isDark} toggleTheme={toggleTheme} />
       <Routes>
         <Route path="/" element={<><Hero /><About /></>} />
