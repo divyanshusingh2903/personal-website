@@ -219,6 +219,7 @@ function WebAppPage() {
         <p>It opens <code>http://127.0.0.1:&lt;port&gt;/launch#…</code>. The link works once and expires after two minutes; press {k("enter")} in that terminal for a new one. Reloading the page ends its session on purpose. Add <code>--no-open</code> to only print the link, or <code>--port 8090</code> for a fixed port.</p>
       </Sec>
       <Sec id="web-screens" title="Screens">
+        <p>The sidebar groups the screens: Overview, Inbox, Projects and Agents; Send; Rules and Receipts under Automation; Server, Settings and Setup. Feedback and errors show as toasts in the corner (errors stay until you close them), and each screen's <strong>Docs</strong> link opens its part of these docs.</p>
         <Table
           head={["Screen", "What you do there"]}
           rows={[
@@ -227,16 +228,19 @@ function WebAppPage() {
             [<strong>Projects</strong>, <>{c("●")} shared, {c("○")} not shared, {c("◐")} partly, {c("✕")} blocked. Views, search, show as folders. The card says in words what happens to each project: share, block, preview, tools, named project, undo.</>],
             [<strong>Preview</strong>, "The exact payload per session, redactions highlighted, and what changed since the last send."],
             [<strong>Send</strong>, "Step 1 Review, nothing leaves. Step 2 Send, with progress per project. A failure offers retry; what arrived is not sent again."],
-            [<strong>Inbox</strong>, "Offers first, then sessions waiting by project with Approve all. Per session: approve, exclude, edit summary, undo, retract."],
-            [<strong>Receipts</strong>, "Each automatic send, the rule that sent each session, retract per session."],
+            [<strong>Inbox</strong>, "Offers first, then sessions waiting by project with Approve all. Per session: approve, exclude, edit summary, undo, retract. Tabs switch at once, from what is already loaded."],
+            [<strong>Rules</strong>, <>Per named project: the trust level ({c("Ask")}, {c("Suggest")}, {c("Auto")}; Auto asks first) and its rules. <strong>+ Add rule</strong> approves or keeps local the sessions that match a tool, folder, remote, branch or issue; Remove takes a rule out. The same checks as <code>goldengate rules</code>.</>],
+            [<strong>Receipts</strong>, "Every automatic send in a list you can search, with totals. Open one for the sessions it sent, the rule that sent each, and Retract per session."],
             [<strong>Server</strong>, "Reachability, the upload token, what the server holds, delete a project there."],
             [<strong>Agents</strong>, "A grid of projects by assistants. Ticks are staged in a review card and apply only when you confirm. A card per assistant with its tokens: revoke, make a new token (shown once), and View as."],
-            [<strong>Settings</strong>, "Share level, look-back, tools, redaction patterns, git checks, summarizer with a write-only API key and a test call."],
+            [<strong>Settings</strong>, "Share level, look-back, tools, redaction patterns, git checks, summarizer with a write-only API key and a test call. Save turns on only when something changed; leaving with unsaved changes asks first."],
           ]}
         />
         <Check items={[
           <>Sharing a project in the browser shows <code>[x]</code> in the TUI after {k("r")}.</>,
           "Agents refuses a wrong admin secret; nothing changes until you apply.",
+          "Rules → + Add rule on a project lists the rule; Remove takes it out again.",
+          "Change a setting and click another screen: you are asked before the change is lost.",
           "Reloading the page asks for a fresh link.",
         ]} />
       </Sec>
@@ -433,6 +437,7 @@ function AutomationPage() {
         />
         <Code>{'goldengate projects trust "Test project" auto\ngoldengate rules add "Test project" --source claude-code      # approve Claude Code sessions\ngoldengate rules add "Test project" --exclude --source codex  # keep Codex sessions local\ngoldengate rules list'}</Code>
         <p>A rule only acts inside a project you already shared, and a block always wins.</p>
+        <p>In the web app, the <strong>Rules</strong> screen does the same: pick a project's trust level, add a rule with <strong>+ Add rule</strong> (or <strong>New rule</strong> for any project), and remove one.</p>
       </Sec>
       <Sec id="receipts" title="Receipts">
         <p>Everything sent without asking gets a receipt that names the rule that sent it.</p>
